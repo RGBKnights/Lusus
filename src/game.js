@@ -20,22 +20,12 @@ const ChessGame = Game({
     }
   },
   'setup': function(ctx) {
-    let secretData = {};
-
-    let data = {
-      'moves': []
-    };
-
-    let collection = [];
-    for (let i = 0; i < ctx.numPlayers; i++) {
-      collection.push(data)
-    }
-
-    let playerData = Object.assign({}, collection);
-
     return {
-      'secret': secretData,
-      'players': playerData
+      'secret': {},
+      'players': {
+        '0':  { 'moves': [] },
+        '1':  { 'moves': [] }
+      }
     };
   }
 });
