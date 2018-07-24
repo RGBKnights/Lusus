@@ -1,57 +1,43 @@
-import { Game } from 'boardgame.io/core';
-import Chess from 'chess.js';
-
-function Load(pgn) {
-  let chess = null;
-  if (Chess.Chess) {
-    chess = new Chess.Chess();
-  } else {
-    chess = new Chess();
-  }
-  chess.load_pgn(pgn);
-  return chess;
-}
-
+import { Game, PlayerView } from 'boardgame.io/core';
 
 const ChessGame = Game({
-  setup: () => ({ pgn: '' }),
-  name: 'chess',
-  moves: {
-    move(G, ctx, san) {
-      const chess = Load(G.pgn);
-      let whitesTurn = chess.turn() === 'w' && ctx.currentPlayer === '1';
-      let blacksTurn = chess.turn() === 'b' && ctx.currentPlayer === '0';
+  'name': 'chess',  
+  'playerView': PlayerView.STRIP_SECRETS,
+  'moves': {
+    'RollDice': function(G, ctx) {
+      // Clone G
+      const g = { ...G };
+  
+      // Update copy
+      let value = ctx.random.D6();
+      g.players[ctx.currentPlayer].moves.push(value);
 
-      if (whitesTurn || blacksTurn) {
-        return { ...G };
-      }
-
-      chess.move(san);
-
-      return { pgn: chess.pgn() };
-    },
+      // Move to next player
+      ctx.events.endTurn();
+  
+      // Return copy
+      return g;
+    }
   },
-  flow: {
-    movesPerTurn: 1,
+  'setup': function(ctx) {
+    let secretData = {};
 
-    endGameIf: G => {
-      const chess = Load(G.pgn);
-      if (chess.game_over()) {
-        let isDraw = chess.in_draw() || chess.in_threefold_repetition() || chess.insufficient_material() || chess.in_stalemate()
-        if (isDraw) {
-          return 'd';
-        }
-        
-        if (chess.in_checkmate()) {
-          if (chess.turn() === 'w') {
-            return 'b';
-          } else {
-            return 'w';
-          }
-        }
-      }
-    },
-  },
+    let data = {
+      'moves': []
+    };
+
+    let collection = [];
+    for (let i = 0; i < ctx.numPlayers; i++) {
+      collection.push(data)
+    }
+
+    let playerData = Object.assign({}, collection);
+
+    return {
+      'secret': secretData,
+      'players': playerData
+    };
+  }
 });
 
 export default ChessGame;
