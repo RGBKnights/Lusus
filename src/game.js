@@ -9,7 +9,7 @@ const ChessGame = Game({
       const g = { ...G };
   
       // Update copy
-      let value = ctx.random.D6();
+      let value = ctx.random.D20();
       g.players[ctx.currentPlayer].moves.push(value);
 
       // Move to next player
