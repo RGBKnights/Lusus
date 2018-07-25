@@ -6,7 +6,7 @@ The original idea of [Lusus](https://slimwiki.com/venatio-studios/actual-lusus) 
 
 * 1 Chessboard (standard size 8x8)
 * 32 Chessmen (16 for each team)
-* 90 Cubies (45 for each team)
+* 90 Cubits (45 for each team)
 
 ### Chessmen
 
@@ -19,9 +19,9 @@ We need the following units for each team.
 * Rook x2
 * Pawn x8
 
-### Cubies
+### Cubits
 
-We need the following Cubies for each team. A player can currently only have one of each type of cubit. Cubies are also split into groups based on type.
+We need the following Cubits for each team. A player can currently only have one of each type of cubit. Cubits are also split into groups based on type.
 
 **Movement**
 * King - bearer gains the movement of a King
@@ -35,10 +35,10 @@ We need the following Cubies for each team. A player can currently only have one
 * Sidestep - one orthogonal move
 
 **Special**
-* Immune - bearer gains immunity from special effects, and the other cubies it bears cannot be targeted
+* Immune - bearer gains immunity from special effects, and the other Cubits it bears cannot be targeted
 * Guard - bearer gains friendly pieces it could attack cannot be taken
-* -1 Draw - bearer causes the player to draw one less cubie
-* +1 Draw - bearer causes the player to draw one more cubie
+* -1 Draw - bearer causes the player to draw one less Cubit
+* +1 Draw - bearer causes the player to draw one more Cubit
 * Sticky Feet - bearer's movement is restricted to one space
 * Disarm - bearer cannot make moves that take pieces
 * Enrage - bearer cannot make moves that do not take pieces
@@ -64,23 +64,23 @@ We need the following Cubies for each team. A player can currently only have one
 * Bequeath - put a select tile from the captured piece into your hand
 
 **One Time Use**
-* Dispel - Remove 1 Any - send any cubie in a slot to the graveyard
-* Knockout - Remove All - send all cubies on a peace to the graveyard
-* Disenchant - Remove 1 Special - send any Special cubie in a slot to the graveyard
-* Trip - Remove 1 Movement - send any Movement cubie in a slot to the graveyard
-* Ensnare - Remove All Movement - send all Movement cubie in a slot to the graveyard
+* Dispel - Remove 1 Any - send any Cubit in a slot to the graveyard
+* Knockout - Remove All - send all Cubits on a peace to the graveyard
+* Disenchant - Remove 1 Special - send any Special Cubit in a slot to the graveyard
+* Trip - Remove 1 Movement - send any Movement Cubit in a slot to the graveyard
+* Ensnare - Remove All Movement - send all Movement Cubit in a slot to the graveyard
 * Delay - Discard All to bag
 * Backstab - Discard 2 at random to grave
 * Life tap - Discard 2 at random to my bag
 * Heal - Recover 3 from your graveyard
-* Recycle - use a cubie in your graveyard instead of this one 
-* Trade - Swap any two cubies
+* Recycle - use a Cubit in your graveyard instead of this one 
+* Trade - Swap any two Cubits
 
 ## Game Flow
 
 ## States
 
-The following are states Units and Cubies can be in and must be in one of the following state. 
+The following are states Units and Cubits can be in and must be in one of the following state. 
 We broke up the states each type can be in. Setup is a special type that represents the initial state of the game.
 
 **Chessmen**
@@ -88,7 +88,7 @@ We broke up the states each type can be in. Setup is a special type that represe
 * Board
 * Captured
 
-**Cubies**
+**Cubits**
 * Setup
 * Bag
 * Hand
@@ -98,14 +98,14 @@ We broke up the states each type can be in. Setup is a special type that represe
 
 ## Transitions
 
-Chessmen and Cubies can only transitions between a few different states at one time based on the flow of the game. Although the specifics will be based on each Cubie.
+Chessmen and Cubits can only transitions between a few different states at one time based on the flow of the game. Although the specifics will be based on each Cubit.
 
 **Chessmen**
 * Setup => Board
 * Board => Captured
 * Board => Promoted => Board
 
-**Cubies**
+**Cubits**
 * Setup => Bag
 * Bag => Hand
 * Hand => Bag
@@ -117,28 +117,31 @@ Chessmen and Cubies can only transitions between a few different states at one t
 * Graveyard  => Field
 * Graveyard  => Bag
 
+## Moves
+* PlayCubits - play a cube from hand to field. Playing a cube must have a valid target. The target may be a unit, an opponent, or self.
+* MoveUnit - unit from a position to another position on the board. Moving a unit must of a source and destination.
+* DiscardCubits - discard required number of Cubits from hand to bag.
+* DrawCubits - draw the required number of Cubits from bag to hand.
+
 ## Phases
-**Draw**
-* Move limits: [DrawCubies]
-* The draw phase should automatically end after the DrawCubies() move. If the player can not draw the correct number of Cubies required that player loses the game. The draw step can not be skipped.
 
 **Play**
-* Move limits: [PlayCubies]
-* The play phase should end after the PlayCubies() move and its side effects are resolved.
+* Move limits: [PlayCubits]
+* The play phase should end after the PlayCubits() move and its side effects are resolved. 
+It should also have a option to skip if there is not valid target.
 
 **Move**
 * Move limits: [MoveUnit]
 * The move phase should end after MoveUnit() move.
 
 **Discard**
-* Move limits: [MoveUnit]
-* The move phase should end after MoveUnit() move.
+* Move limits: [DiscardCubits]
+* The discard phase should end after DiscardCubits() move.
 
-## Moves
-* PlayCubies - play a cube from hand to field. Playing a cube must have a  valid target. The target may be a unit, an opponent, or self.
-* MoveUnit - unit from a position to another position on the board. Moving a unit must of a source and destination.
-* DiscardHand - discard required number of Cubies from hand to bag.
-* DrawCubies - draw the required number of Cubies from bag to hand.
+**Draw**
+* Move limits: [DrawCubits]
+* The draw phase should automatically end after the DrawCubits() move. 
+If the player can not draw the correct number of Cubits required that player loses the game. The draw step can not be skipped.
 
 ## Turns
 
@@ -149,15 +152,15 @@ Each player turns are a sequential collection of phases. These are as follows:
 * Discard
 * Draw
 
-Each players Setup consist of the classical chessmen position on the board. As well as each player drawing the starting number of Cubies. Start Draw Amount for White and the Start Draw Amount for Black after which it returns to the default draw amount unless altered by a Cubie. As with standard chess (White) takes the 1st turn. In our case Player '0' is always (White) and Player '1' is always (Black).
+Each players Setup consist of the classical chessmen position on the board. As well as each player drawing the starting number of Cubits. Start Draw Amount for White and the Start Draw Amount for Black after which it returns to the default draw amount unless altered by a Cubit. As with standard chess (White) takes the 1st turn. In our case Player '0' is always (White) and Player '1' is always (Black).
 
 ## End Game
 
 Winning the game is done by capturing the opponent's King unit. 
 
-> NOTE: this different then classic checkmate.
+> NOTE: this different then classic checkmate!
 
-There are also a Lose condition for players that can not draw the correct number of Cubies when they are required to draw. Under the current design a draw is not possible. With all things being equal (White) should lose if the players drag it an empty bag.
+There are also a Lose condition for players that can not draw the correct number of Cubits when they are required to draw. Under the current design a draw is not possible, a player will "Deck Out" before the other so the Draw result dose not need to be considered. With all things being equal (White) should lose if the players drag it to an empty bag.
 
 ## Game Variables / Constants
 

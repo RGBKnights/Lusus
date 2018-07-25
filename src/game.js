@@ -5,42 +5,74 @@ import { Game, PlayerView } from 'boardgame.io/core';
 const ChessGame = Game({
   name: 'chess',  
   moves: {
-    draw: function(G, ctx) {
-      return undefined;
+    playCubits: function(G, ctx, cubitId, unitId) {
+      // Source must be the id of a Cubit
+      // Target must be the id of a Unit
+      
+      // Move to next player
+      // ctx.events.endTurn();
+
+      const g = { ...G };
+      return g;
     },
-    play: function(G, ctx) {
-      return undefined;
+    moveUnit: function(G, ctx, source, destination) {
+      // Source must be the coordinates of the board, the Unit will be inferred from the source
+      // Destination must be the coordinates of the board
+
+      const g = { ...G };
+      return g;
     },
-    move: function(G, ctx) {
-      return undefined;
+    discardCubits: function(G, ctx) {
+      // The amount of is controlled by the game flow, Cubits can reduce the default amount
+
+      const g = { ...G };
+      return g;
+    },
+    drawCubits: function(G, ctx) {
+      // The amount of is controlled by the game flow, Cubits can increase and decrease the default amount
+      // If the amount is greater then the bag size then that player loses
+
+      const g = { ...G };
+      return g;
     }
   },
   flow: {
     phases: [
       {
-        name: 'draw phase',
-        allowedMoves: ['draw'],
-        /*
-        onPhaseBegin: function(G, ctx) {},
-        onPhaseEnd: function(G, ctx) {}
-        */
+        name: 'Play',
+        allowedMoves: ['playCubits'],
       },
       {
-        name: 'play phase',
-        allowedMoves: ['play'],
+        name: 'Move',
+        allowedMoves: ['moveUnit'],
       },
       {
-        name: 'move phase',
-        allowedMoves: ['move'],
+        name: 'Discard',
+        allowedMoves: ['discardCubits'],
+      },
+      {
+        name: 'Draw',
+        allowedMoves: ['drawCubits'],
       },
     ],
   },
   setup: function(ctx) {
+    // Get Cubits collection and populate bag
+
     return {
-      secret: {},
       players: {
-        '0':  { 'moves': [] },
-        '1':  { 'moves': [] }
+        '0': { 
+          bag: [],
+          hand: [],
+          field: [],
+          moves: []
+        },
+        '1': {
+          bag: [],
+          hand: [],
+          field: [],
+          moves: []
+        }
       }
     };
   }
