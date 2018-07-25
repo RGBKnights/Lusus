@@ -6,7 +6,7 @@ The orginal idea of [Lusus](https://slimwiki.com/venatio-studios/actual-lusus) i
 
 * 1 Chessboard (standard size 8x8)
 * 32 Chessmen (16 for each team)
-* 90 Cubits (45 for each team)
+* 90 Cubies (45 for each team)
 
 ### Chessmen
 
@@ -19,9 +19,9 @@ We need the following units for each team.
 * Rook x2
 * Pawn x8
 
-### Cubits
+### Cubies
 
-We need the following cubits for each team. A player can currently only have one of each type of cubit. Cubits are also split into groups based on type.
+We need the following Cubies for each team. A player can currently only have one of each type of cubit. Cubies are also split into groups based on type.
 
 **Movement**
 * King - bearer gains the movement of a King
@@ -48,7 +48,7 @@ We need the following cubits for each team. A player can currently only have one
 * Deadspace - uses up a slot
 * Condemn - uses up 2 slots
 * Wrap - bearer gains the ability to wrap around the left and right sides of the board
-* Ghost - peieces around the ghost can not move
+* Ghost - pieces around the ghost can not move
 * Immobilized - cant move at all 
 * Hit & Run - On Capture make a passive move
 * Knowledge - Opponent hand revealed
@@ -65,14 +65,14 @@ We need the following cubits for each team. A player can currently only have one
 
 **One Time Use**
 * Dispel - Remove 1 Any - send any cubie in a slot to the graveyard
-* Knockout - Remove All - send all cubies on a piee to the graveyard
+* Knockout - Remove All - send all cubies on a peace to the graveyard
 * Disenchant - Remove 1 Special - send any Special cubie in a slot to the graveyard
 * Trip - Remove 1 Movement - send any Movement cubie in a slot to the graveyard
 * Ensnare - Remove All Movement - send all Movement cubie in a slot to the graveyard
 * Delay - Discard All to bag
 * Backstab - Discard 2 at random to grave
 * Life tap - Discard 2 at random to my bag
-* Heal - Recover 3 from your gravyard
+* Heal - Recover 3 from your graveyard
 * Recycle - use a cubie in your graveyard instead of this one 
 * Trade - Swap any two cubies
 
@@ -80,14 +80,14 @@ We need the following cubits for each team. A player can currently only have one
 
 ## States
 
-The following are states Units and Cubits can be in and must be in one of the following state. 
+The following are states Units and Cubies can be in and must be in one of the following state. 
 We broke up the states each type can be in.
 
 **Chessmen**
 * Board
 * Exile
 
-**Cubits**
+**Cubies**
 * Bag
 * Hand
 * Field
@@ -96,3 +96,17 @@ We broke up the states each type can be in.
 * Board
 
 ## Transitions
+
+Chessmen and Cubies can only transitions between a few different states at one time based on the flow of the game.
+
+**Chessmen**
+* Setup => Board => Exile
+* Setup => Board => Promoted
+
+**Cubies**
+* Bag
+* Hand
+* Field
+* Graveyard
+* Exile
+* Board
