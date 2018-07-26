@@ -1,6 +1,7 @@
 # Lusus
 
-The original idea of [Lusus](https://slimwiki.com/venatio-studios/actual-lusus) is brain child of Kip Wieringa. Although through months of design with Jamie Webster we have create physical prototype that allowed us to define scope of Game, its rules, parts / pieces, and how they interact.
+The original idea of [Lusus](https://slimwiki.com/venatio-studios/actual-lusus) is brain child of Kip Wieringa.
+Although through months of design with Jamie Webster we have create physical prototype that allowed us to define scope of Game, its rules, parts / pieces, and how they interact.
 
 ## Inventory
 
@@ -21,7 +22,9 @@ We need the following units for each team.
 
 ### Cubits
 
-We need the following Cubits for each team. A player can currently only have one of each type of cubit. Cubits are also split into groups based on type.
+We need the following Cubits for each team.
+A player can currently only have one of each type of cubit.
+Cubits are also split into groups based on type.
 
 **Movement**
 * King - bearer gains the movement of a King
@@ -31,7 +34,8 @@ We need the following Cubits for each team. A player can currently only have one
 * Rook - bearer gains the movement of a Rook 
 * Pawn - bearer gains the movement of a Pawn 
 * Swap - bearer gains the ability to swap with an adjacent piece as its move 
-* R&B - If bearer had rook gains bishop / if bearer had bishop gain rook.   If they have neither nothing happens 
+* R&B - If bearer had rook gains bishop / if bearer had bishop gain rook.
+If they have neither nothing happens 
 * Sidestep - one orthogonal move
 
 **Special**
@@ -44,7 +48,8 @@ We need the following Cubits for each team. A player can currently only have one
 * Enrage - bearer cannot make moves that do not take pieces
 * Phase - bearer gains the ability to move through one piece when it moves
 * Double Action
-* Spring - this piece can continue diagonal movement bouncing off other pieces and walls.  as well another pieces can do the same, bouncing off this piece 
+* Spring - this piece can continue diagonal movement bouncing off other pieces and walls. 
+As well another pieces can do the same, bouncing off this piece.
 * Deadspace - uses up a slot
 * Condemn - uses up 2 slots
 * Wrap - bearer gains the ability to wrap around the left and right sides of the board
@@ -98,7 +103,8 @@ We broke up the states each type can be in. Setup is a special type that represe
 
 ## Transitions
 
-Chessmen and Cubits can only transitions between a few different states at one time based on the flow of the game. Although the specifics will be based on each Cubit.
+Chessmen and Cubits can only transitions between a few different states at one time based on the flow of the game. 
+Although the specifics will be based on each Cubit.
 
 **Chessmen**
 * Setup => Board
@@ -118,8 +124,10 @@ Chessmen and Cubits can only transitions between a few different states at one t
 * Graveyard  => Bag
 
 ## Moves
-* PlayCubits - play a cube from hand to field. Playing a cube must have a valid target. The target may be a unit, an opponent, or self.
-* MoveUnit - unit from a position to another position on the board. Moving a unit must of a source and destination.
+* PlayCubits - play a cube from hand to field. Playing a cube must have a valid target. 
+The target may be a unit, an opponent, or self.
+* MoveUnit - unit from a position to another position on the board. 
+Moving a unit must of a source and destination.
 * DiscardCubits - discard required number of Cubits from hand to bag.
 * DrawCubits - draw the required number of Cubits from bag to hand.
 
@@ -141,7 +149,8 @@ It should also have a option to skip if there is not valid target.
 **Draw**
 * Move limits: [DrawCubits]
 * The draw phase should automatically end after the DrawCubits() move. 
-If the player can not draw the correct number of Cubits required that player loses the game. The draw step can not be skipped.
+If the player can not draw the correct number of Cubits required that player loses the game. 
+The draw step can not be skipped.
 
 ## Turns
 
@@ -152,7 +161,11 @@ Each player turns are a sequential collection of phases. These are as follows:
 * Discard
 * Draw
 
-Each players Setup consist of the classical chessmen position on the board. As well as each player drawing the starting number of Cubits. Start Draw Amount for White and the Start Draw Amount for Black after which it returns to the default draw amount unless altered by a Cubit. As with standard chess (White) takes the 1st turn. In our case Player '0' is always (White) and Player '1' is always (Black).
+Each players Setup consist of the classical chessmen position on the board. 
+As well as each player drawing the starting number of Cubits. 
+Start Draw Amount for White and the Start Draw Amount for Black after which it returns to the default draw amount unless altered by a Cubit. 
+As with standard chess (White) takes the 1st turn. 
+In our case Player '0' is always (White) and Player '1' is always (Black).
 
 ## End Game
 
@@ -160,7 +173,9 @@ Winning the game is done by capturing the opponent's King unit.
 
 > NOTE: this different then classic checkmate!
 
-There are also a Lose condition for players that can not draw the correct number of Cubits when they are required to draw. Under the current design a draw is not possible, a player will "Deck Out" before the other so the Draw result dose not need to be considered. With all things being equal (White) should lose if the players drag it to an empty bag.
+There are also a Lose condition for players that can not draw the correct number of Cubits when they are required to draw. 
+Under the current design a draw is not possible, a player will "Deck Out" before the other so the Draw result dose not need to be considered. 
+With all things being equal (White) should lose if the players drag it to an empty bag.
 
 ## Game Variables / Constants
 
