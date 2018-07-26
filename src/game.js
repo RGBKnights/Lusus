@@ -1,4 +1,5 @@
 import { Game, PlayerView } from 'boardgame.io/core';
+import { Logic } from './logic';
 
 // 'playerView': PlayerView.STRIP_SECRETS,
 

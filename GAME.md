@@ -47,11 +47,9 @@ If they have neither nothing happens
 * Disarm - bearer cannot make moves that take pieces
 * Enrage - bearer cannot make moves that do not take pieces
 * Phase - bearer gains the ability to move through one piece when it moves
-* Double Action
-* Spring - this piece can continue diagonal movement bouncing off other pieces and walls. 
-As well another pieces can do the same, bouncing off this piece.
-* Deadspace - uses up a slot
-* Condemn - uses up 2 slots
+* Double Action - The host gains the ability to play an extra Cubit from there hand each turn.
+* Spring - this piece can continue diagonal movement bouncing off other walls.
+* Condemn - uses up the rest of the slots
 * Wrap - bearer gains the ability to wrap around the left and right sides of the board
 * Ghost - pieces around the ghost can not move
 * Immobilized - cant move at all 
@@ -68,7 +66,7 @@ As well another pieces can do the same, bouncing off this piece.
 * Transfusion - put the captures pieces tiles into the bag 
 * Bequeath - put a select tile from the captured piece into your hand
 
-**One Time Use**
+**Disposable**
 * Dispel - Remove 1 Any - send any Cubit in a slot to the graveyard
 * Knockout - Remove All - send all Cubits on a peace to the graveyard
 * Disenchant - Remove 1 Special - send any Special Cubit in a slot to the graveyard
