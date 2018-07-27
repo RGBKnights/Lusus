@@ -175,6 +175,15 @@ There are also a Lose condition for players that can not draw the correct number
 Under the current design a draw is not possible, a player will "Deck Out" before the other so the Draw result dose not need to be considered. 
 With all things being equal (White) should lose if the players drag it to an empty bag.
 
+### Setup Game
+
+The initial game setup should have the following steps:
+* populate bag with cubits
+* shuffle bag
+* add units to start positions on board
+* add starting cubits to units
+* draw starting hand
+
 ## Game Variables / Constants
 
 Below are the list of game Variables & Constants with their values.

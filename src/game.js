@@ -58,21 +58,19 @@ const ChessGame = Game({
     ],
   },
   setup: function(ctx) {
-    // Get Cubits collection and populate bag
-
     return {
       players: {
         '0': { 
           bag: [],
           hand: [],
-          field: [],
-          moves: []
+          moves: [],
+          units: []
         },
         '1': {
           bag: [],
           hand: [],
-          field: [],
-          moves: []
+          moves: [],
+          units: []
         }
       }
     };
