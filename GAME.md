@@ -81,7 +81,7 @@ If they have neither nothing happens
 
 ## Game Flow
 
-## States
+### States
 
 The following are states Units and Cubits can be in and must be in one of the following state. 
 We broke up the states each type can be in. Setup is a special type that represents the initial state of the game.
@@ -99,7 +99,7 @@ We broke up the states each type can be in. Setup is a special type that represe
 * Graveyard
 * Board - future use case
 
-## Transitions
+### Transitions
 
 Chessmen and Cubits can only transitions between a few different states at one time based on the flow of the game. 
 Although the specifics will be based on each Cubit.
@@ -121,7 +121,7 @@ Although the specifics will be based on each Cubit.
 * Graveyard  => Field
 * Graveyard  => Bag
 
-## Moves
+### Moves
 * PlayCubits - play a cube from hand to field. Playing a cube must have a valid target. 
 The target may be a unit, an opponent, or self.
 * MoveUnit - unit from a position to another position on the board. 
@@ -129,7 +129,7 @@ Moving a unit must of a source and destination.
 * DiscardCubits - discard required number of Cubits from hand to bag.
 * DrawCubits - draw the required number of Cubits from bag to hand.
 
-## Phases
+### Phases
 
 **Play**
 * Move limits: [PlayCubits]
@@ -150,7 +150,7 @@ It should also have a option to skip if there is not valid target.
 If the player can not draw the correct number of Cubits required that player loses the game. 
 The draw step can not be skipped.
 
-## Turns
+### Turns
 
 Each player turns are a sequential collection of phases. These are as follows:
 
@@ -165,7 +165,7 @@ Start Draw Amount for White and the Start Draw Amount for Black after which it r
 As with standard chess (White) takes the 1st turn. 
 In our case Player '0' is always (White) and Player '1' is always (Black).
 
-## End Game
+### End Game
 
 Winning the game is done by capturing the opponent's King unit. 
 
