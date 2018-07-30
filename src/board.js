@@ -2,7 +2,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 // UI
-import { Container, Row, Col, Alert } from 'reactstrap';
+import { Container, Row, Col, Alert, Badge } from 'reactstrap';
 import { Token, Grid } from 'boardgame.io/ui';
 // Cubits
 import Cubes from './cubits/cubes';
@@ -49,30 +49,24 @@ export default class ChessBoard extends React.Component {
     for (let x = 0; x < 8; x++) {
       for (let y = 0; y < 8; y++) {
         const key = `${x},${y}`;
-        let color = ((x + y) % 2 === 0) ? '#ABAAAA' : '#4E4D4D';
+        let color = ((x + y) % 2 === 0) ? '#4E4D4D' : '#ABAAAA';
         boardColorMap[key] = color;
       }
     }
 
-    let fieldWhiteColorMap = {};
-    for (let x = 0; x < 5; x++) {
-      for (let y = 0; y < 20; y++) {
-        const key = `${x},${y}`;
-        fieldWhiteColorMap[key] = '#4E4D4D';
-      }
-    }
+    let handColorMap = {
+      '0': {},
+      '1': {}
+    };
+    let fieldColorMap = {
+      '0': {},
+      '1': {}
+    };
 
-    let fieldBlackColorMap = {};
-    for (let x = 0; x < 5; x++) {
-      for (let y = 0; y < 20; y++) {
-        const key = `${x},${y}`;
-        fieldBlackColorMap[key] = '#ABAAAA';
-      }
-    }
-
-    let handStyle = {strokeWidth:0.05,stroke:'#fff', height: 70};
+    let handStyle = {strokeWidth:0.05,stroke:'#fff'};
     let fieldStyle = {strokeWidth:0.05,stroke:'#fff'};
 
+    let colors = ['#4E4D4D', '#ABAAAA'];
     let teams = ['w', 'b'];
     let hands = {
       '0': [],
@@ -80,13 +74,17 @@ export default class ChessBoard extends React.Component {
     };
 
     for (const p in hands) {
+      for (let i = 0; i < 5; i++) {
+        handColorMap[p][`${i},${0}`] = colors[p];
+      }
+
       const player = this.props.G.players[p];
       if (player)  {
         for (let i = 0; i < player.hand.length; i++) {
           hands[p].push(<Token key={i} x={i} y={0}><Text color={teams[p]} value={player.hand[i]} /></Token>);
         }
       } else {
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < this.props.G.limits[p].draw; i++) {
           hands[p].push(<Token key={i} x={i} y={0}><Cubes color={teams[p]} /></Token>);
         }
       }
@@ -97,352 +95,206 @@ export default class ChessBoard extends React.Component {
       '0': [],
       '1': []
     };
+    let boardKey = 0;
+    let fieldKey = 0;
     for (const p in this.props.G.field) {
       const field = this.props.G.field[p];
 
       for (let a = 0; a < field.length; a++) {
         const unit = field[a];
         
-        let slots = [];
-      
+        fieldColorMap[p][`${0},${a}`] = colors[p];
+
         if(unit.type === 'R') {
-          slots.push(<Token key={a} x={a} y={0}><Rook color={teams[p]} /></Token>);
-          board.push(<Token key={a} x={unit.x} y={unit.y}><Rook color={teams[p]} /></Token>);
+          fields[p].push(<Token key={fieldKey++} x={0} y={a}><Rook color={teams[p]} /></Token>);
+          board.push(<Token key={boardKey++} x={unit.x} y={unit.y}><Rook color={teams[p]} /></Token>);
         } else if(unit.type === 'N') {
-          slots.push(<Token key={a} x={a} y={0}><Knight color={teams[p]} /></Token>);
-          board.push(<Token key={a} x={unit.x} y={unit.y}><Knight color={teams[p]} /></Token>);
+          fields[p].push(<Token key={fieldKey++} x={0} y={a}><Knight color={teams[p]} /></Token>);
+          board.push(<Token key={boardKey++} x={unit.x} y={unit.y}><Knight color={teams[p]} /></Token>);
         } else if(unit.type === 'B') {
-          slots.push(<Token key={a} x={a} y={0}><Bishop color={teams[p]} /></Token>);
-          board.push(<Token key={a} x={unit.x} y={unit.y}><Bishop color={teams[p]} /></Token>);
+          fields[p].push(<Token key={fieldKey++} x={0} y={a}><Bishop color={teams[p]} /></Token>);
+          board.push(<Token key={boardKey++} x={unit.x} y={unit.y}><Bishop color={teams[p]} /></Token>);
         } else if(unit.type === 'K') {
-          slots.push(<Token key={a} x={a} y={0}><King color={teams[p]} /></Token>);
-          board.push(<Token key={a} x={unit.x} y={unit.y}><Bishop color={teams[p]} /></Token>);
+          fields[p].push(<Token key={fieldKey++} x={0} y={a}><King color={teams[p]} /></Token>);
+          board.push(<Token key={boardKey++} x={unit.x} y={unit.y}><King color={teams[p]} /></Token>);
         } else if(unit.type === 'Q') {
-          slots.push(<Token key={a} x={a} y={0}><Queen color={teams[p]} /></Token>);
-          board.push(<Token key={a} x={unit.x} y={unit.y}><Bishop color={teams[p]} /></Token>);
+          fields[p].push(<Token key={fieldKey++} x={0} y={a}><Queen color={teams[p]} /></Token>);
+          board.push(<Token key={boardKey++} x={unit.x} y={unit.y}><Queen color={teams[p]} /></Token>);
         } else if(unit.type === 'P') {
-          slots.push(<Token key={a} x={a} y={0}><Pawn color={teams[p]} /></Token>);
-          board.push(<Token key={a} x={unit.x} y={unit.y}><Pawn color={teams[p]} /></Token>);
+          fields[p].push(<Token key={fieldKey++} x={0} y={a}><Pawn color={teams[p]} /></Token>);
+          board.push(<Token key={boardKey++} x={unit.x} y={unit.y}><Pawn color={teams[p]} /></Token>);
         }
 
         for (let b = 0; b < unit.slots.length; b++) {
+          let x = b+1;
+          fieldColorMap[p][`${x},${a}`] = colors[p];
+          
           const cubit = unit.slots[b];
-          slots.push(<Token key={b} x={b} y={0} ><Text color={teams[p]} value={cubit} /></Token>); 
+          if(cubit) {
+            fields[p].push(<Token key={fieldKey++} x={x} y={a} ><Text color={teams[p]} value={cubit} /></Token>); 
+          }
         }
 
-        fields[p].push(slots);
       }
     }
+
+    let bags = {
+      '0': this.props.G.limits['0'].bag,
+      '1': this.props.G.limits['1'].bag
+    };
+
+    let draw = {
+      '0': this.props.G.limits['0'].draw,
+      '1': this.props.G.limits['1'].draw
+    };
+
+    let actions = {
+      '0': this.props.G.limits['0'].play,
+      '1': this.props.G.limits['1'].play
+    };
+
+    let graveyard = {
+      '0': this.props.G.graveyard['0'].length,
+      '1': this.props.G.graveyard['1'].length
+    };
+
+    let exile = {
+      '0': this.props.G.exile['0'].length,
+      '1': this.props.G.exile['1'].length
+    };
     
     return (
       <Container>
         <Row>
-          <Col xs="2">
+          <Col xs={2}>
             <h1>Lusus</h1>
           </Col>
-          <Col></Col>
-          <Col xs="2">
+          <Col>
+            <h1 className="text-center">
+              <small>Tactical Chess</small>
+            </h1>
+          </Col>
+          <Col xs={2}>
             <div className="text-center">
               <ConnectionStatus connected={connected}></ConnectionStatus>
             </div>
           </Col>
         </Row>
         <Row>
-          <Col xs="2"></Col>
-          <Col>
-            <Grid rows={8} cols={8} onClick={this.onClick} colorMap={boardColorMap} >
-              <Token x={0} y={7}>
-                <Rook color="w" />
-              </Token>
-              <Token x={1} y={7}>
-                <Knight color="w" />
-              </Token>
-              <Token x={2} y={7}>
-                <Bishop color="w" />
-              </Token>
-              <Token x={3} y={7}>
-                <Queen color="w" />
-              </Token>
-              <Token x={4} y={7}>
-                <King color="w" />
-              </Token>
-              <Token x={5} y={7}>
-                <Bishop color="w" />
-              </Token>
-              <Token x={6} y={7}>
-                <Knight color="w" />
-              </Token>
-              <Token x={7} y={7}>
-                <Rook color="w" />
-              </Token>
-              <Token x={0} y={6}>
-                <Pawn color="w" />
-              </Token>
-              <Token x={1} y={6}>
-                <Pawn color="w" />
-              </Token>
-              <Token x={2} y={6}>
-                <Pawn color="w" />
-              </Token>
-              <Token x={3} y={6}>
-                <Pawn color="w" />
-              </Token>
-              <Token x={4} y={6}>
-                <Pawn color="w" />
-              </Token>
-              <Token x={5} y={6}>
-                <Pawn color="w" />
-              </Token>
-              <Token x={6} y={6}>
-                <Pawn color="w" />
-              </Token>
-              <Token x={7} y={6}>
-                <Pawn color="w" />
-              </Token>
-              <Token x={0} y={0}>
-                <Rook color="b" />
-              </Token>
-              <Token x={1} y={0}>
-                <Knight color="b" />
-              </Token>
-              <Token x={2} y={0}>
-                <Bishop color="b" />
-              </Token>
-              <Token x={3} y={0}>
-                <Queen color="b" />
-              </Token>
-              <Token x={4} y={0}>
-                <King color="b" />
-              </Token>
-              <Token x={5} y={0}>
-                <Bishop color="b" />
-              </Token>
-              <Token x={6} y={0}>
-                <Knight color="b" />
-              </Token>
-              <Token x={7} y={0}>
-                <Rook color="b" />
-              </Token>
-              <Token x={0} y={1}>
-                <Pawn color="b" />
-              </Token>
-              <Token x={1} y={1}>
-                <Pawn color="b" />
-              </Token>
-              <Token x={2} y={1}>
-                <Pawn color="b" />
-              </Token>
-              <Token x={3} y={1}>
-                <Pawn color="b" />
-              </Token>
-              <Token x={4} y={1}>
-                <Pawn color="b" />
-              </Token>
-              <Token x={5} y={1}>
-                <Pawn color="b" />
-              </Token>
-              <Token x={6} y={1}>
-                <Pawn color="b" />
-              </Token>
-              <Token x={7} y={1}>
-                <Pawn color="b" />
-              </Token>
-            </Grid>
-          </Col>
-          <Col xs="2"></Col>
-        </Row>
-        <Row>
-          <Col xs="2"></Col>
-          <Col>
-            <div >
-              <Row>
-                <Col>
-                  <div className="text-center">
-                    <h3>Hand</h3>
-                  </div>
-                </Col>
-              </Row>
-              <Row>
-                <Col>
-                  <Grid rows={1} cols={hands['0'].length} colorMap={fieldWhiteColorMap} style={handStyle}>
-                    {hands['0']}
-                  </Grid>
-                </Col>
-              </Row>
-              <Row>
-                <Col>
-                  <div className="text-center">
-                    <h3>Field</h3>
-                  </div>
-                </Col>
-              </Row>
-              <Row>
-                <Col>
-                  <div>
-                    <Grid rows={15} cols={5} colorMap={fieldWhiteColorMap} style={fieldStyle}>
-                      <Token x={0} y={0}>
-                        <Rook color="w" />
-                      </Token>
-                      <Token x={0} y={1}>
-                        <Knight color="w" />
-                      </Token>
-                      <Token x={0} y={2}>
-                        <Bishop color="w" />
-                      </Token>
-                      <Token x={0} y={3}>
-                        <Queen color="w" />
-                      </Token>
-                      <Token x={0} y={4}>
-                        <King color="w" />
-                      </Token>
-                      <Token x={0} y={5}>
-                        <Bishop color="w" />
-                      </Token>
-                      <Token x={0} y={6}>
-                        <Knight color="w" />
-                      </Token>
-                      <Token x={0} y={7}>
-                        <Rook color="w" />
-                      </Token>
-                      <Token x={0} y={8}>
-                        <Pawn color="w" />
-                      </Token>
-                      <Token x={0} y={9}>
-                        <Pawn color="w" />
-                      </Token>
-                      <Token x={0} y={10}>
-                        <Pawn color="w" />
-                      </Token>
-                      <Token x={0} y={11}>
-                        <Pawn color="w" />
-                      </Token>
-                      <Token x={0} y={12}>
-                        <Pawn color="w" />
-                      </Token>
-                      <Token x={0} y={13}>
-                        <Pawn color="w" />
-                      </Token>
-                      <Token x={0} y={14}>
-                        <Pawn color="w" />
-                      </Token>
-                      <Token x={0} y={15}>
-                        <Pawn color="w" />
-                      </Token>
-                    </Grid>
-                  </div>
-                </Col>
-              </Row>
-              <Row>
-                <Col>
-                  <div className="text-center">
-                    <h3>Graveyard</h3>
-                  </div>
-                </Col>
-              </Row>
-              <Row>
-                <Col>
-                  <div className="text-center">
-                    <h3>Exile</h3>
-                  </div>
-                </Col>
-              </Row>
-            </div>
-
-          </Col>
-          <Col>
+          <Col xs={2}>
             <Row>
               <Col>
-                <div className="text-center">
-                  <h3>Hand</h3>
-                </div>
+                <h5>Bag <Badge color="primary" className="float-right mt-2">{bags['0']}</Badge></h5>
               </Col>
             </Row>
             <Row>
               <Col>
-                <Grid rows={1} cols={hands['1'].length} colorMap={fieldBlackColorMap} style={handStyle}>
+                <h5>Draw <Badge color="primary" className="float-right mt-2">{draw['0']}</Badge></h5>
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <h5>Action <Badge color="primary" className="float-right mt-2">{actions['0']}</Badge></h5>
+              </Col>
+            </Row>
+            <hr />
+            <Row>
+              <Col>
+                <h5 className="text-center">Hand</h5>
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <Grid rows={1} cols={5} colorMap={handColorMap['0']} style={handStyle}>
+                  {hands['0']}
+                </Grid>
+              </Col>
+            </Row>
+            <hr />
+            <Row>
+              <Col>
+                <h5 className="text-center">Field</h5>
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <Grid rows={15} cols={5} colorMap={fieldColorMap['0']} style={fieldStyle}>
+                  {fields['0']}
+                </Grid>
+              </Col>
+            </Row>
+            <hr />
+            <Row>
+              <Col>
+                <h5>Graveyard <Badge color="warning" className="float-right mt-2">{graveyard['0']}</Badge></h5>
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <h5>Exile <Badge color="danger" className="float-right mt-2">{exile['0']}</Badge></h5>
+              </Col>
+            </Row>
+          </Col>
+          <Col>
+            <Grid rows={8} cols={8} onClick={this.onClick} colorMap={boardColorMap} >
+              {board}
+            </Grid>
+          </Col>
+          <Col xs={2}>
+          <Row>
+              <Col>
+                <h5>Bag <Badge color="primary" className="float-right mt-2">{bags['1']}</Badge></h5>
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <h5>Draw <Badge color="primary" className="float-right mt-2">{draw['1']}</Badge></h5>
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <h5>Action <Badge color="primary" className="float-right mt-2">{actions['1']}</Badge></h5>
+              </Col>
+            </Row>
+            <hr />
+            <Row>
+              <Col>
+                <h5 className="text-center">Hand</h5>
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <Grid rows={1} cols={5} colorMap={handColorMap['1']} style={handStyle}>
                   {hands['1']}
                 </Grid>
               </Col>
             </Row>
+            <hr />
             <Row>
               <Col>
-                <div className="text-center">
-                  <h3>Field</h3>
-                </div>
+                <h5 className="text-center">Field</h5>
               </Col>
             </Row>
             <Row>
               <Col>
-                <div>
-                  <Grid rows={15} cols={5} colorMap={fieldBlackColorMap} style={fieldStyle}>
-                    <Token x={0} y={0}>
-                      <Rook color="b" />
-                    </Token>
-                    <Token x={0} y={1}>
-                      <Knight color="b" />
-                    </Token>
-                    <Token x={0} y={2}>
-                      <Bishop color="b" />
-                    </Token>
-                    <Token x={0} y={3}>
-                      <Queen color="b" />
-                    </Token>
-                    <Token x={0} y={4}>
-                      <King color="b" />
-                    </Token>
-                    <Token x={0} y={5}>
-                      <Bishop color="b" />
-                    </Token>
-                    <Token x={0} y={6}>
-                      <Knight color="b" />
-                    </Token>
-                    <Token x={0} y={7}>
-                      <Rook color="b" />
-                    </Token>
-                    <Token x={0} y={8}>
-                      <Pawn color="b" />
-                    </Token>
-                    <Token x={0} y={9}>
-                      <Pawn color="b" />
-                    </Token>
-                    <Token x={0} y={10}>
-                      <Pawn color="b" />
-                    </Token>
-                    <Token x={0} y={11}>
-                      <Pawn color="b" />
-                    </Token>
-                    <Token x={0} y={12}>
-                      <Pawn color="b" />
-                    </Token>
-                    <Token x={0} y={13}>
-                      <Pawn color="b" />
-                    </Token>
-                    <Token x={0} y={14}>
-                      <Pawn color="b" />
-                    </Token>
-                    <Token x={0} y={15}>
-                      <Pawn color="b" />
-                    </Token>
-                  </Grid>
-                </div>
+                <Grid rows={15} cols={5} colorMap={fieldColorMap['1']} style={fieldStyle}>
+                  {fields['1']}
+                </Grid>
+              </Col>
+            </Row>
+            <hr />
+            <Row>
+              <Col>
+                <h5>Graveyard <Badge color="warning" className="float-right mt-2">{graveyard['1']}</Badge></h5>
               </Col>
             </Row>
             <Row>
               <Col>
-                <div className="text-center">
-                  <h3>Graveyard</h3>
-                </div>
-              </Col>
-            </Row>
-            <Row>
-              <Col>
-                <div className="text-center">
-                  <h3>Exile</h3>
-                </div>
+                <h5>Exile <Badge color="danger" className="float-right mt-2">{exile['1']}</Badge></h5>
               </Col>
             </Row>
           </Col>
-          <Col xs="2"></Col>
+          
         </Row>
       </Container>
     );

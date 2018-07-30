@@ -55,42 +55,54 @@ export class Logic {
 
     return {
       secret: {},
+      limits: {
+        '0': {
+          bag: bags[0].length,
+          draw: hands[0].length,
+          play: 1
+        },
+        '1': {
+          bag: bags[1].length,
+          draw: hands[1].length,
+          play: 1
+        }
+      },
       field: {
         '0': [
-          { type: 'R', x: 0, y: 7, slots: [] },
-          { type: 'N', x: 0, y: 7, slots: [] },
-          { type: 'B', x: 0, y: 7, slots: [] },
-          { type: 'Q', x: 0, y: 7, slots: [] },
-          { type: 'K', x: 0, y: 7, slots: ['1010'] },
-          { type: 'B', x: 0, y: 7, slots: [] },
-          { type: 'N', x: 0, y: 7, slots: [] },
-          { type: 'R', x: 0, y: 7, slots: [] },
-          { type: 'P', x: 0, y: 6, slots: [] },
-          { type: 'P', x: 0, y: 6, slots: [] },
-          { type: 'P', x: 0, y: 6, slots: [] },
-          { type: 'P', x: 0, y: 6, slots: [] },
-          { type: 'P', x: 0, y: 6, slots: [] },
-          { type: 'P', x: 0, y: 6, slots: [] },
-          { type: 'P', x: 0, y: 6, slots: [] },
-          { type: 'P', x: 0, y: 6, slots: [] }
+          { type: 'R', x: 0, y: 0, slots: [null,null] },
+          { type: 'N', x: 0, y: 1, slots: [null,null] },
+          { type: 'B', x: 0, y: 2, slots: [null,null] },
+          { type: 'Q', x: 0, y: 3, slots: [null,null,null] },
+          { type: 'K', x: 0, y: 4, slots: ['1010',null,null,null] },
+          { type: 'B', x: 0, y: 5, slots: [null,null] },
+          { type: 'N', x: 0, y: 6, slots: [null,null] },
+          { type: 'R', x: 0, y: 7, slots: [null,null] },
+          { type: 'P', x: 1, y: 0, slots: [null] },
+          { type: 'P', x: 1, y: 1, slots: [null] },
+          { type: 'P', x: 1, y: 2, slots: [null] },
+          { type: 'P', x: 1, y: 3, slots: [null] },
+          { type: 'P', x: 1, y: 4, slots: [null] },
+          { type: 'P', x: 1, y: 5, slots: [null] },
+          { type: 'P', x: 1, y: 6, slots: [null] },
+          { type: 'P', x: 1, y: 7, slots: [null] }
         ],
         '1': [
-          { type: 'R', x: 0, y: 0, slots: [] },
-          { type: 'N', x: 1, y: 0, slots: [] },
-          { type: 'B', x: 2, y: 0, slots: [] },
-          { type: 'Q', x: 3, y: 0, slots: [] },
-          { type: 'K', x: 4, y: 0, slots: ['1010'] },
-          { type: 'B', x: 5, y: 0, slots: [] },
-          { type: 'N', x: 6, y: 0, slots: [] },
-          { type: 'R', x: 7, y: 0, slots: [] },
-          { type: 'P', x: 0, y: 1, slots: [] },
-          { type: 'P', x: 1, y: 1, slots: [] },
-          { type: 'P', x: 2, y: 1, slots: [] },
-          { type: 'P', x: 3, y: 1, slots: [] },
-          { type: 'P', x: 4, y: 1, slots: [] },
-          { type: 'P', x: 5, y: 1, slots: [] },
-          { type: 'P', x: 6, y: 1, slots: [] },
-          { type: 'P', x: 7, y: 1, slots: [] }
+          { type: 'R', x: 7, y: 0, slots: [null,null] },
+          { type: 'N', x: 7, y: 1, slots: [null,null] },
+          { type: 'B', x: 7, y: 2, slots: [null,null] },
+          { type: 'Q', x: 7, y: 3, slots: [null,null,null] },
+          { type: 'K', x: 7, y: 4, slots: ['1010',null,null,null] },
+          { type: 'B', x: 7, y: 5, slots: [null,null] },
+          { type: 'N', x: 7, y: 6, slots: [null,null] },
+          { type: 'R', x: 7, y: 7, slots: [null,null] },
+          { type: 'P', x: 6, y: 0, slots: [null] },
+          { type: 'P', x: 6, y: 1, slots: [null] },
+          { type: 'P', x: 6, y: 2, slots: [null] },
+          { type: 'P', x: 6, y: 3, slots: [null] },
+          { type: 'P', x: 6, y: 4, slots: [null] },
+          { type: 'P', x: 6, y: 5, slots: [null] },
+          { type: 'P', x: 6, y: 6, slots: [null] },
+          { type: 'P', x: 6, y: 7, slots: [null] }
         ]
       },
       graveyard: {
@@ -105,20 +117,12 @@ export class Logic {
         '0': {
           reinforcements: [],
           bag: bags[0],
-          hand: hands[0],
-          limits: {
-            hand: 3,
-            play: 1
-          }
+          hand: hands[0]
         },
         '1': {
           reinforcements: [],
           bag: bags[1],
-          hand: hands[1],
-          limits: {
-            hand: 3,
-            play: 1
-          }
+          hand: hands[1]
         }
       }
     };
