@@ -1,17 +1,18 @@
 import { Game, PlayerView } from 'boardgame.io/core';
 import { Logic } from './logic';
 
-// 'playerView': PlayerView.STRIP_SECRETS,
+let gl = new Logic();
 
 const ChessGame = Game({
-  name: 'chess',  
+  name: 'chess',
+  playerView: PlayerView.STRIP_SECRETS,
   moves: {
-    playCubits: function(G, ctx, cubitId, unitId) {
-      // Source must be the id of a Cubit
-      // Target must be the id of a Unit
+    playCubits: function(G, ctx, source, target) {
+      // source must be the index of a Cubit in hand
+      // target must be the index of a Unit on field
       
-      // Move to next player
-      // ctx.events.endTurn();
+      // Move to next
+      // ctx.events.endPhase();
 
       const g = { ...G };
       return g;
@@ -58,22 +59,8 @@ const ChessGame = Game({
     ],
   },
   setup: function(ctx) {
-    return {
-      players: {
-        '0': { 
-          bag: [],
-          hand: [],
-          moves: [],
-          units: []
-        },
-        '1': {
-          bag: [],
-          hand: [],
-          moves: [],
-          units: []
-        }
-      }
-    };
+    let data = gl.setup(ctx);
+    return data;
   }
 });
 

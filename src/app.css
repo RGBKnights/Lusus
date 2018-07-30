@@ -1,9 +1,12 @@
 .debug-ui {
   opacity: 1;
   z-index: 999;
+  height: inherit;
 }
 .debug-ui .pane {
-  height: 100%;
-  overflow-y: scroll;
-  padding-bottom: 70px;
+  padding-bottom: 120px;
+}
+
+.debug-ui .player.current {
+  background-color: #4c9ff7;
 }

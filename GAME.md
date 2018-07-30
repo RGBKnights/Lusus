@@ -189,7 +189,5 @@ The initial game setup should have the following steps:
 Below are the list of game Variables & Constants with their values.
 
 * Number of Players: 2
-* Start Draw Amount (White): 1
-* Start Draw Amount (Black): 3
 * Default Draw Amount: 3
 * Bag Size: 45

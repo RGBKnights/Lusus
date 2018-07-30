@@ -19,9 +19,9 @@ export class Cubit {
   }
 }
 
-export class NullCubit extends Cubit {
+export class HiddenCubit extends Cubit {
   constructor(n, desc) {
-    super("Null", "The unknown cubit.");
+    super("Hidden", "The hidden cubit.");
   }
 }
 
