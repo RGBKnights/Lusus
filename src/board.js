@@ -38,8 +38,16 @@ export default class ChessBoard extends React.Component {
     isConnected: PropTypes.bool,
   };
 
-  onClick = ({ x, y }) => {
-    
+  onClickBoard = ({ x, y }) => {
+    console.log("Board", {x,y});
+  };
+
+  onClickField = ({ x, y }) => {
+    console.log("Field", {x,y});
+  };
+
+  onClickHand = ({ x, y }) => {
+    console.log("Hand", {x,y});
   };
 
   render() {
@@ -107,32 +115,35 @@ export default class ChessBoard extends React.Component {
 
         if(unit.type === 'R') {
           fields[p].push(<Token key={fieldKey++} x={0} y={a}><Rook color={teams[p]} /></Token>);
-          board.push(<Token key={boardKey++} x={unit.x} y={unit.y}><Rook color={teams[p]} /></Token>);
+          board.push(<Token  key={boardKey++} x={unit.x} y={unit.y} animate={true}><Rook color={teams[p]} /></Token>);
         } else if(unit.type === 'N') {
           fields[p].push(<Token key={fieldKey++} x={0} y={a}><Knight color={teams[p]} /></Token>);
-          board.push(<Token key={boardKey++} x={unit.x} y={unit.y}><Knight color={teams[p]} /></Token>);
+          board.push(<Token key={boardKey++} x={unit.x} y={unit.y} animate={true}><Knight color={teams[p]} /></Token>);
         } else if(unit.type === 'B') {
           fields[p].push(<Token key={fieldKey++} x={0} y={a}><Bishop color={teams[p]} /></Token>);
-          board.push(<Token key={boardKey++} x={unit.x} y={unit.y}><Bishop color={teams[p]} /></Token>);
+          board.push(<Token key={boardKey++} x={unit.x} y={unit.y} animate={true}><Bishop color={teams[p]} /></Token>);
         } else if(unit.type === 'K') {
           fields[p].push(<Token key={fieldKey++} x={0} y={a}><King color={teams[p]} /></Token>);
-          board.push(<Token key={boardKey++} x={unit.x} y={unit.y}><King color={teams[p]} /></Token>);
+          board.push(<Token key={boardKey++} x={unit.x} y={unit.y} animate={true}><King color={teams[p]} /></Token>);
         } else if(unit.type === 'Q') {
           fields[p].push(<Token key={fieldKey++} x={0} y={a}><Queen color={teams[p]} /></Token>);
-          board.push(<Token key={boardKey++} x={unit.x} y={unit.y}><Queen color={teams[p]} /></Token>);
+          board.push(<Token key={boardKey++} x={unit.x} y={unit.y} animate={true}><Queen color={teams[p]} /></Token>);
         } else if(unit.type === 'P') {
           fields[p].push(<Token key={fieldKey++} x={0} y={a}><Pawn color={teams[p]} /></Token>);
-          board.push(<Token key={boardKey++} x={unit.x} y={unit.y}><Pawn color={teams[p]} /></Token>);
+          board.push(<Token key={boardKey++} x={unit.x} y={unit.y} animate={true}><Pawn color={teams[p]} /></Token>);
         }
 
         for (let b = 0; b < unit.slots.length; b++) {
-          let x = b+1;
-          fieldColorMap[p][`${x},${a}`] = colors[p];
-          
           const cubit = unit.slots[b];
           if(cubit) {
+            let x = b+1;
             fields[p].push(<Token key={fieldKey++} x={x} y={a} ><Text color={teams[p]} value={cubit} /></Token>); 
           }
+        }
+
+        for (let c= 0; c < unit.limit; c++) {
+          let x = c+1;
+          fieldColorMap[p][`${x},${a}`] = colors[p];
         }
 
       }
@@ -205,7 +216,7 @@ export default class ChessBoard extends React.Component {
             </Row>
             <Row>
               <Col>
-                <Grid rows={1} cols={5} colorMap={handColorMap['0']} style={handStyle}>
+                <Grid rows={1} cols={5} onClick={this.onClickHand} colorMap={handColorMap['0']} style={handStyle}>
                   {hands['0']}
                 </Grid>
               </Col>
@@ -218,7 +229,7 @@ export default class ChessBoard extends React.Component {
             </Row>
             <Row>
               <Col>
-                <Grid rows={15} cols={5} colorMap={fieldColorMap['0']} style={fieldStyle}>
+                <Grid rows={15} cols={5} onClick={this.onClickField}  colorMap={fieldColorMap['0']} style={fieldStyle}>
                   {fields['0']}
                 </Grid>
               </Col>
@@ -236,7 +247,7 @@ export default class ChessBoard extends React.Component {
             </Row>
           </Col>
           <Col>
-            <Grid rows={8} cols={8} onClick={this.onClick} colorMap={boardColorMap} >
+            <Grid rows={8} cols={8} onClick={this.onClickBoard} colorMap={boardColorMap} >
               {board}
             </Grid>
           </Col>
