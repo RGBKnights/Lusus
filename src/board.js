@@ -51,6 +51,13 @@ export default class ChessBoard extends React.Component {
   };
 
   render() {
+    /*
+    React.js ln:2666
+    if(debug) {
+      rest = objectWithoutProperties(rest, ['playerID']);
+    }
+    */
+
     let connected = (this.props.isMultiplayer && this.props.isConnected);
 
     let boardColorMap = {};
@@ -81,18 +88,22 @@ export default class ChessBoard extends React.Component {
       '1': []
     };
 
+    const MAX_HAND_SIZE = 5;
+    
     for (const p in hands) {
-      for (let i = 0; i < 5; i++) {
+      for (let i = 0; i < MAX_HAND_SIZE; i++) {
         handColorMap[p][`${i},${0}`] = colors[p];
       }
 
       const player = this.props.G.players[p];
-      if (player)  {
-        for (let i = 0; i < player.hand.length; i++) {
+      const cardsInHand = player.hand.length;
+
+      if (this.props.playerID === p) {
+        for (let i = 0; i < cardsInHand; i++) {
           hands[p].push(<Token key={i} x={i} y={0}><Text color={teams[p]} value={player.hand[i]} /></Token>);
         }
       } else {
-        for (let i = 0; i < this.props.G.limits[p].draw; i++) {
+        for (let i = 0; i < cardsInHand; i++) {
           hands[p].push(<Token key={i} x={i} y={0}><Cubes color={teams[p]} /></Token>);
         }
       }
@@ -150,28 +161,28 @@ export default class ChessBoard extends React.Component {
     }
 
     let bags = {
-      '0': this.props.G.limits['0'].bag,
-      '1': this.props.G.limits['1'].bag
+      '0': this.props.G.players['0'].bag.length,
+      '1': this.props.G.players['1'].bag.length
     };
 
     let draw = {
-      '0': this.props.G.limits['0'].draw,
-      '1': this.props.G.limits['1'].draw
+      '0': this.props.G.players['0'].draw,
+      '1': this.props.G.players['1'].draw
     };
 
     let actions = {
-      '0': this.props.G.limits['0'].play,
-      '1': this.props.G.limits['1'].play
+      '0': this.props.G.players['0'].actions,
+      '1': this.props.G.players['1'].actions
     };
 
     let graveyard = {
-      '0': this.props.G.graveyard['0'].length,
-      '1': this.props.G.graveyard['1'].length
+      '0': this.props.G.players['0'].graveyard.length,
+      '1': this.props.G.players['1'].graveyard.length
     };
 
     let exile = {
-      '0': this.props.G.exile['0'].length,
-      '1': this.props.G.exile['1'].length
+      '0': this.props.G.players['0'].exile.length,
+      '1': this.props.G.players['1'].exile.length
     };
     
     return (

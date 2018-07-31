@@ -54,75 +54,60 @@ export class Logic {
     }
 
     return {
-      secret: {},
-      limits: {
-        '0': {
-          bag: bags[0].length,
-          draw: hands[0].length,
-          play: 1
-        },
-        '1': {
-          bag: bags[1].length,
-          draw: hands[1].length,
-          play: 1
-        }
-      },
-      field: {
-        '0': [
-          { type: 'R', x: 0, y: 0, limit: 3, slots: [] },
-          { type: 'N', x: 0, y: 1, limit: 3, slots: [] },
-          { type: 'B', x: 0, y: 2, limit: 3, slots: [] },
-          { type: 'Q', x: 0, y: 3, limit: 2, slots: [] },
-          { type: 'K', x: 0, y: 4, limit: 4, slots: [] },
-          { type: 'B', x: 0, y: 5, limit: 3, slots: [] },
-          { type: 'N', x: 0, y: 6, limit: 3, slots: [] },
-          { type: 'R', x: 0, y: 7, limit: 3, slots: [] },
-          { type: 'P', x: 1, y: 0, limit: 2, slots: [] },
-          { type: 'P', x: 1, y: 1, limit: 2, slots: [] },
-          { type: 'P', x: 1, y: 2, limit: 2, slots: [] },
-          { type: 'P', x: 1, y: 3, limit: 2, slots: [] },
-          { type: 'P', x: 1, y: 4, limit: 2, slots: [] },
-          { type: 'P', x: 1, y: 5, limit: 2, slots: [] },
-          { type: 'P', x: 1, y: 6, limit: 2, slots: [] },
-          { type: 'P', x: 1, y: 7, limit: 2, slots: [] }
-        ],
-        '1': [
-          { type: 'R', x: 7, y: 0, limit: 3, slots: [] },
-          { type: 'N', x: 7, y: 1, limit: 3, slots: [] },
-          { type: 'B', x: 7, y: 2, limit: 3, slots: [] },
-          { type: 'Q', x: 7, y: 3, limit: 2, slots: [] },
-          { type: 'K', x: 7, y: 4, limit: 4, slots: [] },
-          { type: 'B', x: 7, y: 5, limit: 3, slots: [] },
-          { type: 'N', x: 7, y: 6, limit: 3, slots: [] },
-          { type: 'R', x: 7, y: 7, limit: 3, slots: [] },
-          { type: 'P', x: 6, y: 0, limit: 2, slots: [] },
-          { type: 'P', x: 6, y: 1, limit: 2, slots: [] },
-          { type: 'P', x: 6, y: 2, limit: 2, slots: [] },
-          { type: 'P', x: 6, y: 3, limit: 2, slots: [] },
-          { type: 'P', x: 6, y: 4, limit: 2, slots: [] },
-          { type: 'P', x: 6, y: 5, limit: 2, slots: [] },
-          { type: 'P', x: 6, y: 6, limit: 2, slots: [] },
-          { type: 'P', x: 6, y: 7, limit: 2, slots: [] }
-        ]
-      },
-      graveyard: {
-        '0': [],
-        '1': [],
-      },
-      exile: {
-        '0': [],
-        '1': [],
-      },
       players: {
         '0': {
+          draw: 3,
+          play: 1,
           reinforcements: [],
           bag: bags[0],
-          hand: hands[0]
+          hand: hands[0],
+          graveyard: [],
+          exile: [],
+          units: [
+            { type: 'R', x: 0, y: 0, limit: 3, slots: [] },
+            { type: 'N', x: 0, y: 1, limit: 3, slots: [] },
+            { type: 'B', x: 0, y: 2, limit: 3, slots: [] },
+            { type: 'Q', x: 0, y: 3, limit: 2, slots: [] },
+            { type: 'K', x: 0, y: 4, limit: 4, slots: [] },
+            { type: 'B', x: 0, y: 5, limit: 3, slots: [] },
+            { type: 'N', x: 0, y: 6, limit: 3, slots: [] },
+            { type: 'R', x: 0, y: 7, limit: 3, slots: [] },
+            { type: 'P', x: 1, y: 0, limit: 2, slots: [] },
+            { type: 'P', x: 1, y: 1, limit: 2, slots: [] },
+            { type: 'P', x: 1, y: 2, limit: 2, slots: [] },
+            { type: 'P', x: 1, y: 3, limit: 2, slots: [] },
+            { type: 'P', x: 1, y: 4, limit: 2, slots: [] },
+            { type: 'P', x: 1, y: 5, limit: 2, slots: [] },
+            { type: 'P', x: 1, y: 6, limit: 2, slots: [] },
+            { type: 'P', x: 1, y: 7, limit: 2, slots: [] }
+          ]
         },
         '1': {
+          draw: 3,
+          play: 1,
           reinforcements: [],
           bag: bags[1],
-          hand: hands[1]
+          hand: hands[1],
+          graveyard: [],
+          exile: [],
+          units: [
+            { type: 'R', x: 7, y: 0, limit: 3, slots: [] },
+            { type: 'N', x: 7, y: 1, limit: 3, slots: [] },
+            { type: 'B', x: 7, y: 2, limit: 3, slots: [] },
+            { type: 'Q', x: 7, y: 3, limit: 2, slots: [] },
+            { type: 'K', x: 7, y: 4, limit: 4, slots: [] },
+            { type: 'B', x: 7, y: 5, limit: 3, slots: [] },
+            { type: 'N', x: 7, y: 6, limit: 3, slots: [] },
+            { type: 'R', x: 7, y: 7, limit: 3, slots: [] },
+            { type: 'P', x: 6, y: 0, limit: 2, slots: [] },
+            { type: 'P', x: 6, y: 1, limit: 2, slots: [] },
+            { type: 'P', x: 6, y: 2, limit: 2, slots: [] },
+            { type: 'P', x: 6, y: 3, limit: 2, slots: [] },
+            { type: 'P', x: 6, y: 4, limit: 2, slots: [] },
+            { type: 'P', x: 6, y: 5, limit: 2, slots: [] },
+            { type: 'P', x: 6, y: 6, limit: 2, slots: [] },
+            { type: 'P', x: 6, y: 7, limit: 2, slots: [] }
+          ]
         }
       }
     };

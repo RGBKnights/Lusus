@@ -1,13 +1,14 @@
-import { Game, PlayerView } from 'boardgame.io/core';
+import { Game, } from 'boardgame.io/core';
 import { Logic } from './logic';
 
 let gl = new Logic();
 
 const ChessGame = Game({
   name: 'chess',
-  playerView: PlayerView.STRIP_SECRETS,
+  // playerView: PlayerView.STRIP_SECRETS,
   moves: {
     playCubits: function(G, ctx, cubix, field, unitix) {
+      /*
       // Set Defaults...
       cubix = 0
       field = '0'
@@ -46,8 +47,10 @@ const ChessGame = Game({
 
       // Return Copy
       return g;
+      */
     },
     moveUnit: function(G, ctx, source, destination) {
+      /*
       // Set Defaults...
       source = {x:1,y:4};
       destination = {x:2,y:4};
@@ -74,8 +77,10 @@ const ChessGame = Game({
       ctx.events.endPhase();
 
       return g;
+      */
     },
     discardCubits: function(G, ctx) {
+      /*
       // The amount of is controlled by the game flow, Cubits can reduce the default amount
 
       const g = { ...G };
@@ -93,8 +98,10 @@ const ChessGame = Game({
       ctx.events.endPhase();
 
       return g;
+      */
     },
     drawCubits: function(G, ctx) {
+      /*
       // The amount of is controlled by the game flow, Cubits can increase and decrease the default amount
       // If the amount is greater then the bag size then that player loses
 
@@ -126,6 +133,8 @@ const ChessGame = Game({
   
         return g;
       }
+
+      */
     }
   },
   flow: {
