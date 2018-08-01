@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-class Rook extends React.Component {
+class Knight extends React.Component {
   static propTypes = {
     color: PropTypes.string,
   };
@@ -13,7 +13,7 @@ class Rook extends React.Component {
     return (
       <g transform="scale(0.0018,0.0018) translate(20,20)">
         <path 
-          d="M406 484.7H106v-60h300v60zm-56.67-330.83h-50.05V91.3h-82.39v62.57h-54.22V91.3h-54.23v113.67h295.12V91.3h-54.23v62.57zm23.35 67.23H139.32v187.6h233.36V221.1z" 
+          d="M60.81 476.91h300v-60h-300v60zm233.79-347.3l13.94 7.39c31.88-43.62 61.34-31.85 61.34-31.85l-21.62 53 35.64 19 2.87 33 64.42 108.75-43.55 29.37s-26.82-36.39-39.65-43.66c-10.66-6-41.22-10.25-56.17-12l-67.54-76.91-12 10.56 37.15 42.31c-.13.18-.25.37-.38.57-35.78 58.17 23 105.69 68.49 131.78H84.14C93 85 294.6 129.61 294.6 129.61z" 
           style={style}
           transform="translate(0, 0) scale(1, 1) rotate(-360, 256, 256)" />
       </g>
@@ -21,4 +21,4 @@ class Rook extends React.Component {
   }
 }
 
-export default Rook;
+export default Knight;

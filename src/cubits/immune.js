@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-class Rook extends React.Component {
+class Immune extends React.Component {
   static propTypes = {
     color: PropTypes.string,
   };
@@ -13,12 +13,12 @@ class Rook extends React.Component {
     return (
       <g transform="scale(0.0018,0.0018) translate(20,20)">
         <path 
-          d="M406 484.7H106v-60h300v60zm-56.67-330.83h-50.05V91.3h-82.39v62.57h-54.22V91.3h-54.23v113.67h295.12V91.3h-54.23v62.57zm23.35 67.23H139.32v187.6h233.36V221.1z" 
+          d="M196 16a30 30 0 0 0-30 30v120H46a30 30 0 0 0-30 30v120a30 30 0 0 0 30 30h120v120a30 30 0 0 0 30 30h120a30 30 0 0 0 30-30V346h120a30 30 0 0 0 30-30V196a30 30 0 0 0-30-30H346V46a30 30 0 0 0-30-30H196z"
           style={style}
-          transform="translate(0, 0) scale(1, 1) rotate(-360, 256, 256)" />
+          transform="translate(0, 0) rotate(-360, 256, 256)" />
       </g>
     );
   }
 }
 
-export default Rook;
+export default Immune;

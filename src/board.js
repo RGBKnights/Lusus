@@ -5,15 +5,42 @@ import PropTypes from 'prop-types';
 import { Container, Row, Col, Alert, Badge } from 'reactstrap';
 import { Token, Grid } from 'boardgame.io/ui';
 // Cubits
-import Cubes from './cubits/cubes';
-import Text from './cubits/text';
+import CubitLogo from './cubits/cubit';
+import CubitText from './cubits/text';
+import CubitKing from './cubits/king';
+import CubitBishop from './cubits/bishop';
+import CubitKnight from './cubits/knight';
+import CubitRook from './cubits/rook';
+import CubitQueen from './cubits/queen';
+import CubitPawn from './cubits/pawn';
+import CubitSwap from './cubits/swap';
+import CubitRnB from './cubits/rb';
+import CubitSidestep from './cubits/sidestep';
+import CubitImmune from './cubits/immune';
+import CubitGuard from './cubits/guard';
+import CubitDrawPlus from './cubits/drawplus';
+import CubitDrawMinus from './cubits/drawminus';
+import CubitStickyFeet from './cubits/stickyfeet'
+import CubitDisarm from './cubits/disarm'
+import CubitEnrage from './cubits/enrage'
+import CubitPhase from './cubits/phase'
+import CubitDoubleAction from './cubits/doubleaction'
+import CubitSpring from './cubits/spring'
+import CubitCondemn  from './cubits/condemn'
+import CubitWrap from './cubits/wrap'
+import CubitGhost from './cubits/ghost'
+import CubitImmobilized from './cubits/immobilized'
+import CubitHitnRun from './cubits/hitrun'
+import CubitKnowledge from './cubits/knowledge'
+import CubitBoulderdash from './cubits/boulderdash'
+import CubitThief from './cubits/thief'
 // Units
-import King from './units/king';
-import Bishop from './units/bishop';
-import Knight from './units/knight';
-import Rook from './units/rook';
-import Queen from './units/queen';
-import Pawn from './units/pawn';
+import UnitKing from './units/king';
+import UnitBishop from './units/bishop';
+import UnitKnight from './units/knight';
+import UnitRook from './units/rook';
+import UnitQueen from './units/queen';
+import UnitPawn from './units/pawn';
 
 function ConnectionStatus(props) {
   if (props.connected) {
@@ -37,6 +64,130 @@ export default class ChessBoard extends React.Component {
     isMultiplayer: PropTypes.bool,
     isConnected: PropTypes.bool,
   };
+
+  getUnitComponent(type, team) {
+    let unitComponent = null;
+    switch (type) {
+      case 'R':
+        unitComponent = <UnitRook color={team} />;
+        break;
+      case 'N':
+        unitComponent = <UnitKnight color={team} />;
+        break;
+      case 'B':
+        unitComponent = <UnitBishop color={team} />;
+        break;
+      case 'K':
+        unitComponent = <UnitKing color={team} />;
+        break;
+      case 'Q':
+        unitComponent = <UnitQueen color={team} />;
+        break;
+      case 'P':
+        unitComponent = <UnitPawn color={team} />;
+        break;
+      default:
+        unitComponent = <CubitText color={team} value={type} />;
+        break;
+    }
+
+    return unitComponent;
+  }
+
+  getCubitComponent(cubitix, team) {
+    let cubitComponent = null;
+    switch (cubitix) {
+      case '1000':
+        cubitComponent = <CubitLogo color={team} />;
+        break;
+      case '1001':
+        cubitComponent = <CubitPawn color={team} />;
+        break;
+      case '1002':
+        cubitComponent = <CubitRook color={team} />;
+        break;
+      case '1003':
+        cubitComponent = <CubitKnight color={team} />;
+        break;
+      case '1004':
+        cubitComponent = <CubitBishop color={team} />;
+        break;
+      case '1005':
+        cubitComponent = <CubitKing color={team} />;
+        break;
+      case '1006':
+        cubitComponent = <CubitQueen color={team} />;
+        break;
+      case '1007':
+        cubitComponent = <CubitSwap color={team} />;
+        break;
+      case '1008':
+        cubitComponent = <CubitRnB color={team} />;
+        break;
+      case '1009':
+        cubitComponent = <CubitSidestep color={team} />;
+        break;
+      case '1010':
+        cubitComponent = <CubitImmune color={team} />;
+        break;              
+      case '1011':
+        cubitComponent = <CubitGuard color={team} />;
+        break;
+      case '1012':
+        cubitComponent = <CubitDrawPlus color={team} />;
+        break;
+      case '1013':
+        cubitComponent = <CubitDrawMinus color={team} />;
+        break;
+      case '1014':
+        cubitComponent = <CubitStickyFeet color={team} />;
+        break;   
+      case '1015':
+        cubitComponent = <CubitDisarm color={team} />;
+        break;
+      case '1016':
+        cubitComponent = <CubitEnrage color={team} />;
+        break;
+      case '1017':
+        cubitComponent = <CubitPhase color={team} />;
+        break;
+      case '1018':
+        cubitComponent = <CubitDoubleAction color={team} />;
+        break;
+      case '1019':
+        cubitComponent = <CubitSpring color={team} />;
+        break;
+      case '1020':
+        cubitComponent = <CubitCondemn color={team} />;
+        break;
+      case '1021':
+        cubitComponent = <CubitWrap color={team} />;
+        break;
+      case '1022':
+        cubitComponent = <CubitGhost color={team} />;
+        break;
+      case '1023':
+        cubitComponent = <CubitImmobilized color={team} />;
+        break;
+      case '1024':
+        cubitComponent = <CubitHitnRun color={team} />;
+        break;
+      case '1025':
+        cubitComponent = <CubitKnowledge color={team} />;
+        break;
+      case '1026':
+        cubitComponent = <CubitBoulderdash color={team} />;
+        break;
+      case '1027':
+        cubitComponent = <CubitThief color={team} />;
+        break;
+      default:
+        cubitComponent = <CubitText color={team} value={cubitix} />;
+        break;
+    }
+
+    return cubitComponent;
+  }
 
   onClickBoard = ({ x, y }) => {
     console.log("Board", {x,y});
@@ -101,11 +252,13 @@ export default class ChessBoard extends React.Component {
 
       if (this.props.playerID === p) {
         for (let i = 0; i < cardsInHand; i++) {
-          hands[p].push(<Token key={i} x={i} y={0}><Text color={teams[p]} value={player.hand[i]} /></Token>);
+          let cubitix = player.hand[i];
+          let cubitComponent = this.getCubitComponent(cubitix, teams[p]);
+          hands[p].push(<Token key={i} x={i} y={0}>{cubitComponent}</Token>);
         }
       } else {
         for (let i = 0; i < cardsInHand; i++) {
-          hands[p].push(<Token key={i} x={i} y={0}><Cubes color={teams[p]} /></Token>);
+          hands[p].push(<Token key={i} x={i} y={0}><CubitLogo color={teams[p]} /></Token>);
         }
       }
     }
@@ -122,40 +275,31 @@ export default class ChessBoard extends React.Component {
 
       for (let a = 0; a < player.units.length; a++) {
         const unit = player.units[a];
-        
-        fieldColorMap[p][`${0},${a}`] = colors[p];
 
-        if(unit.type === 'R') {
-          fields[p].push(<Token key={fieldKey++} x={0} y={a}><Rook color={teams[p]} /></Token>);
-          board.push(<Token  key={boardKey++} x={unit.x} y={unit.y} animate={true}><Rook color={teams[p]} /></Token>);
-        } else if(unit.type === 'N') {
-          fields[p].push(<Token key={fieldKey++} x={0} y={a}><Knight color={teams[p]} /></Token>);
-          board.push(<Token key={boardKey++} x={unit.x} y={unit.y} animate={true}><Knight color={teams[p]} /></Token>);
-        } else if(unit.type === 'B') {
-          fields[p].push(<Token key={fieldKey++} x={0} y={a}><Bishop color={teams[p]} /></Token>);
-          board.push(<Token key={boardKey++} x={unit.x} y={unit.y} animate={true}><Bishop color={teams[p]} /></Token>);
-        } else if(unit.type === 'K') {
-          fields[p].push(<Token key={fieldKey++} x={0} y={a}><King color={teams[p]} /></Token>);
-          board.push(<Token key={boardKey++} x={unit.x} y={unit.y} animate={true}><King color={teams[p]} /></Token>);
-        } else if(unit.type === 'Q') {
-          fields[p].push(<Token key={fieldKey++} x={0} y={a}><Queen color={teams[p]} /></Token>);
-          board.push(<Token key={boardKey++} x={unit.x} y={unit.y} animate={true}><Queen color={teams[p]} /></Token>);
-        } else if(unit.type === 'P') {
-          fields[p].push(<Token key={fieldKey++} x={0} y={a}><Pawn color={teams[p]} /></Token>);
-          board.push(<Token key={boardKey++} x={unit.x} y={unit.y} animate={true}><Pawn color={teams[p]} /></Token>);
-        }
+        let unitComponent = this.getUnitComponent(unit.type, teams[p]);
 
+        // Push units to fields 1st column
+        fields[p].push(<Token key={fieldKey++} x={0} y={a}>{unitComponent}</Token>);
+
+        // Push units to board
+        board.push(<Token key={boardKey++} x={unit.x} y={unit.y} animate={true}>{unitComponent}</Token>);
+
+        // push cubits to field for each unit
         for (let b = 0; b < unit.slots.length; b++) {
           const cubitix = unit.slots[b];
           if(cubitix) {
             let x = b+1;
-            fields[p].push(<Token key={fieldKey++} x={x} y={a} ><Text color={teams[p]} value={cubitix} /></Token>); 
+
+            let cubitComponent = this.getCubitComponent(cubitix, teams[p]);
+
+            fields[p].push(<Token key={fieldKey++} x={x} y={a} >{cubitComponent}</Token>); 
           }
         }
 
+        // Field background colours
+        fieldColorMap[p][`${0},${a}`] = colors[p];
         for (let c= 0; c < unit.limit; c++) {
-          let x = c+1;
-          fieldColorMap[p][`${x},${a}`] = colors[p];
+          fieldColorMap[p][`${c+1},${a}`] = colors[p];
         }
 
       }
@@ -198,7 +342,6 @@ export default class ChessBoard extends React.Component {
             </div>
           </Col>
         </Row>
-        <hr />
         <Row>
           <Col>
             <div className="text-center">
@@ -211,7 +354,6 @@ export default class ChessBoard extends React.Component {
             </div>
           </Col>
         </Row>
-        <hr />
         <Row>
           <Col xs={3}>
             <Row>
@@ -232,7 +374,7 @@ export default class ChessBoard extends React.Component {
                 </Row>
               </Col>
             </Row>
-            <hr />
+
             <Row>
               <Col>
                 <div className="text-center">
@@ -336,7 +478,7 @@ export default class ChessBoard extends React.Component {
                 </Row>
               </Col>
             </Row>
-            <hr />
+
             <Row>
               <Col>
                 <Row>

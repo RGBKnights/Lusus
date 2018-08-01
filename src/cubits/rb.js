@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-class Rook extends React.Component {
+class RnB extends React.Component {
   static propTypes = {
     color: PropTypes.string,
   };
@@ -13,12 +13,12 @@ class Rook extends React.Component {
     return (
       <g transform="scale(0.0018,0.0018) translate(20,20)">
         <path 
-          d="M406 484.7H106v-60h300v60zm-56.67-330.83h-50.05V91.3h-82.39v62.57h-54.22V91.3h-54.23v113.67h295.12V91.3h-54.23v62.57zm23.35 67.23H139.32v187.6h233.36V221.1z" 
+          d="M304.833 16c-261.69 0-320.71 387.657-62.343 387.657 86.284 0 86.955-129.375 0-129.375-139.947 0-99.134-202.896 62.343-258.282zm-30.938 92.343c-86.283 0-86.955 129.375 0 129.375 139.95 0 88.353 202.896-73.125 258.282 261.69 0 331.49-387.657 73.125-387.657z"
           style={style}
-          transform="translate(0, 0) scale(1, 1) rotate(-360, 256, 256)" />
+          transform="translate(0, 0) rotate(-360, 256, 256)" />
       </g>
     );
   }
 }
 
-export default Rook;
+export default RnB;
