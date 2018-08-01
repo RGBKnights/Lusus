@@ -5,4 +5,4 @@ import App from './app';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './app.css';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(<App gameID="f5396086"  />, document.getElementById('root'));
