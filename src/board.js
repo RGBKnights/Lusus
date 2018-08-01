@@ -202,15 +202,6 @@ export default class ChessBoard extends React.Component {
   };
 
   render() {
-    /*
-    https://github.com/google/boardgame.io/issues/245
-    Patch: React.js ln:2666
-    With:
-    if(debug) {
-      rest = objectWithoutProperties(rest, ['playerID']);
-    }
-    */
-
     let connected = (this.props.isMultiplayer && this.props.isConnected);
 
     let boardColorMap = {};

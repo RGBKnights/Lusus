@@ -17,9 +17,9 @@ class DrawPlus extends React.Component {
           style={style}
           transform="translate(0, 0) rotate(-360, 256, 256)" />
         <g transform="translate(256,256)">
-          <circle cx="128" cy="128" r="128" fill="#000" fill-opacity="1"></circle>
-          <circle stroke="#fff" stroke-opacity="1" fill="#000" fill-opacity="1" stroke-width="18" cx="128" cy="128" r="101"></circle>
-          <path fill="#fff" fill-opacity="1" d="M119 64v55H64v18h55v55h18v-55h55v-18h-55V64h-18z"></path>
+          <circle cx="128" cy="128" r="128" fill="#000"></circle>
+          <circle stroke="#fff" fill="#000" strokeWidth="18" cx="128" cy="128" r="101"></circle>
+          <path fill="#fff" d="M119 64v55H64v18h55v55h18v-55h55v-18h-55V64h-18z"></path>
         </g>
       </g>
       

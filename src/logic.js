@@ -14,25 +14,26 @@ export class Logic {
       '1007', // Swap
       '1008', // R&B
       '1009', // Sidestep
-      // Special
-      '1010', // Immune
-      '1011', // Guard
-      '1012', // Draw -1
-      '1013', // Draw +1
+      // Special - Movement
       '1014', // Sticky Feet
       '1015', // Disarm
       '1016', // Enrage
       '1017', // Phase
-      '1018', // Double Action
       '1019', // Spring
-      '1020', // Condemn
       '1021', // Wrap
       '1022', // Ghost
       '1023', // Immobilized
       '1024', // Hit & Run
-      '1025', // Knowledge
       '1026', // Boulder dash
-      '1027', // Thief 
+      // Special - Action
+      '1010', // Immune
+      '1011', // Guard
+      '1012', // Draw -1
+      '1013', // Draw +1
+      '1018', // Double Action
+      '1020', // Condemn
+      '1025', // Knowledge     
+      '1027', // Thief
     ];
   }
 
