@@ -1,46 +1,39 @@
-
 export class Logic {
   getCubits() {
-    return [
+    return {
       // Hidden
-      '1000',
+      '0': { name: "Hidden", types: [0], rarity: 0 },
       // Movement
-      '1001', // Pawn
-      '1002', // Rook
-      '1003', // Knight
-      '1004', // Bishop
-      '1005', // King
-      '1006', // Queen
-      '1007', // Swap
-      '1008', // R&B
-      '1009', // Sidestep
-      // Special - Movement
-      '1014', // Sticky Feet
-      '1015', // Disarm
-      '1016', // Enrage
-      '1017', // Phase
-      '1019', // Spring
-      '1021', // Wrap
-      '1022', // Ghost
-      '1023', // Immobilized
-      '1024', // Hit & Run
-      '1026', // Boulder dash
-      // Special - Action
-      '1010', // Immune
-      '1011', // Guard
-      '1012', // Draw -1
-      '1013', // Draw +1
-      '1018', // Double Action
-      '1020', // Condemn
-      '1025', // Knowledge     
-      '1027', // Thief
-      // One Time Use
+      '1000': { name: "Pawn", types: [1], rarity: 0 },
+      '1001': { name: "Rook", types: [1], rarity: 0 },
+      '1002': { name: "Knight", types: [1], rarity: 0 },
+      '1003': { name: "Bishop", types: [1], rarity: 0 },
+      '1004': { name: "King", types: [1], rarity: 0 },
+      '1005': { name: "Queen", types: [1], rarity: 0 },
+      '1006': { name: "Swap", types: [1], rarity: 0 },
+      '1007': { name: "Hit & Run", types: [1], rarity: 0 },
+      // POPs - Enchantments
+      '2000': { name: "Draw -1", types: [2], rarity: 0 },
+      '2001': { name: "Draw +1", types: [2], rarity: 0 },
+      '2002': { name: "Knowledge", types: [2], rarity: 0 },
+      // POUs - Equipment
+      '3000': { name: "Guard", types: [3], rarity: 0},
+      '3001': { name: "Condemn", types: [3], rarity: 0 },
+      // Space - Board
+      '4000': { name: "Immune", types: [3], rarity: 0 },
+      '4001': { name: "Sacrifice", types: [3], rarity: 0 },
+      // Arena - Global
+      '5000': { name: "King of Hill", types: [4], rarity: 0 },
+    };
+  }
 
-    ];
+  getCubitix() {
+    const collection = this.getCubits();
+    return Object.keys(collection);
   }
 
   setup(ctx) {
-    const collection = this.getCubits();
+    const collection = this.getCubitix();
 
     // Populate bags with Cubits
     let bags = [
@@ -64,25 +57,26 @@ export class Logic {
           reinforcements: [],
           bag: bags[0],
           hand: hands[0],
-          graveyard: [],
           exile: [],
+          afterlife: [],
+          slots: [],
           units: [
-            { type: 'R', x: 0, y: 0, limit: 4, slots: [] },
-            { type: 'N', x: 0, y: 1, limit: 3, slots: [] },
-            { type: 'B', x: 0, y: 2, limit: 3, slots: [] },
-            { type: 'Q', x: 0, y: 3, limit: 2, slots: [] },
-            { type: 'K', x: 0, y: 4, limit: 1, slots: [] },
-            { type: 'B', x: 0, y: 5, limit: 3, slots: [] },
-            { type: 'N', x: 0, y: 6, limit: 3, slots: [] },
-            { type: 'R', x: 0, y: 7, limit: 4, slots: [] },
-            { type: 'P', x: 1, y: 0, limit: 2, slots: [] },
-            { type: 'P', x: 1, y: 1, limit: 2, slots: [] },
-            { type: 'P', x: 1, y: 2, limit: 2, slots: [] },
-            { type: 'P', x: 1, y: 3, limit: 2, slots: [] },
-            { type: 'P', x: 1, y: 4, limit: 2, slots: [] },
-            { type: 'P', x: 1, y: 5, limit: 2, slots: [] },
-            { type: 'P', x: 1, y: 6, limit: 2, slots: [] },
-            { type: 'P', x: 1, y: 7, limit: 2, slots: [] }
+            { type: 'R', color: '#FF5733', x: 0, y: 0, limit: 4, slots: [] },
+            { type: 'N', color: '#F9FF33', x: 0, y: 1, limit: 3, slots: [] },
+            { type: 'B', color: '#008000', x: 0, y: 2, limit: 3, slots: [] },
+            { type: 'Q', color: '#33FFA8', x: 0, y: 3, limit: 2, slots: [] },
+            { type: 'K', color: '#33F6FF', x: 0, y: 4, limit: 1, slots: [] },
+            { type: 'B', color: '#3346FF', x: 0, y: 5, limit: 3, slots: [] },
+            { type: 'N', color: '#800080', x: 0, y: 6, limit: 3, slots: [] },
+            { type: 'R', color: '#FF0000', x: 0, y: 7, limit: 4, slots: [] },
+            { type: 'P', color: '#FF5733', x: 1, y: 0, limit: 2, slots: [] },
+            { type: 'P', color: '#F9FF33', x: 1, y: 1, limit: 2, slots: [] },
+            { type: 'P', color: '#008000', x: 1, y: 2, limit: 2, slots: [] },
+            { type: 'P', color: '#33FFA8', x: 1, y: 3, limit: 2, slots: [] },
+            { type: 'P', color: '#33F6FF', x: 1, y: 4, limit: 2, slots: [] },
+            { type: 'P', color: '#3346FF', x: 1, y: 5, limit: 2, slots: [] },
+            { type: 'P', color: '#800080', x: 1, y: 6, limit: 2, slots: [] },
+            { type: 'P', color: '#FF0000', x: 1, y: 7, limit: 2, slots: [] }
           ]
         },
         '1': {
@@ -91,25 +85,26 @@ export class Logic {
           reinforcements: [],
           bag: bags[1],
           hand: hands[1],
-          graveyard: [],
           exile: [],
+          afterlife: [],
+          slots: [],
           units: [
-            { type: 'R', x: 7, y: 0, limit: 4, slots: [] },
-            { type: 'N', x: 7, y: 1, limit: 3, slots: [] },
-            { type: 'B', x: 7, y: 2, limit: 3, slots: [] },
-            { type: 'Q', x: 7, y: 3, limit: 2, slots: [] },
-            { type: 'K', x: 7, y: 4, limit: 1, slots: [] },
-            { type: 'B', x: 7, y: 5, limit: 3, slots: [] },
-            { type: 'N', x: 7, y: 6, limit: 3, slots: [] },
-            { type: 'R', x: 7, y: 7, limit: 4, slots: [] },
-            { type: 'P', x: 6, y: 0, limit: 2, slots: [] },
-            { type: 'P', x: 6, y: 1, limit: 2, slots: [] },
-            { type: 'P', x: 6, y: 2, limit: 2, slots: [] },
-            { type: 'P', x: 6, y: 3, limit: 2, slots: [] },
-            { type: 'P', x: 6, y: 4, limit: 2, slots: [] },
-            { type: 'P', x: 6, y: 5, limit: 2, slots: [] },
-            { type: 'P', x: 6, y: 6, limit: 2, slots: [] },
-            { type: 'P', x: 6, y: 7, limit: 2, slots: [] }
+            { type: 'R', color: '#FF5733', x: 7, y: 0, limit: 4, slots: [] },
+            { type: 'N', color: '#F9FF33', x: 7, y: 1, limit: 3, slots: [] },
+            { type: 'B', color: '#008000', x: 7, y: 2, limit: 3, slots: [] },
+            { type: 'Q', color: '#33FFA8', x: 7, y: 3, limit: 2, slots: [] },
+            { type: 'K', color: '#33F6FF', x: 7, y: 4, limit: 1, slots: [] },
+            { type: 'B', color: '#3346FF', x: 7, y: 5, limit: 3, slots: [] },
+            { type: 'N', color: '#800080', x: 7, y: 6, limit: 3, slots: [] },
+            { type: 'R', color: '#FF0000', x: 7, y: 7, limit: 4, slots: [] },
+            { type: 'P', color: '#FF5733', x: 6, y: 0, limit: 2, slots: [] },
+            { type: 'P', color: '#F9FF33', x: 6, y: 1, limit: 2, slots: [] },
+            { type: 'P', color: '#008000', x: 6, y: 2, limit: 2, slots: [] },
+            { type: 'P', color: '#33FFA8', x: 6, y: 3, limit: 2, slots: [] },
+            { type: 'P', color: '#33F6FF', x: 6, y: 4, limit: 2, slots: [] },
+            { type: 'P', color: '#3346FF', x: 6, y: 5, limit: 2, slots: [] },
+            { type: 'P', color: '#800080', x: 6, y: 6, limit: 2, slots: [] },
+            { type: 'P', color: '#FF0000', x: 6, y: 7, limit: 2, slots: [] }
           ]
         }
       }

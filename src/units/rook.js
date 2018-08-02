@@ -7,15 +7,15 @@ class Rook extends React.Component {
   };
 
   render() {
-    let teamColor = this.props.color === 'b' ? '#000000' : '#FFFFFF';
-    let style = { fill: teamColor, fillOpacity: 1 };
+    let teamColor = this.props.team === 'b' ? '#000000' : '#FFFFFF';
+    let styleMain = { fill: teamColor, fillOpacity: 1 };
+    let styleRank = { fill: this.props.color , fillOpacity: 1 };
 
     return (
       <g transform="scale(0.0018,0.0018) translate(20,20)">
-        <path 
-          d="M406 484.7H106v-60h300v60zm-56.67-330.83h-50.05V91.3h-82.39v62.57h-54.22V91.3h-54.23v113.67h295.12V91.3h-54.23v62.57zm23.35 67.23H139.32v187.6h233.36V221.1z" 
-          style={style}
-          transform="translate(0, 0) scale(1, 1) rotate(-360, 256, 256)" />
+        <path style={styleRank} d="M406 484.7L106 484.7L106 424.7L406 424.7L406 484.7Z" ></path>
+        <path style={styleMain} d="M349.33 153.87L299.28 153.87L299.28 91.3L216.89 91.3L216.89 153.87L162.67 153.87L162.67 91.3L108.44 91.3L108.44 204.97L403.56 204.97L403.56 91.3L349.33 91.3L349.33 153.87Z" ></path>
+        <path style={styleMain} d="M372.68 221.1L139.32 221.1L139.32 408.7L372.68 408.7L372.68 221.1Z"></path>
       </g>
     );
   }

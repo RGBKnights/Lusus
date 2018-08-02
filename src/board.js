@@ -14,26 +14,15 @@ import CubitRook from './cubits/rook';
 import CubitQueen from './cubits/queen';
 import CubitPawn from './cubits/pawn';
 import CubitSwap from './cubits/swap';
-import CubitRnB from './cubits/rb';
-import CubitSidestep from './cubits/sidestep';
 import CubitImmune from './cubits/immune';
 import CubitGuard from './cubits/guard';
 import CubitDrawPlus from './cubits/drawplus';
 import CubitDrawMinus from './cubits/drawminus';
-import CubitStickyFeet from './cubits/stickyfeet'
-import CubitDisarm from './cubits/disarm'
-import CubitEnrage from './cubits/enrage'
-import CubitPhase from './cubits/phase'
-import CubitDoubleAction from './cubits/doubleaction'
-import CubitSpring from './cubits/spring'
 import CubitCondemn  from './cubits/condemn'
-import CubitWrap from './cubits/wrap'
-import CubitGhost from './cubits/ghost'
-import CubitImmobilized from './cubits/immobilized'
-import CubitHitnRun from './cubits/hitrun'
+import CubitHitRun from './cubits/hitrun'
 import CubitKnowledge from './cubits/knowledge'
-import CubitBoulderdash from './cubits/boulderdash'
-import CubitThief from './cubits/thief'
+import CubitSacrifice from './cubits/sacrifice'
+import CubitKingOfHill from './cubits/kingofhill'
 // Units
 import UnitKing from './units/king';
 import UnitBishop from './units/bishop';
@@ -65,26 +54,26 @@ export default class ChessBoard extends React.Component {
     isConnected: PropTypes.bool,
   };
 
-  getUnitComponent(type, team) {
+  getUnitComponent(type, color, team) {
     let unitComponent = null;
     switch (type) {
       case 'R':
-        unitComponent = <UnitRook color={team} />;
+        unitComponent = <UnitRook team={team} color={color} />;
         break;
       case 'N':
-        unitComponent = <UnitKnight color={team} />;
+        unitComponent = <UnitKnight team={team} color={color} />;
         break;
       case 'B':
-        unitComponent = <UnitBishop color={team} />;
+        unitComponent = <UnitBishop team={team} color={color} />;
         break;
       case 'K':
-        unitComponent = <UnitKing color={team} />;
+        unitComponent = <UnitKing team={team} color={color} />;
         break;
       case 'Q':
-        unitComponent = <UnitQueen color={team} />;
+        unitComponent = <UnitQueen team={team} color={color} />;
         break;
       case 'P':
-        unitComponent = <UnitPawn color={team} />;
+        unitComponent = <UnitPawn team={team} color={color} />;
         break;
       default:
         unitComponent = <CubitText color={team} value={type} />;
@@ -97,89 +86,56 @@ export default class ChessBoard extends React.Component {
   getCubitComponent(cubitix, team) {
     let cubitComponent = null;
     switch (cubitix) {
-      case '1000':
+      case '0':
         cubitComponent = <CubitLogo color={team} />;
         break;
-      case '1001':
+      case '1000':
         cubitComponent = <CubitPawn color={team} />;
         break;
-      case '1002':
+      case '1001':
         cubitComponent = <CubitRook color={team} />;
         break;
-      case '1003':
+      case '1002':
         cubitComponent = <CubitKnight color={team} />;
         break;
-      case '1004':
+      case '1003':
         cubitComponent = <CubitBishop color={team} />;
         break;
-      case '1005':
+      case '1004':
         cubitComponent = <CubitKing color={team} />;
         break;
-      case '1006':
+      case '1005':
         cubitComponent = <CubitQueen color={team} />;
         break;
-      case '1007':
+      case '1006':
         cubitComponent = <CubitSwap color={team} />;
         break;
-      case '1008':
-        cubitComponent = <CubitRnB color={team} />;
+      case '1007':
+        cubitComponent = <CubitHitRun color={team} />;
         break;
-      case '1009':
-        cubitComponent = <CubitSidestep color={team} />;
-        break;
-      case '1010':
-        cubitComponent = <CubitImmune color={team} />;
-        break;              
-      case '1011':
-        cubitComponent = <CubitGuard color={team} />;
-        break;
-      case '1012':
-        cubitComponent = <CubitDrawPlus color={team} />;
-        break;
-      case '1013':
+      case '2000':
         cubitComponent = <CubitDrawMinus color={team} />;
         break;
-      case '1014':
-        cubitComponent = <CubitStickyFeet color={team} />;
-        break;   
-      case '1015':
-        cubitComponent = <CubitDisarm color={team} />;
+      case '2001':
+        cubitComponent = <CubitDrawPlus color={team} />;
         break;
-      case '1016':
-        cubitComponent = <CubitEnrage color={team} />;
-        break;
-      case '1017':
-        cubitComponent = <CubitPhase color={team} />;
-        break;
-      case '1018':
-        cubitComponent = <CubitDoubleAction color={team} />;
-        break;
-      case '1019':
-        cubitComponent = <CubitSpring color={team} />;
-        break;
-      case '1020':
-        cubitComponent = <CubitCondemn color={team} />;
-        break;
-      case '1021':
-        cubitComponent = <CubitWrap color={team} />;
-        break;
-      case '1022':
-        cubitComponent = <CubitGhost color={team} />;
-        break;
-      case '1023':
-        cubitComponent = <CubitImmobilized color={team} />;
-        break;
-      case '1024':
-        cubitComponent = <CubitHitnRun color={team} />;
-        break;
-      case '1025':
+      case '2002':
         cubitComponent = <CubitKnowledge color={team} />;
         break;
-      case '1026':
-        cubitComponent = <CubitBoulderdash color={team} />;
+      case '3000':
+        cubitComponent = <CubitGuard color={team} />;
         break;
-      case '1027':
-        cubitComponent = <CubitThief color={team} />;
+      case '3001':
+        cubitComponent = <CubitCondemn color={team} />;
+        break;
+      case '4000':
+        cubitComponent = <CubitImmune color={team} />;
+        break;
+      case '4001':
+        cubitComponent = <CubitSacrifice color={team} />;
+        break;
+      case '5000':
+        cubitComponent = <CubitKingOfHill color={team} />;
         break;
       default:
         cubitComponent = <CubitText color={team} value={cubitix} />;
@@ -267,7 +223,7 @@ export default class ChessBoard extends React.Component {
       for (let a = 0; a < player.units.length; a++) {
         const unit = player.units[a];
 
-        let unitComponent = this.getUnitComponent(unit.type, teams[p]);
+        let unitComponent = this.getUnitComponent(unit.type, unit.color, teams[p]);
 
         // Push units to fields 1st column
         fields[p].push(<Token key={fieldKey++} x={0} y={a}>{unitComponent}</Token>);
@@ -310,12 +266,6 @@ export default class ChessBoard extends React.Component {
       '0': this.props.G.players['0'].actions,
       '1': this.props.G.players['1'].actions
     };
-
-    let graveyard = {
-      '0': this.props.G.players['0'].graveyard.length,
-      '1': this.props.G.players['1'].graveyard.length
-    };
-
     let exile = {
       '0': this.props.G.players['0'].exile.length,
       '1': this.props.G.players['1'].exile.length
@@ -334,19 +284,34 @@ export default class ChessBoard extends React.Component {
           </Col>
         </Row>
         <Row>
-          <Col>
-            <div className="text-center">
-              <h5>Player 1</h5>
-            </div>
-          </Col>
-          <Col>
-            <div className="text-center">
-              <h5>Player 2</h5>
-            </div>
-          </Col>
-        </Row>
-        <Row>
           <Col xs={3}>
+            <Row>
+              <Col>
+                <div className="text-center">
+                  <h5>Player 1</h5>
+                </div>
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <span>Bag <Badge color="success" className="float-right mt-2">{bags['0']}</Badge></span>
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <span>Draw <Badge color="primary" className="float-right mt-2">{draw['0']}</Badge></span>
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <span>Action <Badge color="primary" className="float-right mt-2">{actions['0']}</Badge></span>
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <span>Exile <Badge color="danger" className="float-right mt-2">{exile['0']}</Badge></span>
+              </Col>
+            </Row>
             <Row>
               <Col>
                 <Row>
@@ -384,73 +349,47 @@ export default class ChessBoard extends React.Component {
           <Col>
             <Row>
               <Col>
-              <Row>
-                <Col>
-                    <span>Bag <Badge color="success" className="float-right mt-2">{bags['0']}</Badge></span>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col>
-                    <span>Draw <Badge color="primary" className="float-right mt-2">{draw['0']}</Badge></span>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col>
-                    <span>Action <Badge color="primary" className="float-right mt-2">{actions['0']}</Badge></span>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col>
-                    <span>Graveyard <Badge color="warning" className="float-right mt-2">{graveyard['0']}</Badge></span>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col>
-                    <span>Exile <Badge color="danger" className="float-right mt-2">{exile['0']}</Badge></span>
-                  </Col>
-                </Row>
-              </Col>
-              <Col>
-
-              </Col>
-              <Col>
-                <Row>
-                  <Col>
-                    <span>Bag <Badge color="success" className="float-right mt-2">{bags['1']}</Badge></span>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col>
-                    <span>Draw <Badge color="primary" className="float-right mt-2">{draw['1']}</Badge></span>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col>
-                    <span>Action <Badge color="primary" className="float-right mt-2">{actions['1']}</Badge></span>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col>
-                    <span>Graveyard <Badge color="warning" className="float-right mt-2">{graveyard['1']}</Badge></span>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col>
-                    <span>Exile <Badge color="danger" className="float-right mt-2">{exile['1']}</Badge></span>
-                  </Col>
-                </Row>
-              </Col>
-            </Row>
-            <hr />
-            <Row>
-              <Col>
                 <Grid rows={8} cols={8} onClick={this.onClickBoard} colorMap={boardColorMap} >
                   {board}
                 </Grid>
               </Col>
             </Row>
+            <hr />
+            <Row>
+              <Col>
+                <Grid rows={8} cols={8} colorMap={boardColorMap} >
+                </Grid>
+              </Col>
+            </Row>
           </Col>
           <Col xs={3}>
+            <Row>
+              <Col>
+                <div className="text-center">
+                  <h5>Player 2</h5>
+                </div>
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <span>Bag <Badge color="success" className="float-right mt-2">{bags['1']}</Badge></span>
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <span>Draw <Badge color="primary" className="float-right mt-2">{draw['1']}</Badge></span>
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <span>Action <Badge color="primary" className="float-right mt-2">{actions['1']}</Badge></span>
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <span>Exile <Badge color="danger" className="float-right mt-2">{exile['1']}</Badge></span>
+              </Col>
+            </Row>
             <Row>
               <Col>
                 <Row>

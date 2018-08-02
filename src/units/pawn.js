@@ -7,15 +7,15 @@ class Pawn extends React.Component {
   };
 
   render() {
-    let teamColor = this.props.color === 'b' ? '#000000' : '#FFFFFF';
-    let style = { fill: teamColor, fillOpacity: 1 };
+    let teamColor = this.props.team === 'b' ? '#000000' : '#FFFFFF';
+    let styleMain = { fill: teamColor, fillOpacity: 1 };
+    let styleRank = { fill: this.props.color , fillOpacity: 1 };
 
     return (
       <g transform="scale(0.0018,0.0018) translate(20,20)">
-        <path 
-          d="M312.07 194.46A56.07 56.07 0 1 1 256 138.39a56.07 56.07 0 0 1 56.07 56.07zM406 418.01H106v60h300v-60zM282.33 261.52a71.81 71.81 0 0 1-52.15.2c-.73 58.91-62.35 114.06-96.75 140.28H378.9c-34.09-26.33-95.44-81.78-96.57-140.48z" 
-          style={style} 
-          transform="translate(0, 0) scale(1, 1) rotate(-360, 256, 256)" />
+        <path style={styleMain} d="M312.07 194.46C312.07 237.623 265.345 264.599 227.965 243.018C190.585 221.437 190.585 167.483 227.965 145.902C236.489 140.981 246.158 138.39 256 138.39C286.967 138.39 312.07 163.493 312.07 194.46Z"></path>
+			  <path style={styleRank} d="M406 418.01L106 418.01L106 478.01L406 478.01L406 418.01Z"></path>
+			  <path style={styleMain} d="M282.33 261.52C265.586 268.119 246.974 268.191 230.18 261.72C229.45 320.63 167.83 375.78 133.43 402L378.9 402C344.81 375.67 283.46 320.22 282.33 261.52Z"></path>
       </g>
     );
   }
