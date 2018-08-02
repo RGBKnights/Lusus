@@ -34,6 +34,8 @@ export class Logic {
       '1020', // Condemn
       '1025', // Knowledge     
       '1027', // Thief
+      // One Time Use
+
     ];
   }
 
