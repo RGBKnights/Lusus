@@ -2,7 +2,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 // UI
-import { Container, Row, Col, Alert, Badge } from 'reactstrap';
+import { Container, Row, Col, Alert, Badge, UncontrolledCollapse  } from 'reactstrap';
 import { Token, Grid } from 'boardgame.io/ui';
 // Cubits
 import CubitLogo from './cubits/cubit';
@@ -34,11 +34,11 @@ import UnitPawn from './units/pawn';
 function ConnectionStatus(props) {
   if (props.connected) {
     return (
-      <Alert title="Connected!" color="success" style={{marginTop: 10}}><strong>✓</strong></Alert>
+      <Alert color="success" style={{marginTop: 10}}><strong>Connected!</strong></Alert>
     );
   } else {
     return (
-      <Alert title="Disconnected from Server..." color="danger" style={{marginTop: 10}}><strong>X</strong></Alert>
+      <Alert color="danger" style={{marginTop: 10}}><strong>Disconnected...</strong></Alert>
     );
   }
 }
@@ -169,6 +169,11 @@ export default class ChessBoard extends React.Component {
       }
     }
 
+    let arenaStyle = {
+      strokeWidth:0.05,
+      stroke:'#000'
+    };
+
     let handColorMap = {
       '0': {},
       '1': {}
@@ -252,6 +257,13 @@ export default class ChessBoard extends React.Component {
       }
     }
 
+    let toggleStyles = {cursor: 'pointer'};
+
+    let slots = {
+      '0': this.props.G.players['0'].slots,
+      '1': this.props.G.players['1'].slots
+    };
+
     let bags = {
       '0': this.props.G.players['0'].bag.length,
       '1': this.props.G.players['1'].bag.length
@@ -266,9 +278,20 @@ export default class ChessBoard extends React.Component {
       '0': this.props.G.players['0'].actions,
       '1': this.props.G.players['1'].actions
     };
+
     let exile = {
       '0': this.props.G.players['0'].exile.length,
       '1': this.props.G.players['1'].exile.length
+    };
+
+    let reinforcements = {
+      '0': this.props.G.players['0'].reinforcements,
+      '1': this.props.G.players['1'].reinforcements
+    };
+
+    let afterlife = {
+      '0': this.props.G.players['0'].afterlife,
+      '1': this.props.G.players['1'].afterlife
     };
     
     return (
@@ -277,7 +300,7 @@ export default class ChessBoard extends React.Component {
           <Col>
             <h1>Lusus <small>Tactical Chess</small></h1>
           </Col>
-          <Col xs={1}>
+          <Col xs={3}>
             <div className="text-center">
               <ConnectionStatus connected={connected}></ConnectionStatus>
             </div>
@@ -294,69 +317,127 @@ export default class ChessBoard extends React.Component {
             </Row>
             <Row>
               <Col>
-                <span>Bag <Badge color="success" className="float-right mt-2">{bags['0']}</Badge></span>
+                <h5>
+                  <span>Draw</span>
+                  <Badge color="secondary" className="float-right mt-2">{draw['0']}</Badge>
+                </h5>
               </Col>
             </Row>
             <Row>
               <Col>
-                <span>Draw <Badge color="primary" className="float-right mt-2">{draw['0']}</Badge></span>
+                <h5>
+                  <span>Action</span>
+                  <Badge color="secondary" className="float-right mt-2">{actions['0']}</Badge>
+                </h5>
               </Col>
             </Row>
             <Row>
               <Col>
-                <span>Action <Badge color="primary" className="float-right mt-2">{actions['0']}</Badge></span>
+                <h5>
+                  <span>Bag</span>
+                  <Badge color="secondary" className="float-right mt-2">{bags['0']}</Badge>
+                </h5>
               </Col>
             </Row>
             <Row>
               <Col>
-                <span>Exile <Badge color="danger" className="float-right mt-2">{exile['0']}</Badge></span>
+                <h5>
+                  <span>Exile</span>
+                  <Badge color="secondary" className="float-right mt-2">{exile['0']}</Badge>
+                </h5>
+              </Col>
+            </Row>
+            <hr />
+            <Row>
+              <Col>
+                <h5 id="Player1PlayerToggle">
+                  <u style={toggleStyles}>Player</u>
+                  <Badge color="secondary" className="float-right mt-2">{slots['0'].length}</Badge>
+                </h5>
+                <UncontrolledCollapse toggler="#Player1PlayerToggle" isOpen={true}>
+                  <Grid rows={1} cols={5}  colorMap={handColorMap['0']} style={handStyle}>
+                    {slots['0']}
+                  </Grid>
+                </UncontrolledCollapse>
               </Col>
             </Row>
             <Row>
               <Col>
-                <Row>
-                  <Col>
-                    <div className="text-center">
-                      <span>Hand</span>
-                    </div>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col>
-                    <Grid rows={1} cols={5} onClick={this.onClickHand} colorMap={handColorMap['0']} style={handStyle}>
-                      {hands['0']}
-                    </Grid>
-                  </Col>
-                </Row>
-              </Col>
-            </Row>
-
-            <Row>
-              <Col>
-                <div className="text-center">
-                  <span>Field</span>
-                </div>
+                <h5 id="Player1HandToggle">
+                  <u style={toggleStyles}>Hand</u>
+                  <Badge color="secondary" className="float-right mt-2">{hands['0'].length}</Badge>
+                </h5>
+                <UncontrolledCollapse toggler="#Player1HandToggle" isOpen={true}>
+                  <Grid rows={1} cols={5}  colorMap={handColorMap['0']} style={handStyle}>
+                    {hands['0']}
+                  </Grid>
+                </UncontrolledCollapse>
               </Col>
             </Row>
             <Row>
               <Col>
-                <Grid rows={fields['0'].length} cols={5} onClick={this.onClickField}  colorMap={fieldColorMap['0']} style={fieldStyle}>
-                  {fields['0']}
-                </Grid>
+                <h5 id="Player1FieldToggle">
+                  <u style={toggleStyles}>Units</u>
+                  <Badge color="secondary" className="float-right mt-2">{fields['0'].length}</Badge>
+                </h5>
+                <UncontrolledCollapse toggler="#Player1FieldToggle" isOpen={true}>
+                  <Grid rows={fields['0'].length} cols={5} colorMap={fieldColorMap['0']} style={fieldStyle}>
+                    {fields['0']}
+                  </Grid>
+                </UncontrolledCollapse>
+              </Col>
+            </Row>
+            <hr />
+            <Row>
+              <Col>
+                <h5 id="Player1ReinforcementsToggle">
+                  <u style={toggleStyles}>Reinforcements</u>
+                  <Badge color="secondary" className="float-right mt-2">{reinforcements['0'].length}</Badge>
+                </h5>
+                <UncontrolledCollapse toggler="#Player1ReinforcementsToggle">
+                  <Grid rows={reinforcements['0'].length} cols={5}  colorMap={fieldColorMap['0']} style={fieldStyle}>
+                    {reinforcements['0']}
+                  </Grid>
+                </UncontrolledCollapse>
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <h5 id="Player1AfterlifeToggle">
+                  <u style={toggleStyles}>Afterlife</u>
+                  <Badge color="secondary" className="float-right mt-2">{afterlife['0'].length}</Badge>
+                </h5>
+                <UncontrolledCollapse toggler="#Player1AfterlifeToggle">
+                  <p>...</p>
+                  <Grid rows={afterlife['0'].length} cols={5}  colorMap={fieldColorMap['0']} style={fieldStyle}>
+                    {afterlife['0']}
+                  </Grid>
+                </UncontrolledCollapse>
               </Col>
             </Row>
           </Col>
           <Col>
             <Row>
               <Col>
+                <h3>Arena</h3>
+              </Col>
+              <Col xs={2}>
+                <Grid rows={1} cols={1} style={arenaStyle}>
+                  <Token x={0} y={0}><CubitLogo color="b" /></Token>
+                </Grid>
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <h3>Board</h3>
                 <Grid rows={8} cols={8} onClick={this.onClickBoard} colorMap={boardColorMap} >
                   {board}
                 </Grid>
               </Col>
             </Row>
-            <hr />
             <Row>
               <Col>
+                <h3>Field</h3>
                 <Grid rows={8} cols={8} colorMap={boardColorMap} >
                 </Grid>
               </Col>
@@ -372,59 +453,102 @@ export default class ChessBoard extends React.Component {
             </Row>
             <Row>
               <Col>
-                <span>Bag <Badge color="success" className="float-right mt-2">{bags['1']}</Badge></span>
+                <h5>
+                  <span>Draw</span>
+                  <Badge color="secondary" className="float-right mt-2">{draw['1']}</Badge>
+                </h5>
               </Col>
             </Row>
             <Row>
               <Col>
-                <span>Draw <Badge color="primary" className="float-right mt-2">{draw['1']}</Badge></span>
+                <h5>
+                  <span>Action</span>
+                  <Badge color="secondary" className="float-right mt-2">{actions['1']}</Badge>
+                </h5>
               </Col>
             </Row>
             <Row>
               <Col>
-                <span>Action <Badge color="primary" className="float-right mt-2">{actions['1']}</Badge></span>
+                <h5>
+                  <span>Bag</span>
+                  <Badge color="secondary" className="float-right mt-2">{bags['1']}</Badge>
+                </h5>
               </Col>
             </Row>
             <Row>
               <Col>
-                <span>Exile <Badge color="danger" className="float-right mt-2">{exile['1']}</Badge></span>
+                <h5>
+                  <span>Exile</span>
+                  <Badge color="secondary" className="float-right mt-2">{exile['1']}</Badge>
+                </h5>
+              </Col>
+            </Row>
+            <hr />
+            <Row>
+              <Col>
+                <h5 id="Player2PlayerToggle">
+                  <u style={toggleStyles}>Player</u>
+                  <Badge color="secondary" className="float-right mt-2">{slots['1'].length}</Badge>
+                </h5>
+                <UncontrolledCollapse toggler="#Player2PlayerToggle" isOpen={true}>
+                  <Grid rows={1} cols={5}  colorMap={handColorMap['1']} style={handStyle}>
+                    {slots['1']}
+                  </Grid>
+                </UncontrolledCollapse>
               </Col>
             </Row>
             <Row>
               <Col>
-                <Row>
-                  <Col>
-                    <div className="text-center">
-                      <span>Hand</span>
-                    </div>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col>
-                    <Grid rows={1} cols={5} onClick={this.onClickHand} colorMap={handColorMap['1']} style={handStyle}>
-                      {hands['1']}
-                    </Grid>
-                  </Col>
-                </Row>
+                <h5 id="Player2HandToggle">
+                  <u style={toggleStyles}>Hand</u>
+                  <Badge color="secondary" className="float-right mt-2">{hands['1'].length}</Badge>
+                </h5>
+                <UncontrolledCollapse toggler="#Player2HandToggle" isOpen={true}>
+                  <Grid rows={1} cols={5} onClick={this.onClickHand} colorMap={handColorMap['1']} style={handStyle}>
+                    {hands['1']}
+                  </Grid>
+                </UncontrolledCollapse>
               </Col>
             </Row>
-
             <Row>
               <Col>
-                <Row>
-                  <Col>
-                    <div className="text-center">
-                      <span>Field</span>
-                    </div>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col>
-                    <Grid rows={fields['1'].length} cols={5} onClick={this.onClickField}  colorMap={fieldColorMap['1']} style={fieldStyle}>
-                      {fields['1']}
-                    </Grid>
-                  </Col>
-                </Row>
+                <h5 id="Player2FieldToggle">
+                  <u style={toggleStyles}>Units</u>
+                  <Badge color="secondary" className="float-right mt-2">{fields['1'].length}</Badge>
+                </h5>
+                <UncontrolledCollapse toggler="#Player2FieldToggle" isOpen={true}>
+                  <Grid rows={fields['1'].length} cols={5} onClick={this.onClickField}  colorMap={fieldColorMap['1']} style={fieldStyle}>
+                    {fields['1']}
+                  </Grid>
+                </UncontrolledCollapse>
+              </Col>
+            </Row>
+            <hr />
+            <Row>
+              <Col>
+                <h5 id="Player2ReinforcementsToggle">
+                  <u style={toggleStyles}>Reinforcements</u>
+                  <Badge color="secondary" className="float-right mt-2">{reinforcements['1'].length}</Badge>
+                </h5>
+                <UncontrolledCollapse toggler="#Player2ReinforcementsToggle">
+                  <Grid rows={reinforcements['1'].length} cols={5}  colorMap={fieldColorMap['1']} style={fieldStyle}>
+                    {reinforcements['1']}
+                  </Grid>
+                </UncontrolledCollapse>
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <h5 id="Player2AfterlifeToggle">
+                  <u style={toggleStyles}>Afterlife</u>
+                  <Badge color="secondary" className="float-right mt-2">{afterlife['1'].length}</Badge>
+                </h5>
+                <UncontrolledCollapse toggler="#Player2AfterlifeToggle">
+                  <p>...</p>
+                  <Grid rows={afterlife['1'].length} cols={5}  colorMap={fieldColorMap['1']} style={fieldStyle}>
+                    {afterlife['1']}
+                  </Grid>
+                </UncontrolledCollapse>
               </Col>
             </Row>
           </Col>

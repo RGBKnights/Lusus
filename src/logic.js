@@ -50,6 +50,7 @@ export class Logic {
     }
 
     return {
+      arena: [],
       players: {
         '0': {
           draw: 3,
