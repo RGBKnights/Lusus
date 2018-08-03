@@ -5,8 +5,6 @@ Stuff I am working on now or next. Also there is a RoadMap list with the long te
 
 ## TODO
 
-* Update the following based on our last round of review:
-- Add Arena (1)
 * Board UI - Link @click events for interactions for the different phases moves are called from the board
 * Thinking of all side effects that need to be handled with each different type of move()
 * Implement movement for each Unit

@@ -2,28 +2,148 @@ export class Logic {
   getCubits() {
     return {
       // Hidden
-      '0': { name: "Hidden", types: [0], rarity: 0 },
+      '0': { 
+        name: "Hidden", 
+        types: [0], 
+        rarity: 0, 
+        validTargets: [],
+        autoTarget: 0,
+        duration: 0
+      },
       // Movement
-      '1000': { name: "Pawn", types: [1], rarity: 0 },
-      '1001': { name: "Rook", types: [1], rarity: 0 },
-      '1002': { name: "Knight", types: [1], rarity: 0 },
-      '1003': { name: "Bishop", types: [1], rarity: 0 },
-      '1004': { name: "King", types: [1], rarity: 0 },
-      '1005': { name: "Queen", types: [1], rarity: 0 },
-      '1006': { name: "Swap", types: [1], rarity: 0 },
-      '1007': { name: "Hit & Run", types: [1], rarity: 0 },
+      '1000': { 
+        name: "Pawn",
+        types: [1],
+        rarity: 0,
+        validTargets: [],
+        autoTarget: 0,
+        duration: 0
+      },
+      '1001': { 
+        name: "Rook", 
+        types: [1], 
+        rarity: 0, 
+        validTargets: [],
+        autoTarget: 0,
+        duration: 0
+      },
+      '1002': { 
+        name: "Knight", 
+        types: [1], 
+        rarity: 0, 
+        validTargets: [],
+        autoTarget: 0,
+        duration: 0
+      },
+      '1003': { 
+        name: "Bishop", 
+        types: [1], 
+        rarity: 0, 
+        validTargets: [],
+        autoTarget: 0,
+        duration: 0
+      },
+      '1004': { 
+        name: "King", 
+        types: [1], 
+        rarity: 0, 
+        validTargets: [],
+        autoTarget: 0,
+        duration: 0
+      },
+      '1005': { 
+        name: "Queen", 
+        types: [1], 
+        rarity: 0, 
+        validTargets: [],
+        autoTarget: 0,
+        duration: 0
+      },
+      '1006': { 
+        name: "Swap", 
+        types: [1], 
+        rarity: 0, 
+        validTargets: [],
+        autoTarget: 0,
+        duration: 0
+      },
+      '1007': { 
+        name: "Hit & Run", 
+        types: [1], 
+        rarity: 0, 
+        validTargets: [],
+        autoTarget: 0,
+        duration: 0
+      },
       // POPs - Enchantments
-      '2000': { name: "Draw -1", types: [2], rarity: 0 },
-      '2001': { name: "Draw +1", types: [2], rarity: 0 },
-      '2002': { name: "Knowledge", types: [2], rarity: 0 },
+      '2000': { 
+        name: "Draw -1", 
+        types: [2], 
+        rarity: 0, 
+        validTargets: [],
+        autoTarget: 0,
+        duration: 0
+      },
+      '2001': { 
+        name: "Draw +1", 
+        types: [2], 
+        rarity: 0, 
+        validTargets: [],
+        autoTarget: 0,
+        duration: 0
+      },
+      '2002': { 
+        name: "Knowledge", 
+        types: [2], 
+        rarity: 0, 
+        validTargets: [],
+        autoTarget: 0,
+        duration: 0
+      },
       // POUs - Equipment
-      '3000': { name: "Guard", types: [3], rarity: 0},
-      '3001': { name: "Condemn", types: [3], rarity: 0 },
+      '3000': { 
+        name: "Guard", 
+        types: [3], 
+        rarity: 0, 
+        validTargets: [],
+        autoTarget: 0,
+        duration: 0
+      },
+      '3001': {
+         name: "Condemn", 
+         types: [3], 
+         rarity: 0, 
+         validTargets: [],
+         autoTarget: 0,
+         duration: 0
+        },
+      // Trap
       // Space - Board
-      '4000': { name: "Immune", types: [3], rarity: 0 },
-      '4001': { name: "Sacrifice", types: [3], rarity: 0 },
+      '4000': { 
+        name: "Immune", 
+        types: [3],
+        rarity: 0,
+        validTargets: [],
+        autoTarget: 0,
+        duration: 0
+      },
+      '4001': { 
+        name: "Sacrifice",
+        types: [3], 
+        rarity: 0, 
+        validTargets: [],
+        autoTarget: 0,
+        duration: 0
+      },
       // Arena - Global
-      '5000': { name: "King of Hill", types: [4], rarity: 0 },
+      '5000': { 
+        name: "King of Hill", 
+        types: [4], 
+        rarity: 0, 
+        validTargets: [],
+        autoTarget: 0,
+        duration: 0
+      },
     };
   }
 

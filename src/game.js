@@ -8,13 +8,8 @@ let gl = new Logic();
 const ChessGame = Game({
   name: 'chess',
   moves: {
-    playCubits: function(G, ctx, cubitix, player, unitix) {
-      // Set Defaults...
-      cubitix = 0;
-      player = '0';
-      unitix = 0;
-
-      // Input Contacts
+    playCubitOnUnit: function(G, ctx, cubitix, player, unitix) {
+      // Input Contracts
       if (cubitix === undefined) {
         return;
       }
@@ -24,13 +19,13 @@ const ChessGame = Game({
       if (unitix === undefined) {
         return;
       }
-      
+
       // Create Copy
       const g = { ...G };
 
       // remove source from hand 
       let cubit = g.players[ctx.currentPlayer].hand.splice(cubitix, 1).shift();
-      
+
       // Get unit
       let unit = g.players[player].units[unitix];
 
@@ -47,6 +42,41 @@ const ChessGame = Game({
 
       // Return Copy
       return g;
+    },
+    playCubitOnPlayer: function(G, ctx, cubitix, player) {
+      // Input Contracts
+      if (cubitix === undefined) {
+        return;
+      }
+      if (player === undefined) {
+        return;
+      }
+
+       // Create Copy
+       const g = { ...G };
+
+       // remove source from hand 
+       let cubit = g.players[ctx.currentPlayer].hand.splice(cubitix, 1).shift();
+ 
+       // if slots is not greater then limit
+       if (g.players[player].slots.length >= 5) {
+         return;
+       }
+ 
+       // add it slot of unit 
+       g.players[player].slots.push(cubit);
+ 
+       // Move to next Phase
+       ctx.events.endPhase();
+ 
+       // Return Copy
+       return g;
+    },
+    playCubitOnField: function(G, ctx, cubitix, destination) {
+
+    },
+    playCubitOnArena: function(G, ctx, cubitix) {
+
     },
     moveUnit: function(G, ctx, source, destination) {
       // Set Defaults...
@@ -129,7 +159,7 @@ const ChessGame = Game({
     phases: [
       {
         name: 'Play',
-        allowedMoves: ['playCubits'],
+        allowedMoves: ['playCubitOnUnit', 'playCubitOnPlayer', 'playCubitOnField', 'playCubitOnArena'],
       },
       {
         name: 'Move',
