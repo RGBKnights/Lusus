@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-class Pawn extends React.Component {
+class Orthogonal extends React.Component {
   static propTypes = {
     color: PropTypes.string,
   };
@@ -13,12 +13,12 @@ class Pawn extends React.Component {
     return (
       <g transform="scale(0.0018,0.0018) translate(20,20)">
         <path 
-          d="M312.07 194.46A56.07 56.07 0 1 1 256 138.39a56.07 56.07 0 0 1 56.07 56.07zM406 418.01H106v60h300v-60zM282.33 261.52a71.81 71.81 0 0 1-52.15.2c-.73 58.91-62.35 114.06-96.75 140.28H378.9c-34.09-26.33-95.44-81.78-96.57-140.48z" 
-          style={style} 
+           d="M256 34.47l-90.51 90.51h67.883v108.393H124.98V165.49L34.47 256l90.51 90.51v-67.883h108.393V387.02H165.49L256 477.53l90.51-90.51h-67.883V278.627H387.02v67.883L477.53 256l-90.51-90.51v67.883H278.627V124.98h67.883L256 34.47z"
+          style={style}
           transform="translate(0, 0) scale(1, 1) rotate(-360, 256, 256)" />
       </g>
     );
   }
 }
 
-export default Pawn;
+export default Orthogonal;

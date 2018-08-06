@@ -1,18 +1,9 @@
 export class Logic {
   getCubits() {
     return {
-      // Hidden
-      '0': { 
-        name: "Hidden", 
-        types: [0], 
-        rarity: 0, 
-        validTargets: [],
-        autoTarget: 0,
-        duration: 0
-      },
       // Movement
       '1000': { 
-        name: "Pawn",
+        name: "Orthogonal",
         types: [1],
         rarity: 0,
         validTargets: [],
@@ -20,7 +11,7 @@ export class Logic {
         duration: 0
       },
       '1001': { 
-        name: "Rook", 
+        name: "Diagonal", 
         types: [1], 
         rarity: 0, 
         validTargets: [],
@@ -28,7 +19,7 @@ export class Logic {
         duration: 0
       },
       '1002': { 
-        name: "Knight", 
+        name: "Cardinal", 
         types: [1], 
         rarity: 0, 
         validTargets: [],
@@ -36,15 +27,15 @@ export class Logic {
         duration: 0
       },
       '1003': { 
-        name: "Bishop", 
+        name: "Pattern", 
         types: [1], 
         rarity: 0, 
         validTargets: [],
         autoTarget: 0,
         duration: 0
       },
-      '1004': { 
-        name: "King", 
+      '1004': {
+        name: "Sidestep", 
         types: [1], 
         rarity: 0, 
         validTargets: [],
@@ -52,14 +43,6 @@ export class Logic {
         duration: 0
       },
       '1005': { 
-        name: "Queen", 
-        types: [1], 
-        rarity: 0, 
-        validTargets: [],
-        autoTarget: 0,
-        duration: 0
-      },
-      '1006': { 
         name: "Swap", 
         types: [1], 
         rarity: 0, 
@@ -67,7 +50,7 @@ export class Logic {
         autoTarget: 0,
         duration: 0
       },
-      '1007': { 
+      '1006': { 
         name: "Hit & Run", 
         types: [1], 
         rarity: 0, 
@@ -76,7 +59,7 @@ export class Logic {
         duration: 0
       },
       // POPs - Enchantments
-      '2000': { 
+      '1007': { 
         name: "Draw -1", 
         types: [2], 
         rarity: 0, 
@@ -84,7 +67,7 @@ export class Logic {
         autoTarget: 0,
         duration: 0
       },
-      '2001': { 
+      '1008': { 
         name: "Draw +1", 
         types: [2], 
         rarity: 0, 
@@ -92,7 +75,7 @@ export class Logic {
         autoTarget: 0,
         duration: 0
       },
-      '2002': { 
+      '1009': { 
         name: "Knowledge", 
         types: [2], 
         rarity: 0, 
@@ -101,7 +84,7 @@ export class Logic {
         duration: 0
       },
       // POUs - Equipment
-      '3000': { 
+      '1010': { 
         name: "Guard", 
         types: [3], 
         rarity: 0, 
@@ -109,7 +92,7 @@ export class Logic {
         autoTarget: 0,
         duration: 0
       },
-      '3001': {
+      '1011': {
          name: "Condemn", 
          types: [3], 
          rarity: 0, 
@@ -118,27 +101,27 @@ export class Logic {
          duration: 0
         },
       // Trap
-      // Space - Board
-      '4000': { 
-        name: "Immune", 
-        types: [3],
-        rarity: 0,
+      '1012': { 
+        name: "Revert",
+        types: [4], 
+        rarity: 0, 
         validTargets: [],
         autoTarget: 0,
         duration: 0
       },
-      '4001': { 
+      // Space - Board
+      '1013': { 
         name: "Sacrifice",
-        types: [3], 
+        types: [5], 
         rarity: 0, 
         validTargets: [],
         autoTarget: 0,
         duration: 0
       },
       // Arena - Global
-      '5000': { 
+      '1014': {
         name: "King of Hill", 
-        types: [4], 
+        types: [6], 
         rarity: 0, 
         validTargets: [],
         autoTarget: 0,
@@ -169,8 +152,7 @@ export class Logic {
       }
     }
 
-    return {
-      arena: [],
+    return {      
       players: {
         '0': {
           draw: 3,
@@ -180,7 +162,9 @@ export class Logic {
           hand: hands[0],
           exile: [],
           afterlife: [],
+          arena: null,
           slots: [],
+          field: [],
           units: [
             { type: 'R', color: '#FF5733', x: 0, y: 0, limit: 4, slots: [] },
             { type: 'N', color: '#F9FF33', x: 0, y: 1, limit: 3, slots: [] },
@@ -208,7 +192,9 @@ export class Logic {
           hand: hands[1],
           exile: [],
           afterlife: [],
+          arena: null,
           slots: [],
+          field: [],
           units: [
             { type: 'R', color: '#FF5733', x: 7, y: 0, limit: 4, slots: [] },
             { type: 'N', color: '#F9FF33', x: 7, y: 1, limit: 3, slots: [] },

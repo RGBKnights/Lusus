@@ -7,12 +7,11 @@ import { Token, Grid } from 'boardgame.io/ui';
 // Cubits
 import CubitLogo from './cubits/cubit';
 import CubitText from './cubits/text';
-import CubitKing from './cubits/king';
-import CubitBishop from './cubits/bishop';
-import CubitKnight from './cubits/knight';
-import CubitRook from './cubits/rook';
-import CubitQueen from './cubits/queen';
-import CubitPawn from './cubits/pawn';
+import CubitOrthogonal from './cubits/orthogonal';
+import CubitDiagonal from './cubits/diagonal';
+import CubitCardinal from './cubits/cardinal';
+import CubitPattern from './cubits/pattern';
+import CubitSidestep from './cubits/sidestep';
 import CubitSwap from './cubits/swap';
 import CubitImmune from './cubits/immune';
 import CubitGuard from './cubits/guard';
@@ -23,6 +22,7 @@ import CubitHitRun from './cubits/hitrun'
 import CubitKnowledge from './cubits/knowledge'
 import CubitSacrifice from './cubits/sacrifice'
 import CubitKingOfHill from './cubits/kingofhill'
+// import * as Cubits from './cubits'
 // Units
 import UnitKing from './units/king';
 import UnitBishop from './units/bishop';
@@ -97,51 +97,48 @@ export default class ChessBoard extends React.Component {
         cubitComponent = <CubitLogo color={team} />;
         break;
       case '1000':
-        cubitComponent = <CubitPawn color={team} />;
+        cubitComponent = <CubitOrthogonal color={team} />;
         break;
       case '1001':
-        cubitComponent = <CubitRook color={team} />;
+        cubitComponent = <CubitDiagonal color={team} />;
         break;
       case '1002':
-        cubitComponent = <CubitKnight color={team} />;
+        cubitComponent = <CubitCardinal color={team} />;
         break;
       case '1003':
-        cubitComponent = <CubitBishop color={team} />;
+        cubitComponent = <CubitPattern color={team} />;
         break;
       case '1004':
-        cubitComponent = <CubitKing color={team} />;
+        cubitComponent = <CubitSidestep color={team} />;
         break;
       case '1005':
-        cubitComponent = <CubitQueen color={team} />;
-        break;
-      case '1006':
         cubitComponent = <CubitSwap color={team} />;
         break;
-      case '1007':
+      case '1006':
         cubitComponent = <CubitHitRun color={team} />;
         break;
-      case '2000':
+      case '1007':
         cubitComponent = <CubitDrawMinus color={team} />;
         break;
-      case '2001':
+      case '1008':
         cubitComponent = <CubitDrawPlus color={team} />;
         break;
-      case '2002':
+      case '1009':
         cubitComponent = <CubitKnowledge color={team} />;
         break;
-      case '3000':
+      case '1010':
         cubitComponent = <CubitGuard color={team} />;
         break;
-      case '3001':
+      case '1011':
         cubitComponent = <CubitCondemn color={team} />;
         break;
-      case '4000':
+      case '1012':
         cubitComponent = <CubitImmune color={team} />;
         break;
-      case '4001':
+      case '1013':
         cubitComponent = <CubitSacrifice color={team} />;
         break;
-      case '5000':
+      case '1014':
         cubitComponent = <CubitKingOfHill color={team} />;
         break;
       default:
@@ -153,7 +150,15 @@ export default class ChessBoard extends React.Component {
   }
 
   onClickBoard = ({ x, y }) => {
-    console.log("Board", {x,y});
+    if(this.props.ctx.phase === 'Movement' && this.action == null) {
+      this.action = { source: { x:x, y:y } };
+      return;
+    }
+    if(this.props.ctx.phase === 'Movement' && this.action != null) {
+      this.props.moves.moveUnit(this.action.source.x, this.action.source.y, x, y);
+      this.action = null;
+      return;
+    }
   };
 
   onClickField = ({ x, y }) => {
@@ -161,42 +166,48 @@ export default class ChessBoard extends React.Component {
   };
 
   onClickPlayer1Hand = ({ x, y }) => {
-    if(this.props.ctx.phase === 'Play') {
-      this.action = { cubitix: x, player: '0' };
+    if(this.props.ctx.phase === 'Action') {
+      this.action = { cubitix: x };
+      return;
     }
   };
 
   onClickPlayer2Hand = ({ x, y }) => {
-    if(this.props.ctx.phase === 'Play') {
-      this.action = { cubitix: x, player: '1' };
+    if(this.props.ctx.phase === 'Action') {
+      this.action = { cubitix: x };
+      return;
     }
   };
 
   onClickPlayer1Slots = ({ x, y }) => {
-    if(this.props.ctx.phase === 'Play' && this.action != null) {
-      this.props.moves.playCubitOnPlayer(this.action.cubitix, this.action.player);
+    if(this.props.ctx.phase === 'Action' && this.action != null) {
+      this.props.moves.playCubitOnPlayer(this.action.cubitix, '0');
       this.action = null;
+      return;
     }
   };
 
   onClickPlayer2Slots = ({ x, y }) => {
-    if(this.props.ctx.phase === 'Play' && this.action != null) {
-      this.props.moves.playCubitOnPlayer(this.action.cubitix, this.action.player);
+    if(this.props.ctx.phase === 'Action' && this.action != null) {
+      this.props.moves.playCubitOnPlayer(this.action.cubitix, '1');
       this.action = null;
+      return;
     }
   };
 
   onClickPlayer1Units = ({ x, y }) => {
-    if(this.props.ctx.phase === 'Play' && this.action != null) {
-      this.props.moves.playCubitOnUnit(this.action.cubitix, this.action.player, y);
+    if(this.props.ctx.phase === 'Action' && this.action != null) {
+      this.props.moves.playCubitOnUnit(this.action.cubitix, '0', y);
       this.action = null;
+      return;
     }
   };
 
   onClickPlayer2Units = ({ x, y }) => {
-    if(this.props.ctx.phase === 'Play' && this.action != null) {
-      this.props.moves.playCubitOnUnit(this.action.cubitix, this.action.player, y);
+    if(this.props.ctx.phase === 'Action' && this.action != null) {
+      this.props.moves.playCubitOnUnit(this.action.cubitix, '1', y);
       this.action = null;
+      return;
     }
   };
 
@@ -217,7 +228,15 @@ export default class ChessBoard extends React.Component {
   };
 
   onClickArena = ({ x, y }) => {
-    console.log("Arena", {x,y});
+    if(this.props.ctx.phase === 'Action' && this.action != null) {
+      this.props.moves.playCubitOnArena(this.action.cubitix);
+      this.action = null;
+      return;
+    }
+  };
+
+  onTokenMouseOver = ({ x, y }) => {
+    // console.log("Test");
   };
 
   render() {
@@ -232,10 +251,7 @@ export default class ChessBoard extends React.Component {
       }
     }
 
-    let arenaStyle = {
-      strokeWidth:0.05,
-      stroke:'#000'
-    };
+    let toggleStyles = {cursor: 'pointer'};
 
     let handColorMap = {
       '0': {},
@@ -246,10 +262,13 @@ export default class ChessBoard extends React.Component {
       '1': {}
     };
 
+    let arenaColorMap = {};
+    arenaColorMap[`${0},${0}`] = '#959595';
+
     let handStyle = {strokeWidth:0.05,stroke:'#fff'};
     let unitstyle = {strokeWidth:0.05,stroke:'#fff'};
 
-    let colors = ['#817F7F', '#ABAAAA'];
+    let colors = ['#959595', '#959595'];
     let teams = ['w', 'b'];
     let hands = {
       '0': [],
@@ -279,6 +298,10 @@ export default class ChessBoard extends React.Component {
     }
 
     let board = [];
+    let commanders = {
+      '0': 0,
+      '1': 0
+    };
     let units = {
       '0': [],
       '1': []
@@ -293,22 +316,23 @@ export default class ChessBoard extends React.Component {
 
         let unitComponent = this.getUnitComponent(unit.type, unit.color, teams[p]);
 
+        // count commanders
+        commanders[p]++;
+
         // Push units to units 1st column
         units[p].push(<Token key={fieldKey++} x={0} y={a}>{unitComponent}</Token>);
-
+        
         // Push units to board
         board.push(<Token key={boardKey++} x={unit.x} y={unit.y} animate={true}>{unitComponent}</Token>);
 
         // push cubits to field for each unit
         for (let b = 0; b < unit.slots.length; b++) {
-          const cubitix = unit.slots[b];
-          if(cubitix) {
-            let x = b+1;
+          const data = unit.slots[b];
+          let x = b+1;
 
-            let cubitComponent = this.getCubitComponent(cubitix, teams[p]);
+          let cubitComponent = this.getCubitComponent(data.cubit, teams[data.controller]);
 
-            units[p].push(<Token key={fieldKey++} x={x} y={a} >{cubitComponent}</Token>); 
-          }
+          units[p].push(<Token key={fieldKey++} x={x} y={a} >{cubitComponent}</Token>); 
         }
 
         // Field background colours
@@ -320,12 +344,20 @@ export default class ChessBoard extends React.Component {
       }
     }
 
-    let toggleStyles = {cursor: 'pointer'};
-
     let slots = {
-      '0': this.props.G.players['0'].slots,
-      '1': this.props.G.players['1'].slots
+      '0': [],
+      '1': []
     };
+
+    for (const p in slots) {
+      const player = this.props.G.players[p];
+      
+      for (let a = 0; a < player.slots.length; a++) {
+        const data = player.slots[a];
+        let cubitComponent = this.getCubitComponent(data.cubit, teams[data.controller]);
+        slots[p].push(<Token key={a} x={a} y={0} >{cubitComponent}</Token>); 
+      }
+    }
 
     let bags = {
       '0': this.props.G.players['0'].bag.length,
@@ -418,7 +450,7 @@ export default class ChessBoard extends React.Component {
                   <Badge color="secondary" className="float-right mt-2">{hands['0'].length}</Badge>
                 </h5>
                 <UncontrolledCollapse toggler="#Player1HandToggle" isOpen={true}>
-                  <Grid rows={1} cols={5} onClick={this.onClickPlayer1Hand} colorMap={handColorMap['0']} style={handStyle}>
+                  <Grid rows={1} cols={5} onClick={this.onClickPlayer1Hand} onMouseOver={this.onTokenMouseOver} colorMap={handColorMap['0']} style={handStyle}>
                     {hands['0']}
                   </Grid>
                 </UncontrolledCollapse>
@@ -444,7 +476,7 @@ export default class ChessBoard extends React.Component {
                   <Badge color="secondary" className="float-right mt-2">{units['0'].length}</Badge>
                 </h5>
                 <UncontrolledCollapse toggler="#Player1UnitToggle" isOpen={true}>
-                  <Grid rows={units['0'].length} cols={5} onClick={this.onClickPlayer1Units}  colorMap={fieldColorMap['0']} style={unitstyle}>
+                  <Grid rows={commanders['0']} cols={5} onClick={this.onClickPlayer1Units}  colorMap={fieldColorMap['0']} style={unitstyle}>
                     {units['0']}
                   </Grid>
                 </UncontrolledCollapse>
@@ -484,8 +516,7 @@ export default class ChessBoard extends React.Component {
                 <h3>Arena</h3>
               </Col>
               <Col xs={2}>
-                <Grid rows={1} cols={1} onClick={this.onClickArena} style={arenaStyle}>
-                  <Token x={0} y={0}><CubitLogo color="b" /></Token>
+                <Grid rows={1} cols={1} onClick={this.onClickArena} colorMap={arenaColorMap}>
                 </Grid>
               </Col>
             </Row>
@@ -579,7 +610,7 @@ export default class ChessBoard extends React.Component {
                   <Badge color="secondary" className="float-right mt-2">{units['1'].length}</Badge>
                 </h5>
                 <UncontrolledCollapse toggler="#Player2UnitToggle" isOpen={true}>
-                  <Grid rows={units['1'].length} cols={5} onClick={this.onClickPlayer2Units}  colorMap={fieldColorMap['1']} style={unitstyle}>
+                  <Grid rows={commanders['1']} cols={5} onClick={this.onClickPlayer2Units}  colorMap={fieldColorMap['1']} style={unitstyle}>
                     {units['1']}
                   </Grid>
                 </UncontrolledCollapse>
