@@ -10,6 +10,7 @@ const ClientApp = Client({
   debug: true
 });
 
+/*
 const App = () => (
   <div>
     <h1 className="text-center">Player 1 View</h1>
@@ -19,5 +20,6 @@ const App = () => (
     <ClientApp gameID="f5396086" playerID="1" />
   </div>
 );
+*/
 
-export default App;
+export default ClientApp;
