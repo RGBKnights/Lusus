@@ -90,12 +90,15 @@ const ChessGame = Game({
       // Return Copy
       return g;
     },
-    playCubitOnField: function(G, ctx, cubitix, destination) {
+    playCubitOnField: function(G, ctx, cubitix, x, y) {
       // Input Contracts
       if (cubitix === undefined) {
         return;
       }
-      if (destination === undefined) {
+      if (x === undefined) {
+        return;
+      }
+      if (y === undefined) {
         return;
       }
 
@@ -109,9 +112,9 @@ const ChessGame = Game({
 
       // Create data to store cubit location on field
       let data = {
-        cubit: cubit, 
-        x: destination.x, 
-        y: destination.y
+        cubit: cubit,
+        x: x, 
+        y: y
       };
 
       // Add data to field

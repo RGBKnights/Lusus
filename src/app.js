@@ -1,4 +1,4 @@
-import React from 'react';
+// import React from 'react';
 import { Client } from 'boardgame.io/react';
 import ChessBoard from './board';
 import ChessGame from './game';

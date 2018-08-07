@@ -162,7 +162,11 @@ export default class ChessBoard extends React.Component {
   };
 
   onClickField = ({ x, y }) => {
-    console.log("Field", {x,y});
+    if(this.props.ctx.phase === 'Action' && this.action != null) {
+      this.props.moves.playCubitOnField(this.action.cubitix, x, y);
+      this.action = null;
+      return;
+    }
   };
 
   onClickPlayer1Hand = ({ x, y }) => {
@@ -268,15 +272,16 @@ export default class ChessBoard extends React.Component {
     let handStyle = {strokeWidth:0.05,stroke:'#fff'};
     let unitstyle = {strokeWidth:0.05,stroke:'#fff'};
 
+    let players = {'0': null, '1': null};
+
     let colors = ['#959595', '#959595'];
     let teams = ['w', 'b'];
     let hands = {
       '0': [],
       '1': []
     };
-
-
-    for (const p in hands) {
+    
+    for (const p in players) {
       for (let x = 0; x < 5; x++) {
         handColorMap[p][`${x},${0}`] = colors[p];
       }
@@ -307,8 +312,8 @@ export default class ChessBoard extends React.Component {
       '1': []
     };
     let boardKey = 0;
-    let fieldKey = 0;
-    for (const p in units) {
+    let unitKey = 0;
+    for (const p in players) {
       const player = this.props.G.players[p];
 
       for (let a = 0; a < player.units.length; a++) {
@@ -320,7 +325,7 @@ export default class ChessBoard extends React.Component {
         commanders[p]++;
 
         // Push units to units 1st column
-        units[p].push(<Token key={fieldKey++} x={0} y={a}>{unitComponent}</Token>);
+        units[p].push(<Token key={unitKey++} x={0} y={a}>{unitComponent}</Token>);
         
         // Push units to board
         board.push(<Token key={boardKey++} x={unit.x} y={unit.y} animate={true}>{unitComponent}</Token>);
@@ -332,7 +337,7 @@ export default class ChessBoard extends React.Component {
 
           let cubitComponent = this.getCubitComponent(data.cubit, teams[data.controller]);
 
-          units[p].push(<Token key={fieldKey++} x={x} y={a} >{cubitComponent}</Token>); 
+          units[p].push(<Token key={unitKey++} x={x} y={a} >{cubitComponent}</Token>); 
         }
 
         // Field background colours
@@ -349,13 +354,34 @@ export default class ChessBoard extends React.Component {
       '1': []
     };
 
-    for (const p in slots) {
+    for (const p in players) {
       const player = this.props.G.players[p];
       
       for (let a = 0; a < player.slots.length; a++) {
         const data = player.slots[a];
         let cubitComponent = this.getCubitComponent(data.cubit, teams[data.controller]);
         slots[p].push(<Token key={a} x={a} y={0} >{cubitComponent}</Token>); 
+      }
+    }
+
+    let field = [];
+    let fieldKey = 0;
+    for (const p in players) {
+      const player = this.props.G.players[p];
+
+      for (let a = 0; a < player.field.length; a++) {
+        let data = player.field[a];
+        let cubitComponent = this.getCubitComponent(data.cubit, teams[p]);
+        field.push(<Token key={fieldKey++} x={data.x} y={data.y} >{cubitComponent}</Token>);
+      }
+    }
+
+    let arena = [];
+    for (const p in players) {
+      const player = this.props.G.players[p];
+      if(player.arena) {
+        let cubitComponent = this.getCubitComponent(player.arena, teams[p]);
+        arena.push(<Token key={fieldKey++} x={0} y={0} >{cubitComponent}</Token>);
       }
     }
 
@@ -517,6 +543,7 @@ export default class ChessBoard extends React.Component {
               </Col>
               <Col xs={2}>
                 <Grid rows={1} cols={1} onClick={this.onClickArena} colorMap={arenaColorMap}>
+                  {arena}
                 </Grid>
               </Col>
             </Row>
@@ -532,6 +559,7 @@ export default class ChessBoard extends React.Component {
               <Col>
                 <h3>Field</h3>
                 <Grid rows={8} cols={8} onClick={this.onClickField} colorMap={boardColorMap} >
+                  {field}
                 </Grid>
               </Col>
             </Row>
