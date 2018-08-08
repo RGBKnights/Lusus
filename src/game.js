@@ -164,15 +164,24 @@ const ChessGame = Game({
         return;
       }
 
+      let source = {x: sx, y: sy};
+      let destination = {x: dx, y: dy};
+
       const g = { ...G };
 
-      let unit = g.players[ctx.currentPlayer].units.find(function(u) { return u.x === sx && u.y === sy; });
+      let results = gl.isMoveValid(g, ctx.currentPlayer, source, destination);
+      if(results === false) {
+        return;
+      }
+
+      let unit = g.players[ctx.currentPlayer].units.find(function(u) { return u.x === source.x && u.y === source.y; });
       if(unit === undefined) {
         return;
       }
 
       unit.x = dx;
       unit.y = dy;
+      unit.moved = true;
 
       // Move to next Phase
       ctx.events.endPhase();
