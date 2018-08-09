@@ -1,155 +1,216 @@
-let TYPES = {
+export const TYPES = {
   unknown: 0,
-  movement: 1
+  movement: 1,
 };
 
-let MOVEMENT = {
+export const MOVEMENT = {
   invalid: 0,
-  passive: 1,
-  aggressive: 2
+  obstructed: 1,
+  passive: 2,
+  capture: 3,
+  ally: 4,
 };
 
-let RARITY = {
+export const RARITY = {
   unknown: 0,
   bronze: 1,
   silver: 2,
   gold: 3
 };
 
-/*
-export TYPES;
-export MOVEMENT;
-export RARITY;
-*/
+export const TARGET_WHERE = {
+  unknown: 0,
+  player: 1,
+  hand: 2,
+  units: 3,
+  board: 4,
+  field: 5,
+  arena: 6,
+  afterlife: 7,
+  reinforcements: 8,
+};
+
+export const TARGET_WHAT = {
+  unknown: 0,
+  self: 1,
+  opponent: 2,
+  pawn: 3,
+  rook: 4,
+  knight: 5,
+  bishop: 6,
+  queen: 7,
+  king: 8,
+  any: 9,
+  all: 10
+};
 
 export class Logic {
   getCollection() {
     return {
-      // Movement
       '1000': { 
         name: "Orthogonal",
         types: [TYPES.movement],
         rarity: RARITY.unknown,
-        validTargets: [],
-        autoTarget: 0,
-        duration: 0
+        targetWhere: TARGET_WHERE.units,
+        targetWhat: TARGET_WHAT.any,
+        activatable: false,
+        durationType: 0,
+        durationAmount: 0,
+        hidden: false,
       },
       '1001': { 
         name: "Diagonal", 
         types: [TYPES.movement], 
         rarity: RARITY.unknown, 
-        validTargets: [],
-        autoTarget: 0,
-        duration: 0
+        targetWhere: TARGET_WHERE.units,
+        targetWhat: TARGET_WHAT.any,
+        activatable: false,
+        durationType: 0,
+        durationAmount: 0,
+        hidden: false,
       },
       '1002': { 
         name: "Cardinal", 
         types: [TYPES.movement], 
         rarity: RARITY.unknown, 
-        validTargets: [],
-        autoTarget: 0,
-        duration: 0
+        targetWhere: TARGET_WHERE.units,
+        targetWhat: TARGET_WHAT.any,
+        activatable: false,
+        durationType: 0,
+        durationAmount: 0,
+        hidden: false,
       },
       '1003': { 
         name: "Pattern", 
         types: [TYPES.movement], 
         rarity: RARITY.unknown, 
-        validTargets: [],
-        autoTarget: 0,
-        duration: 0
+        targetWhere: TARGET_WHERE.units,
+        targetWhat: TARGET_WHAT.any,
+        activatable: false,
+        durationType: 0,
+        durationAmount: 0,
+        hidden: false,
       },
       '1004': {
         name: "Sidestep", 
         types: [TYPES.movement], 
         rarity: RARITY.unknown, 
-        validTargets: [],
-        autoTarget: 0,
-        duration: 0
+        targetWhere: TARGET_WHERE.units,
+        targetWhat: TARGET_WHAT.any,
+        activatable: false,
+        durationType: 0,
+        durationAmount: 0,
+        hidden: false,
       },
       '1005': { 
         name: "Swap", 
         types: [TYPES.movement], 
         rarity: RARITY.unknown, 
-        validTargets: [],
-        autoTarget: 0,
-        duration: 0
+        targetWhere: TARGET_WHERE.units,
+        targetWhat: TARGET_WHAT.pawn,
+        activatable: true,
+        durationType: 0,
+        durationAmount: 0,
+        hidden: false,
       },
       '1006': { 
         name: "Hit & Run", 
         types: [TYPES.movement], 
         rarity: RARITY.unknown, 
-        validTargets: [],
-        autoTarget: 0,
-        duration: 0
+        targetWhere: TARGET_WHERE.units,
+        targetWhat: TARGET_WHAT.any,
+        activatable: true,
+        durationType: 0,
+        durationAmount: 0,
+        hidden: false,
       },
-      // POPs - Enchantments
       '1007': { 
         name: "Draw -1", 
-        types: [2], 
+        types: [TYPES.unknown], 
         rarity: RARITY.unknown, 
-        validTargets: [],
-        autoTarget: 0,
-        duration: 0
+        targetWhere: TARGET_WHERE.player,
+        targetWhat: TARGET_WHAT.opponent,
+        activatable: false,
+        durationType: 0,
+        durationAmount: 0,
+        hidden: false,
       },
       '1008': { 
         name: "Draw +1", 
-        types: [2], 
+        types: [TYPES.unknown], 
         rarity: RARITY.unknown, 
-        validTargets: [],
-        autoTarget: 0,
-        duration: 0
+        targetWhere: TARGET_WHERE.player,
+        targetWhat: TARGET_WHAT.self,
+        activatable: false,
+        durationType: 0,
+        durationAmount: 0,
+        hidden: false,
       },
       '1009': { 
         name: "Knowledge", 
-        types: [2], 
+        types: [TYPES.unknown], 
         rarity: RARITY.unknown, 
-        validTargets: [],
-        autoTarget: 0,
-        duration: 0
+        targetWhere: TARGET_WHERE.player,
+        targetWhat: TARGET_WHAT.self,
+        activatable: false,
+        durationType: 0,
+        durationAmount: 0,
+        hidden: false,
       },
-      // POUs - Equipment
       '1010': { 
         name: "Guard", 
-        types: [3], 
+        types: [TYPES.unknown], 
         rarity: RARITY.unknown, 
-        validTargets: [],
-        autoTarget: 0,
-        duration: 0
+        targetWhere: TARGET_WHERE.units,
+        targetWhat: TARGET_WHAT.any,
+        activatable: false,
+        durationType: 0,
+        durationAmount: 0,
+        hidden: false,
       },
       '1011': {
-         name: "Condemn", 
-         types: [3], 
-         rarity: RARITY.unknown, 
-         validTargets: [],
-         autoTarget: 0,
-         duration: 0
-        },
-      // Trap
+        name: "Condemn", 
+        types: [TYPES.unknown], 
+        rarity: RARITY.unknown, 
+        targetWhere: TARGET_WHERE.units,
+        targetWhat: TARGET_WHAT.opponent,
+        activatable: false,
+        durationType: 0,
+        durationAmount: 0,
+        hidden: false,
+      },
       '1012': { 
         name: "Revert",
-        types: [4], 
+        types: [TYPES.unknown], 
         rarity: RARITY.unknown, 
-        validTargets: [],
-        autoTarget: 0,
-        duration: 0
+        targetWhere: TARGET_WHERE.unit,
+        targetWhat: TARGET_WHERE.self,
+        activatable: false,
+        durationType: 0,
+        durationAmount: 0,
+        hidden: true,
       },
-      // Space - Board
       '1013': { 
         name: "Sacrifice",
-        types: [5], 
+        types: [TYPES.unknown], 
         rarity: RARITY.unknown, 
-        validTargets: [],
-        autoTarget: 0,
-        duration: 0
+        targetWhere: 0,
+        targetWhat: 0,
+        activatable: false,
+        durationType: 0,
+        durationAmount: 0,
+        hidden: false,
       },
-      // Arena - Global
       '1014': {
         name: "King of Hill", 
-        types: [6], 
+        types: [TYPES.unknown], 
         rarity: RARITY.unknown, 
-        validTargets: [],
-        autoTarget: 0,
-        duration: 0
+        targetWhere: 0,
+        targetWhat: 0,
+        activatable: false,
+        durationType: 0,
+        durationAmount: 0,
+        hidden: false,
       },
     };
   }
@@ -158,10 +219,10 @@ export class Logic {
     const collection = this.getCollection();
     let cubits = [];
     for (let i = 0; i < slots.length; i++) {
-      const key = slots[i];
-      let cubit = collection[key];
+      const data = slots[i];
+      let cubit = collection[data.cubit];
       if(cubit) {
-        cubit.key = key;
+        cubit.key = data.cubit;
         cubits.push(cubit);
       }
     }
@@ -195,6 +256,8 @@ export class Logic {
       }
     }
 
+    let cubitData = {cubit: '1004',controller: '0'};
+
     return {      
       players: {
         '0': {
@@ -220,7 +283,7 @@ export class Logic {
             { type: 'P', color: '#FF5733', x: 1, y: 0, limit: 2, slots: [] },
             { type: 'P', color: '#F9FF33', x: 1, y: 1, limit: 2, slots: [] },
             { type: 'P', color: '#008000', x: 1, y: 2, limit: 2, slots: [] },
-            { type: 'P', color: '#33FFA8', x: 1, y: 3, limit: 2, slots: [] },
+            { type: 'P', color: '#33FFA8', x: 2, y: 3, limit: 2, slots: [cubitData] },
             { type: 'P', color: '#33F6FF', x: 1, y: 4, limit: 2, slots: [] },
             { type: 'P', color: '#3346FF', x: 1, y: 5, limit: 2, slots: [] },
             { type: 'P', color: '#800080', x: 1, y: 6, limit: 2, slots: [] },
@@ -269,17 +332,17 @@ export class Logic {
 
     let obstructionUnit = g.players[playerId].units.find(function(u) { return u.x === x && u.y === y; });
     if(obstructionUnit !== undefined) {
-      return {x: x, y: y, type: MOVEMENT.invalid};
+      return {x: x, y: y, type: MOVEMENT.ally};
     }
 
     let obstructionField = undefined; // TODO: Add field obstructions
     if(obstructionField !== undefined) {
-      return {x: x, y: y, type: MOVEMENT.invalid};
+      return {x: x, y: y, type: MOVEMENT.obstructed};
     }
 
     let capture = g.players[opponentId].units.find(function(u) { return u.x === x && u.y === y; });
     if(capture !== undefined && limitAggression === false) {
-      return {x: x, y: y, type: MOVEMENT.aggressive};
+      return {x: x, y: y, type: MOVEMENT.capture};
     } 
 
     if(limitPassive) {
@@ -446,46 +509,46 @@ export class Logic {
 
         for (x = source.x - 1, steps = 0; x > 0 && steps < modifier.data.distance; x--, steps++) {
           let move = this.getMoveAtPosition(g, playerId, opponentId, x, source.y);
-          if(move.type === MOVEMENT.invalid) {
-            break;
-          } else if(move.type === MOVEMENT.aggressive) {
+          if(move.type === MOVEMENT.passive) {
+            moves.push(move);
+          } else if(move.type === MOVEMENT.capture) {
             moves.push(move);
             break;
           } else {
-            moves.push(move);
+            break;
           }
         }
         for (x = source.x + 1, steps = 0; x < 8 && steps < modifier.data.distance; x++, steps++) {
           let move = this.getMoveAtPosition(g, playerId, opponentId, x, source.y);
-          if(move.type === MOVEMENT.invalid) {
-            break;
-          } else if(move.type === MOVEMENT.aggressive) {
+          if(move.type === MOVEMENT.passive) {
+            moves.push(move);
+          } else if(move.type === MOVEMENT.capture) {
             moves.push(move);
             break;
           } else {
-            moves.push(move);
+            break;
           }
         }
         for (y = source.y - 1, steps = 0; y > 0 && steps < modifier.data.distance; y--, steps++) {
           let move = this.getMoveAtPosition(g, playerId, opponentId, source.x, y);
-          if(move.type === MOVEMENT.invalid) {
-            break;
-          } else if(move.type === MOVEMENT.aggressive) {
+          if(move.type === MOVEMENT.passive) {
+            moves.push(move);
+          } else if(move.type === MOVEMENT.capture) {
             moves.push(move);
             break;
           } else {
-            moves.push(move);
+            break;
           }
         }
         for (y = source.y + 1, steps = 0; y < 8 && steps < modifier.data.distance; y++, steps++) {
           let move = this.getMoveAtPosition(g, playerId, opponentId, source.x, y);
-          if(move.type === MOVEMENT.invalid) {
-            break;
-          } else if(move.type === MOVEMENT.aggressive) {
+          if(move.type === MOVEMENT.passive) {
+            moves.push(move);
+          } else if(move.type === MOVEMENT.capture) {
             moves.push(move);
             break;
           } else {
-            moves.push(move);
+            break;
           }
         }
       } else if(modifier.key === '1001') { // Diagonal
@@ -493,49 +556,49 @@ export class Logic {
 
         for (x = source.x + 1, y = source.y + 1, steps = 0; x < 8 && y < 8 && steps < modifier.data.distance; x++, y++, steps++) {
           let move = this.getMoveAtPosition(g, playerId, opponentId, x, y);
-          if(move.type === MOVEMENT.invalid) {
-            break;
-          } else if(move.type === MOVEMENT.aggressive) {
+          if(move.type === MOVEMENT.passive) {
+            moves.push(move);
+          } else if(move.type === MOVEMENT.capture) {
             moves.push(move);
             break;
           } else {
-            moves.push(move);
+            break;
           }
         }
 
         for (x = source.x - 1, y = source.y - 1, steps = 0; x > 0 && y >= 0 && steps < modifier.data.distance; x--, y--, steps++) {
           let move = this.getMoveAtPosition(g, playerId, opponentId, x, y);
-          if(move.type === MOVEMENT.invalid) {
-            break;
-          } else if(move.type === MOVEMENT.aggressive) {
+          if(move.type === MOVEMENT.passive) {
+            moves.push(move);
+          } else if(move.type === MOVEMENT.capture) {
             moves.push(move);
             break;
           } else {
-            moves.push(move);
+            break;
           }
         }
 
         for (x = source.x - 1, y = source.y +1, steps = 0; x >= 0 && y < 8 && steps < modifier.data.distance; x--, y++, steps++) {
           let move = this.getMoveAtPosition(g, playerId, opponentId, x, y);
-          if(move.type === MOVEMENT.invalid) {
-            break;
-          } else if(move.type === MOVEMENT.aggressive) {
+          if(move.type === MOVEMENT.passive) {
+            moves.push(move);
+          } else if(move.type === MOVEMENT.capture) {
             moves.push(move);
             break;
           } else {
-            moves.push(move);
+            break;
           }
         }
 
         for (x = source.x + 1, y = source.y - 1, steps = 0; x < 8 && y >= 0 && steps < modifier.data.distance; x++, y--, steps++) {
           let move = this.getMoveAtPosition(g, playerId, opponentId, x, y);
-          if(move.type === MOVEMENT.invalid) {
-            break;
-          } else if(move.type === MOVEMENT.aggressive) {
+          if(move.type === MOVEMENT.passive) {
+            moves.push(move);
+          } else if(move.type === MOVEMENT.capture) {
             moves.push(move);
             break;
           } else {
-            moves.push(move);
+            break;
           }
         }
 
@@ -553,16 +616,23 @@ export class Logic {
         for (let i = 0; i < targets.length; i++) {
           const target = targets[i];
           let move = this.getMoveAtPosition(g, playerId, opponentId, target.x, target.y);
-          if(move.type !== MOVEMENT.invalid) {
+          if(move.type === MOVEMENT.passive || move.type === MOVEMENT.capture) {
             moves.push(move);
           }
         }
         
       } else if(modifier.key === '1004') { // Sidestep
+        let targets = [];
+        targets.push({ x: source.x, y: source.y + 1 });
+        targets.push({ x: source.x, y: source.y - 1 });
 
-        //TODO: finish this...
-
-      } else if(modifier.key === '1005') { // Swap
+        for (let i = 0; i < targets.length; i++) {
+          const target = targets[i];
+          let move = this.getMoveAtPosition(g, playerId, opponentId, target.x, target.y);
+          if(move.type === MOVEMENT.passive || move.type === MOVEMENT.capture) {
+            moves.push(move);
+          }
+        }
 
       }
     }
@@ -570,17 +640,17 @@ export class Logic {
     return moves;
   }
 
-  isMoveValid(g, player, source, destination) {
+  getMoveForLocation(g, player, source, destination) {
     let moves = this.moves(g, player, source);
 
     for (let i = 0; i < moves.length; i++) {
       const move = moves[i];
       if(move.x === destination.x && move.y === destination.y) {
-        return true;
+        return move;
       }
     }
 
-    return false;
+    return {x: destination.x, y: destination.y, type: MOVEMENT.invalid};
   }
 
 }

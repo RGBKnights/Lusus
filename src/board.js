@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { Container, Row, Col, Alert, Badge, UncontrolledCollapse  } from 'reactstrap';
 import { Token, Grid } from 'boardgame.io/ui';
 // Logic
-import { Logic } from './logic';
+import { Logic, MOVEMENT} from './logic';
 // Cubits
 import CubitLogo from './cubits/cubit';
 import CubitText from './cubits/text';
@@ -264,14 +264,14 @@ export default class ChessBoard extends React.Component {
         const key = `${x},${y}`;
         const color = ((x + y) % 2 === 0) ? '#817F7F' : '#ABAAAA';
 
-        fieldColorMap[key] = color
+        fieldColorMap[key] = color;
         boardColorMap[key] = color;
 
         let move = moves.find(function(m) { return m.x === x && m.y === y; });
         if(move === undefined) {
-        } else if(move.type === 1) {
+        } else if(move.type === MOVEMENT.passive) {
           boardColorMap[key] = '#4E9334';
-        } else if(move.type === 2) {
+        } else if(move.type === MOVEMENT.capture) {
           boardColorMap[key] = '#BE8E3F';
         }
       }
