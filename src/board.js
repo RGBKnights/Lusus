@@ -647,7 +647,7 @@ export default class ChessBoard extends React.Component {
                   <Badge color="secondary" className="float-right mt-2">{slots['1'].length}</Badge>
                 </h5>
                 <UncontrolledCollapse toggler="#Player2PlayerToggle" isOpen={true}>
-                  <Grid rows={1} cols={5} onClick={this.onClickPlayer2Hand}  colorMap={handColorMap['1']} style={handStyle}>
+                  <Grid rows={1} cols={5} onClick={this.onClickPlayer2Slots}  colorMap={handColorMap['1']} style={handStyle}>
                     {slots['1']}
                   </Grid>
                 </UncontrolledCollapse>

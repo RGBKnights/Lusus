@@ -1,7 +1,7 @@
 import { Game, } from 'boardgame.io/core';
 import { Logic, MOVEMENT, TARGET_WHERE, TARGET_WHAT } from './logic';
 
-// playerView: PlayerView.STRIP_SECRETS,
+let clone = require('clone');
 
 let gl = new Logic();
 
@@ -11,17 +11,17 @@ const ChessGame = Game({
     playCubitOnUnit: function(G, ctx, handId, playerId, unitId) {
       // Input Contracts
       if (handId === undefined) {
-        return undefined;
+        return;
       }
       if (playerId === undefined) {
-        return undefined;
+        return;
       }
       if (unitId === undefined) {
-        return undefined;
+        return;
       }
 
       // Create Copy
-      const g = { ...G };
+      const g = clone(G);
 
       // remove source from hand 
       let cubitix = g.players[ctx.currentPlayer].hand.splice(handId, 1).shift();
@@ -31,32 +31,32 @@ const ChessGame = Game({
 
       // if slots is not greater then limit
       if (unit.slots.length >= unit.limit) {
-        return undefined;
+        return;
       }
 
       // confirm that cubit is allow to make this move
       let cubit = gl.getCubit(cubitix);
       if(cubit.targetWhere !== TARGET_WHERE.units) {
-        return undefined;
+        return;
       }
 
       // confirm that cubit is allow to make this move
       if(cubit.targetWhat === TARGET_WHAT.self && playerId !== ctx.currentPlayer) {
-        return undefined;
+        return;
       } else if(cubit.targetWhat === TARGET_WHAT.opponent && playerId === ctx.currentPlayer) {
-        return undefined;
+        return;
       } else if(cubit.targetWhat === TARGET_WHAT.pawn && unit.type !== 'P') {
-        return undefined;
+        return;
       } else if(cubit.targetWhat === TARGET_WHAT.king && unit.type !== 'K') {
-        return undefined;
+        return;
       } else if(cubit.targetWhat === TARGET_WHAT.queen && unit.type !== 'Q' ) {
-        return undefined;
+        return;
       } else if(cubit.targetWhat === TARGET_WHAT.bishop && unit.type !== 'B' ) {
-        return undefined;
+        return;
       } else if(cubit.targetWhat === TARGET_WHAT.knight && unit.type !== 'N' ) {
-        return undefined;
+        return;
       } else if(cubit.targetWhat === TARGET_WHAT.rook && unit.type !== 'R') {
-        return undefined;
+        return;
       }
 
       // Data
@@ -86,7 +86,7 @@ const ChessGame = Game({
       const PLAYER_SLOT_LIMIT = 5;
 
       // Create Copy
-      const g = { ...G };
+      let g = clone(G);
 
       // Remove source from hand 
       let cubitix = g.players[ctx.currentPlayer].hand.splice(handId, 1).shift();
@@ -130,7 +130,7 @@ const ChessGame = Game({
       }
 
       // Create Copy
-      const g = { ...G };
+      let g = clone(G);
 
       // Remove source from hand 
       let cubitix = g.players[ctx.currentPlayer].hand.splice(cubitId, 1).shift();
@@ -161,7 +161,7 @@ const ChessGame = Game({
       }
 
       // Create Copy
-      const g = { ...G };
+      let g = clone(G);
 
       // Remove source from hand 
       let cubitix = g.players[ctx.currentPlayer].hand.splice(cubitId, 1).shift();
@@ -203,7 +203,7 @@ const ChessGame = Game({
       let source = {x: sx, y: sy};
       let destination = {x: dx, y: dy};
 
-      const g = { ...G };
+      let g = clone(G);
 
       let move = gl.getMoveForLocation(g, ctx.currentPlayer, source, destination);
       if(move.type === MOVEMENT.invalid) {
@@ -243,7 +243,7 @@ const ChessGame = Game({
         onPhaseBegin: function(G, ctx) {
           // NOTE: Happens on the server...
           
-          const g = { ...G };
+          let g = clone(G);
 
           // Get hand
           let hand = g.players[ctx.currentPlayer].hand.slice();
