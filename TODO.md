@@ -5,10 +5,8 @@ Stuff I am working on now or next. Also there is a RoadMap list with the long te
 
 ## TODO
 
-* Board UI - Link @click events for interactions for the different phases moves are called from the board
-* Thinking of all side effects that need to be handled with each different type of move()
-* Implement movement for each Unit
-* Implement movement for each Cubit
+* Implement - Draw +/-
+* Implement - Movement Activation (cubits that can do a different movement on the Move Phase based on the activation)
 * Implement logic for each Cubit
 
 ## RoadMap

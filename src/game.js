@@ -1,5 +1,6 @@
 import { Game, } from 'boardgame.io/core';
-import { Logic, MOVEMENT, TARGET_WHERE, TARGET_WHAT } from './logic';
+import { Logic, } from './logic';
+import { MOVEMENT, TARGET_WHERE, TARGET_WHAT } from './cubits';
 
 let clone = require('clone');
 
@@ -211,8 +212,14 @@ const ChessGame = Game({
       }
 
       if(move.type === MOVEMENT.capture) {
-        let index = g.players[opponentId].units.findIndex(function(u) { return u.x === source.x && u.y === source.y; });
-        let enemy = g.players[opponentId].unit.splice(index, 1).shift();
+        let index = g.players[opponentId].units.findIndex(function(u) { return u.x === destination.x && u.y === destination.y; });
+        let enemy = g.players[opponentId].units.splice(index, 1).shift();
+        if(enemy.type === 'K') {
+          // TODO: make sure it is the only kind left on the opponents team
+          ctx.events.endGame(ctx.currentPlayer);
+          return g;
+        }
+
         g.players[opponentId].afterlife.push(enemy);
       }
 
@@ -242,6 +249,8 @@ const ChessGame = Game({
         allowedMoves: [],
         onPhaseBegin: function(G, ctx) {
           // NOTE: Happens on the server...
+
+          let opponentId = ctx.currentPlayer === '0' ? '1' : '0';
           
           let g = clone(G);
 
@@ -258,8 +267,8 @@ const ChessGame = Game({
           let total = g.players[ctx.currentPlayer].bag;
           let amount = g.players[ctx.currentPlayer].draw;
           if(total < amount) {
-            // End the Game
-            ctx.events.endGame();
+           
+            ctx.events.endGame(opponentId);  // End the Game
 
           } else {
             g.players[ctx.currentPlayer].bag = ctx.random.Shuffle(g.players[ctx.currentPlayer].bag);

@@ -9,7 +9,7 @@ class Bishop extends React.Component {
   render() {
     let teamColor = this.props.team === 'b' ? '#000000' : '#FFFFFF';
     let styleMain = { fill: teamColor, fillOpacity: 1 };
-    let styleRank = { fill: this.props.color , fillOpacity: 1 };
+    let styleRank = { fill: this.props.color ? this.props.color : teamColor, fillOpacity: 1 };
 
     return (
       <g transform="scale(0.0018,0.0018) translate(20,20)">

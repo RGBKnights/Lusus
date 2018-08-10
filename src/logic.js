@@ -1,218 +1,9 @@
-export const TYPES = {
-  unknown: 0,
-  movement: 1,
-};
-
-export const MOVEMENT = {
-  invalid: 0,
-  obstructed: 1,
-  passive: 2,
-  capture: 3,
-  ally: 4,
-};
-
-export const RARITY = {
-  unknown: 0,
-  bronze: 1,
-  silver: 2,
-  gold: 3
-};
-
-export const TARGET_WHERE = {
-  unknown: 0,
-  player: 1,
-  hand: 2,
-  units: 3,
-  board: 4,
-  field: 5,
-  arena: 6,
-  afterlife: 7,
-  reinforcements: 8,
-};
-
-export const TARGET_WHAT = {
-  unknown: 0,
-  self: 1,
-  opponent: 2,
-  pawn: 3,
-  rook: 4,
-  knight: 5,
-  bishop: 6,
-  queen: 7,
-  king: 8,
-  any: 9,
-  all: 10
-};
+import { getCubitsDatabase, TYPES, MOVEMENT } from './cubits';
 
 export class Logic {
   getCollection() {
-    return {
-      '1000': { 
-        name: "Orthogonal",
-        types: [TYPES.movement],
-        rarity: RARITY.unknown,
-        targetWhere: TARGET_WHERE.units,
-        targetWhat: TARGET_WHAT.any,
-        activatable: false,
-        durationType: 0,
-        durationAmount: 0,
-        hidden: false,
-      },
-      '1001': { 
-        name: "Diagonal", 
-        types: [TYPES.movement], 
-        rarity: RARITY.unknown, 
-        targetWhere: TARGET_WHERE.units,
-        targetWhat: TARGET_WHAT.any,
-        activatable: false,
-        durationType: 0,
-        durationAmount: 0,
-        hidden: false,
-      },
-      '1002': { 
-        name: "Cardinal", 
-        types: [TYPES.movement], 
-        rarity: RARITY.unknown, 
-        targetWhere: TARGET_WHERE.units,
-        targetWhat: TARGET_WHAT.any,
-        activatable: false,
-        durationType: 0,
-        durationAmount: 0,
-        hidden: false,
-      },
-      '1003': { 
-        name: "Pattern", 
-        types: [TYPES.movement], 
-        rarity: RARITY.unknown, 
-        targetWhere: TARGET_WHERE.units,
-        targetWhat: TARGET_WHAT.any,
-        activatable: false,
-        durationType: 0,
-        durationAmount: 0,
-        hidden: false,
-      },
-      '1004': {
-        name: "Sidestep", 
-        types: [TYPES.movement], 
-        rarity: RARITY.unknown, 
-        targetWhere: TARGET_WHERE.units,
-        targetWhat: TARGET_WHAT.any,
-        activatable: false,
-        durationType: 0,
-        durationAmount: 0,
-        hidden: false,
-      },
-      '1005': { 
-        name: "Swap", 
-        types: [TYPES.movement], 
-        rarity: RARITY.unknown, 
-        targetWhere: TARGET_WHERE.units,
-        targetWhat: TARGET_WHAT.pawn,
-        activatable: true,
-        durationType: 0,
-        durationAmount: 0,
-        hidden: false,
-      },
-      '1006': { 
-        name: "Hit & Run", 
-        types: [TYPES.movement], 
-        rarity: RARITY.unknown, 
-        targetWhere: TARGET_WHERE.units,
-        targetWhat: TARGET_WHAT.any,
-        activatable: true,
-        durationType: 0,
-        durationAmount: 0,
-        hidden: false,
-      },
-      '1007': { 
-        name: "Draw -1", 
-        types: [TYPES.unknown], 
-        rarity: RARITY.unknown, 
-        targetWhere: TARGET_WHERE.player,
-        targetWhat: TARGET_WHAT.opponent,
-        activatable: false,
-        durationType: 0,
-        durationAmount: 0,
-        hidden: false,
-      },
-      '1008': { 
-        name: "Draw +1", 
-        types: [TYPES.unknown], 
-        rarity: RARITY.unknown, 
-        targetWhere: TARGET_WHERE.player,
-        targetWhat: TARGET_WHAT.self,
-        activatable: false,
-        durationType: 0,
-        durationAmount: 0,
-        hidden: false,
-      },
-      '1009': { 
-        name: "Knowledge", 
-        types: [TYPES.unknown], 
-        rarity: RARITY.unknown, 
-        targetWhere: TARGET_WHERE.player,
-        targetWhat: TARGET_WHAT.self,
-        activatable: false,
-        durationType: 0,
-        durationAmount: 0,
-        hidden: false,
-      },
-      '1010': { 
-        name: "Guard", 
-        types: [TYPES.unknown], 
-        rarity: RARITY.unknown, 
-        targetWhere: TARGET_WHERE.units,
-        targetWhat: TARGET_WHAT.any,
-        activatable: false,
-        durationType: 0,
-        durationAmount: 0,
-        hidden: false,
-      },
-      '1011': {
-        name: "Condemn", 
-        types: [TYPES.unknown], 
-        rarity: RARITY.unknown, 
-        targetWhere: TARGET_WHERE.units,
-        targetWhat: TARGET_WHAT.opponent,
-        activatable: false,
-        durationType: 0,
-        durationAmount: 0,
-        hidden: false,
-      },
-      '1012': { 
-        name: "Revert",
-        types: [TYPES.unknown], 
-        rarity: RARITY.unknown, 
-        targetWhere: TARGET_WHERE.unit,
-        targetWhat: TARGET_WHERE.self,
-        activatable: false,
-        durationType: 0,
-        durationAmount: 0,
-        hidden: true,
-      },
-      '1013': { 
-        name: "Sacrifice",
-        types: [TYPES.unknown], 
-        rarity: RARITY.unknown, 
-        targetWhere: 0,
-        targetWhat: 0,
-        activatable: false,
-        durationType: 0,
-        durationAmount: 0,
-        hidden: false,
-      },
-      '1014': {
-        name: "King of Hill", 
-        types: [TYPES.unknown], 
-        rarity: RARITY.unknown, 
-        targetWhere: 0,
-        targetWhat: 0,
-        activatable: false,
-        durationType: 0,
-        durationAmount: 0,
-        hidden: false,
-      },
-    };
+    let collection = getCubitsDatabase();
+    return collection;
   }
 
   getCubits(slots) {
@@ -256,7 +47,8 @@ export class Logic {
       }
     }
 
-    let cubitData = {cubit: '1004',controller: '0'};
+    // hands[0].push('1009');
+    // hands[1].push('1009');
 
     return {      
       players: {
@@ -272,22 +64,22 @@ export class Logic {
           slots: [],
           field: [],
           units: [
-            { type: 'R', color: '#FF5733', x: 0, y: 0, limit: 4, slots: [] },
-            { type: 'N', color: '#F9FF33', x: 0, y: 1, limit: 3, slots: [] },
-            { type: 'B', color: '#008000', x: 0, y: 2, limit: 3, slots: [] },
-            { type: 'Q', color: '#33FFA8', x: 0, y: 3, limit: 2, slots: [] },
-            { type: 'K', color: '#33F6FF', x: 0, y: 4, limit: 1, slots: [] },
-            { type: 'B', color: '#3346FF', x: 0, y: 5, limit: 3, slots: [] },
-            { type: 'N', color: '#800080', x: 0, y: 6, limit: 3, slots: [] },
-            { type: 'R', color: '#FF0000', x: 0, y: 7, limit: 4, slots: [] },
-            { type: 'P', color: '#FF5733', x: 1, y: 0, limit: 2, slots: [] },
-            { type: 'P', color: '#F9FF33', x: 1, y: 1, limit: 2, slots: [] },
-            { type: 'P', color: '#008000', x: 1, y: 2, limit: 2, slots: [] },
-            { type: 'P', color: '#33FFA8', x: 2, y: 3, limit: 2, slots: [cubitData] },
-            { type: 'P', color: '#33F6FF', x: 1, y: 4, limit: 2, slots: [] },
-            { type: 'P', color: '#3346FF', x: 1, y: 5, limit: 2, slots: [] },
-            { type: 'P', color: '#800080', x: 1, y: 6, limit: 2, slots: [] },
-            { type: 'P', color: '#FF0000', x: 1, y: 7, limit: 2, slots: [] }
+            { key: '1', type: 'R', color: '#FF5733', x: 0, y: 0, limit: 4, slots: [], moved: false },
+            { key: '2', type: 'N', color: '#F9FF33', x: 0, y: 1, limit: 3, slots: [], moved: false },
+            { key: '3', type: 'B', color: '#008000', x: 0, y: 2, limit: 3, slots: [], moved: false },
+            { key: '4', type: 'Q', color: '#33FFA8', x: 0, y: 3, limit: 2, slots: [], moved: false },
+            { key: '5', type: 'K', color: '#33F6FF', x: 0, y: 4, limit: 1, slots: [], moved: false },
+            { key: '6', type: 'B', color: '#3346FF', x: 0, y: 5, limit: 3, slots: [], moved: false },
+            { key: '7', type: 'N', color: '#800080', x: 0, y: 6, limit: 3, slots: [], moved: false },
+            { key: '8', type: 'R', color: '#FF0000', x: 0, y: 7, limit: 4, slots: [], moved: false },
+            { key: '9', type: 'P', color: '#FF5733', x: 1, y: 0, limit: 2, slots: [], moved: false },
+            { key: '10', type: 'P', color: '#F9FF33', x: 1, y: 1, limit: 2, slots: [], moved: false },
+            { key: '11', type: 'P', color: '#008000', x: 1, y: 2, limit: 2, slots: [], moved: false },
+            { key: '12', type: 'P', color: '#33FFA8', x: 1, y: 3, limit: 2, slots: [], moved: false },
+            { key: '13', type: 'P', color: '#33F6FF', x: 1, y: 4, limit: 2, slots: [], moved: false },
+            { key: '14', type: 'P', color: '#3346FF', x: 1, y: 5, limit: 2, slots: [], moved: false },
+            { key: '15', type: 'P', color: '#800080', x: 1, y: 6, limit: 2, slots: [], moved: false },
+            { key: '16', type: 'P', color: '#FF0000', x: 1, y: 7, limit: 2, slots: [], moved: false }
           ]
         },
         '1': {
@@ -302,22 +94,22 @@ export class Logic {
           slots: [],
           field: [],
           units: [
-            { type: 'R', color: '#FF5733', x: 7, y: 0, limit: 4, slots: [], moved: false },
-            { type: 'N', color: '#F9FF33', x: 7, y: 1, limit: 3, slots: [], moved: false },
-            { type: 'B', color: '#008000', x: 7, y: 2, limit: 3, slots: [], moved: false },
-            { type: 'Q', color: '#33FFA8', x: 7, y: 3, limit: 2, slots: [], moved: false },
-            { type: 'K', color: '#33F6FF', x: 7, y: 4, limit: 1, slots: [], moved: false },
-            { type: 'B', color: '#3346FF', x: 7, y: 5, limit: 3, slots: [], moved: false },
-            { type: 'N', color: '#800080', x: 7, y: 6, limit: 3, slots: [], moved: false },
-            { type: 'R', color: '#FF0000', x: 7, y: 7, limit: 4, slots: [], moved: false },
-            { type: 'P', color: '#FF5733', x: 6, y: 0, limit: 2, slots: [], moved: false },
-            { type: 'P', color: '#F9FF33', x: 6, y: 1, limit: 2, slots: [], moved: false },
-            { type: 'P', color: '#008000', x: 6, y: 2, limit: 2, slots: [], moved: false },
-            { type: 'P', color: '#33FFA8', x: 6, y: 3, limit: 2, slots: [], moved: false },
-            { type: 'P', color: '#33F6FF', x: 6, y: 4, limit: 2, slots: [], moved: false },
-            { type: 'P', color: '#3346FF', x: 6, y: 5, limit: 2, slots: [], moved: false },
-            { type: 'P', color: '#800080', x: 6, y: 6, limit: 2, slots: [], moved: false },
-            { type: 'P', color: '#FF0000', x: 6, y: 7, limit: 2, slots: [], moved: false }
+            { key: '17', type: 'R', color: '#FF5733', x: 7, y: 0, limit: 4, slots: [], moved: false },
+            { key: '18', type: 'N', color: '#F9FF33', x: 7, y: 1, limit: 3, slots: [], moved: false },
+            { key: '19', type: 'B', color: '#008000', x: 7, y: 2, limit: 3, slots: [], moved: false },
+            { key: '20', type: 'Q', color: '#33FFA8', x: 7, y: 3, limit: 2, slots: [], moved: false },
+            { key: '21', type: 'K', color: '#33F6FF', x: 7, y: 4, limit: 1, slots: [], moved: false },
+            { key: '22', type: 'B', color: '#3346FF', x: 7, y: 5, limit: 3, slots: [], moved: false },
+            { key: '23', type: 'N', color: '#800080', x: 7, y: 6, limit: 3, slots: [], moved: false },
+            { key: '24', type: 'R', color: '#FF0000', x: 7, y: 7, limit: 4, slots: [], moved: false },
+            { key: '25', type: 'P', color: '#FF5733', x: 6, y: 0, limit: 2, slots: [], moved: false },
+            { key: '26', type: 'P', color: '#F9FF33', x: 6, y: 1, limit: 2, slots: [], moved: false },
+            { key: '27', type: 'P', color: '#008000', x: 6, y: 2, limit: 2, slots: [], moved: false },
+            { key: '28', type: 'P', color: '#33FFA8', x: 6, y: 3, limit: 2, slots: [], moved: false },
+            { key: '29', type: 'P', color: '#33F6FF', x: 6, y: 4, limit: 2, slots: [], moved: false },
+            { key: '30', type: 'P', color: '#3346FF', x: 6, y: 5, limit: 2, slots: [], moved: false },
+            { key: '31', type: 'P', color: '#800080', x: 6, y: 6, limit: 2, slots: [], moved: false },
+            { key: '32', type: 'P', color: '#FF0000', x: 6, y: 7, limit: 2, slots: [], moved: false }
           ]
         }
       }
@@ -651,6 +443,27 @@ export class Logic {
     }
 
     return {x: destination.x, y: destination.y, type: MOVEMENT.invalid};
+  }
+
+  playerHasCubit(g, playerId, cubitId) {
+    for (let a = 0; a < g.players[playerId].units.length; a++) {
+      const unit = g.players[playerId].units[a];     
+      for (let b = 0; b < unit.slots.length; b++) {
+        const data =  unit.slots[b];
+        if(data.cubit === cubitId) {
+          return true;
+        }
+      }
+    }
+
+    for (let a = 0; a < g.players[playerId].slots.length; a++) {
+      const data = g.players[playerId].slots[a];
+      if(data.cubit === cubitId) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
 }

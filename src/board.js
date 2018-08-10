@@ -5,7 +5,8 @@ import PropTypes from 'prop-types';
 import { Container, Row, Col, Alert, Badge, UncontrolledCollapse  } from 'reactstrap';
 import { Token, Grid } from 'boardgame.io/ui';
 // Logic
-import { Logic, MOVEMENT} from './logic';
+import { Logic } from './logic';
+import { Cubits, MOVEMENT } from './cubits';
 // Cubits
 import CubitLogo from './cubits/cubit';
 import CubitText from './cubits/text';
@@ -177,6 +178,7 @@ export default class ChessBoard extends React.Component {
   onClickPlayer1Hand = ({ x, y }) => {
     if(this.props.ctx.phase === 'Action') {
       this.action = { cubitix: x };
+      this.forceUpdate();
       return;
     }
   };
@@ -184,6 +186,7 @@ export default class ChessBoard extends React.Component {
   onClickPlayer2Hand = ({ x, y }) => {
     if(this.props.ctx.phase === 'Action') {
       this.action = { cubitix: x };
+      this.forceUpdate();
       return;
     }
   };
@@ -251,18 +254,61 @@ export default class ChessBoard extends React.Component {
   render() {
     let connected = (this.props.isMultiplayer && this.props.isConnected);
 
+    // Styles
+    let whiteBroaderStyle = {strokeWidth:0.05,stroke:'#fff'};
+    let backBoarderStyle = {strokeWidth:0.01,stroke:'#000'};
+    let toggleStyles = {cursor: 'pointer'};
+
+    let backgroundColor = '#959595';
+    let whiteColor = '#817F7F';
+    let backColor = '#ABAAAA';
+    let selectedColor = '#4E9334';
+    let passiveMoveColor = '#4E9334';
+    let captureMoveColor = '#BE8E3F';
+
+    // Setup players and teams
+    let players = {'0': null, '1': null};
+    let teams = ['w', 'b'];
+
+    // ColorMaps for Grid
+    let fieldColorMap = {};
+    let boardColorMap = {};
+    let arenaColorMap = {};
+    arenaColorMap[`${0},${0}`] = backgroundColor;
+    let handColorMap = { 
+      '0': {}, 
+      '1': {} 
+    };
+    let playerColorMap = { 
+      '0': {}, 
+      '1': {} 
+    };
+    let unitsColorMap = {
+      '0': {},
+      '1': {}
+    }
+    let afterlifeColorMap = {
+      '0': {},
+      '1': {}
+    }
+    let reinforcementsColorMap = {
+      '0': {},
+      '1': {}
+    }
+
+    let unitKey = 0;
+
+    // Get moves in a unit is selected on board
     let moves = [];
     if(this.props.ctx.phase === 'Movement' && this.action != null) {
       moves = gl.moves(this.props.G, this.props.playerID, this.action.source);
     }
 
-    let boardStyle = {strokeWidth:0.01,stroke:'#000'};
-    let fieldColorMap = {};
-    let boardColorMap = {};
+    // Populate the board and field color maps
     for (let x = 0; x < 8; x++) {
       for (let y = 0; y < 8; y++) {
         const key = `${x},${y}`;
-        const color = ((x + y) % 2 === 0) ? '#817F7F' : '#ABAAAA';
+        const color = ((x + y) % 2 === 0) ? whiteColor : backColor;
 
         fieldColorMap[key] = color;
         boardColorMap[key] = color;
@@ -270,44 +316,67 @@ export default class ChessBoard extends React.Component {
         let move = moves.find(function(m) { return m.x === x && m.y === y; });
         if(move === undefined) {
         } else if(move.type === MOVEMENT.passive) {
-          boardColorMap[key] = '#4E9334';
+          boardColorMap[key] = passiveMoveColor;
         } else if(move.type === MOVEMENT.capture) {
-          boardColorMap[key] = '#BE8E3F';
+          boardColorMap[key] = captureMoveColor;
         }
       }
     }
 
-    let toggleStyles = {cursor: 'pointer'};
+    // Data
+    let board = [];
+    let field = [];
+    let arena = [];
 
-    let handColorMap = {
-      '0': {},
-      '1': {}
-    };
-
-    let arenaColorMap = {};
-    arenaColorMap[`${0},${0}`] = '#959595';
-
-    let handStyle = {strokeWidth:0.05,stroke:'#fff'};
-    let unitstyle = {strokeWidth:0.05,stroke:'#fff'};
-
-    let players = {'0': null, '1': null};
-
-    let colors = ['#959595', '#959595'];
-    let teams = ['w', 'b'];
     let hands = {
+      '0': [], 
+      '1': []
+    };
+    let commanders = {
+      '0': 0,
+      '1': 0
+    };
+    let units = {
       '0': [],
       '1': []
     };
-    
-    for (const p in players) {
-      for (let x = 0; x < 5; x++) {
-        handColorMap[p][`${x},${0}`] = colors[p];
-      }
+    let slots = {
+      '0': [],
+      '1': []
+    };
+    let reinforcements = {
+      '0': [],
+      '1': []
+    };
+    let afterlife = {
+      '0': [],
+      '1': []
+    };
 
+    let knowledge = {
+      '0': gl.playerHasCubit(this.props.G, '1', Cubits.Knowledge),
+      '1': gl.playerHasCubit(this.props.G, '0', Cubits.Knowledge)
+    }
+
+    // Cards in Hand
+    for (const p in players) {
       const player = this.props.G.players[p];
       const cardsInHand = player.hand.length;
-
+      
+      // Color Map
       if (this.props.playerID === p) {
+        for (let x = 0; x < 5; x++) {
+          let color = (this.props.ctx.phase === 'Action' && this.action != null && this.action.cubitix === x) ? selectedColor : backgroundColor;
+          handColorMap[p][`${x},${0}`] = color;
+        }
+      } else {
+        for (let x = 0; x < 5; x++) {
+          handColorMap[p][`${x},${0}`] = backgroundColor;
+        }
+      }
+
+      // Cubits
+      if (this.props.playerID === p || knowledge[p] === true) {
         for (let i = 0; i < cardsInHand; i++) {
           let cubitix = player.hand[i];
           let cubitComponent = this.getCubitComponent(cubitix, teams[p]);
@@ -320,21 +389,8 @@ export default class ChessBoard extends React.Component {
       }
     }
 
-    let board = [];
-    let commanders = {
-      '0': 0,
-      '1': 0
-    };
-    let units = {
-      '0': [],
-      '1': []
-    };
-    let unitsColorMap = {
-      '0': {},
-      '1': {}
-    }
-    let boardKey = 0;
-    let unitKey = 0;
+    // Units and slots
+    unitKey = 0;
     for (const p in players) {
       const player = this.props.G.players[p];
 
@@ -350,7 +406,7 @@ export default class ChessBoard extends React.Component {
         units[p].push(<Token key={unitKey++} x={0} y={a}>{unitComponent}</Token>);
         
         // Push units to board
-        board.push(<Token key={boardKey++} x={unit.x} y={unit.y} animate={true}>{unitComponent}</Token>);
+        board.push(<Token key={unit.key} x={unit.x} y={unit.y} animate={true}>{unitComponent}</Token>);
 
         // push cubits to field for each unit
         for (let b = 0; b < unit.slots.length; b++) {
@@ -362,22 +418,22 @@ export default class ChessBoard extends React.Component {
           units[p].push(<Token key={unitKey++} x={x} y={a} >{cubitComponent}</Token>); 
         }
 
-        // Field background colours
-        unitsColorMap[p][`${0},${a}`] = colors[p];
+        // Grid colours
+        unitsColorMap[p][`${0},${a}`] = backgroundColor;
         for (let c= 0; c < unit.limit; c++) {
-          unitsColorMap[p][`${c+1},${a}`] = colors[p];
+          unitsColorMap[p][`${c+1},${a}`] = backgroundColor;
         }
 
       }
     }
 
-    let slots = {
-      '0': [],
-      '1': []
-    };
-
+    // Player slots
     for (const p in players) {
       const player = this.props.G.players[p];
+
+      for (let x = 0; x < 5; x++) {
+        playerColorMap[p][`${x},${0}`] = backgroundColor;
+      }
       
       for (let a = 0; a < player.slots.length; a++) {
         const data = player.slots[a];
@@ -386,11 +442,10 @@ export default class ChessBoard extends React.Component {
       }
     }
 
-    let field = [];
+    // Field
     let fieldKey = 0;
     for (const p in players) {
       const player = this.props.G.players[p];
-
       for (let a = 0; a < player.field.length; a++) {
         let data = player.field[a];
         let cubitComponent = this.getCubitComponent(data.cubit, teams[p]);
@@ -398,7 +453,7 @@ export default class ChessBoard extends React.Component {
       }
     }
 
-    let arena = [];
+    // Arena
     for (const p in players) {
       const player = this.props.G.players[p];
       if(player.arena) {
@@ -407,36 +462,83 @@ export default class ChessBoard extends React.Component {
       }
     }
 
-    let bags = {
-      '0': this.props.G.players['0'].bag.length,
-      '1': this.props.G.players['1'].bag.length
-    };
+    // Afterlife
+    unitKey = 0;
+    for (const p in players) {
+      const player = this.props.G.players[p];
+      for (let a = 0; a < player.afterlife.length; a++) {
+        let unit =  player.afterlife[a];
 
-    let draw = {
-      '0': this.props.G.players['0'].draw,
-      '1': this.props.G.players['1'].draw
-    };
+        let unitComponent = this.getUnitComponent(unit.type, unit.color, teams[p]);
 
-    let actions = {
-      '0': this.props.G.players['0'].actions,
-      '1': this.props.G.players['1'].actions
-    };
+        // Push units to units 1st column
+        afterlife[p].push(<Token key={unitKey++} x={0} y={a}>{unitComponent}</Token>);
+        
+        // push cubits to field for each unit
+        for (let b = 0; b < unit.slots.length; b++) {
+          const data = unit.slots[b];
+          let x = b+1;
 
-    let exile = {
-      '0': this.props.G.players['0'].exile.length,
-      '1': this.props.G.players['1'].exile.length
-    };
+          let cubitComponent = this.getCubitComponent(data.cubit, teams[data.controller]);
 
-    let reinforcements = {
-      '0': this.props.G.players['0'].reinforcements,
-      '1': this.props.G.players['1'].reinforcements
-    };
+          afterlife[p].push(<Token key={unitKey++} x={x} y={a} >{cubitComponent}</Token>); 
+        }
 
-    let afterlife = {
-      '0': this.props.G.players['0'].afterlife,
-      '1': this.props.G.players['1'].afterlife
-    };
-    
+        // Grid colours
+        afterlifeColorMap[p][`${0},${a}`] = backgroundColor;
+        for (let c= 0; c < unit.limit; c++) {
+          afterlifeColorMap[p][`${c+1},${a}`] = backgroundColor;
+        }
+      }
+    }
+
+    // Reinforcements
+    for (const p in players) {
+      const player = this.props.G.players[p];
+      for (let a = 0; a < player.reinforcements.length; a++) {
+        let unit =  player.reinforcements[a];
+
+        let unitComponent = this.getUnitComponent(unit.type, unit.color, teams[p]);
+
+        // Push units to units 1st column
+        reinforcements[p].push(<Token key={unitKey++} x={0} y={a}>{unitComponent}</Token>);
+        
+        // push cubits to field for each unit
+        for (let b = 0; b < unit.slots.length; b++) {
+          const data = unit.slots[b];
+          let x = b+1;
+
+          let cubitComponent = this.getCubitComponent(data.cubit, teams[data.controller]);
+
+          reinforcements[p].push(<Token key={unitKey++} x={x} y={a} >{cubitComponent}</Token>); 
+        }
+
+        // Grid colours
+        reinforcementsColorMap[p][`${0},${a}`] = backgroundColor;
+        for (let c= 0; c < unit.limit; c++) {
+          reinforcementsColorMap[p][`${c+1},${a}`] = backgroundColor;
+        }
+      }
+    }
+
+    // Counts
+    let counts = {
+      '0': {
+        bag: this.props.G.players['0'].bag.length,
+        draw: this.props.G.players['0'].draw,
+        actions: this.props.G.players['0'].actions,
+        exile: this.props.G.players['0'].exile.length,
+        units: commanders['0']
+      },
+      '1': {
+        bag: this.props.G.players['1'].bag.length,
+        draw:  this.props.G.players['1'].draw,
+        actions: this.props.G.players['1'].actions,
+        exile: this.props.G.players['1'].exile.length,
+        units: commanders['0']
+      }
+    }
+
     return (
       <Container>
         <Row>
@@ -462,7 +564,7 @@ export default class ChessBoard extends React.Component {
               <Col>
                 <h5>
                   <span>Draw</span>
-                  <Badge color="secondary" className="float-right mt-2">{draw['0']}</Badge>
+                  <Badge color="secondary" className="float-right mt-2">{counts['0'].draw}</Badge>
                 </h5>
               </Col>
             </Row>
@@ -470,7 +572,7 @@ export default class ChessBoard extends React.Component {
               <Col>
                 <h5>
                   <span>Action</span>
-                  <Badge color="secondary" className="float-right mt-2">{actions['0']}</Badge>
+                  <Badge color="secondary" className="float-right mt-2">{counts['0'].actions}</Badge>
                 </h5>
               </Col>
             </Row>
@@ -478,7 +580,7 @@ export default class ChessBoard extends React.Component {
               <Col>
                 <h5>
                   <span>Bag</span>
-                  <Badge color="secondary" className="float-right mt-2">{bags['0']}</Badge>
+                  <Badge color="secondary" className="float-right mt-2">{counts['0'].bag}</Badge>
                 </h5>
               </Col>
             </Row>
@@ -486,7 +588,7 @@ export default class ChessBoard extends React.Component {
               <Col>
                 <h5>
                   <span>Exile</span>
-                  <Badge color="secondary" className="float-right mt-2">{exile['0']}</Badge>
+                  <Badge color="secondary" className="float-right mt-2">{counts['0'].exile}</Badge>
                 </h5>
               </Col>
             </Row>
@@ -498,7 +600,7 @@ export default class ChessBoard extends React.Component {
                   <Badge color="secondary" className="float-right mt-2">{hands['0'].length}</Badge>
                 </h5>
                 <UncontrolledCollapse toggler="#Player1HandToggle" isOpen={true}>
-                  <Grid rows={1} cols={5} onClick={this.onClickPlayer1Hand} onMouseOver={this.onTokenMouseOver} colorMap={handColorMap['0']} style={handStyle}>
+                  <Grid rows={1} cols={5} onClick={this.onClickPlayer1Hand} onMouseOver={this.onTokenMouseOver} colorMap={handColorMap['0']} style={whiteBroaderStyle}>
                     {hands['0']}
                   </Grid>
                 </UncontrolledCollapse>
@@ -511,7 +613,7 @@ export default class ChessBoard extends React.Component {
                   <Badge color="secondary" className="float-right mt-2">{slots['0'].length}</Badge>
                 </h5>
                 <UncontrolledCollapse toggler="#Player1PlayerToggle" isOpen={true}>
-                  <Grid rows={1} cols={5} onClick={this.onClickPlayer1Slots} colorMap={handColorMap['0']} style={handStyle}>
+                  <Grid rows={1} cols={5} onClick={this.onClickPlayer1Slots} colorMap={playerColorMap['0']} style={whiteBroaderStyle}>
                     {slots['0']}
                   </Grid>
                 </UncontrolledCollapse>
@@ -524,7 +626,7 @@ export default class ChessBoard extends React.Component {
                   <Badge color="secondary" className="float-right mt-2">{units['0'].length}</Badge>
                 </h5>
                 <UncontrolledCollapse toggler="#Player1UnitToggle" isOpen={true}>
-                  <Grid rows={commanders['0']} cols={5} onClick={this.onClickPlayer1Units}  colorMap={unitsColorMap['0']} style={unitstyle}>
+                  <Grid rows={counts['0'].units} cols={5} onClick={this.onClickPlayer1Units}  colorMap={unitsColorMap['0']} style={whiteBroaderStyle}>
                     {units['0']}
                   </Grid>
                 </UncontrolledCollapse>
@@ -538,7 +640,7 @@ export default class ChessBoard extends React.Component {
                   <Badge color="secondary" className="float-right mt-2">{reinforcements['0'].length}</Badge>
                 </h5>
                 <UncontrolledCollapse toggler="#Player1ReinforcementsToggle">
-                  <Grid rows={reinforcements['0'].length} cols={5} onClick={this.onClickPlayer1Reinforcements}>
+                  <Grid rows={reinforcements['0'].length} cols={5} onClick={this.onClickPlayer1Reinforcements} colorMap={reinforcementsColorMap['0']} style={whiteBroaderStyle}>
                     {reinforcements['0']}
                   </Grid>
                 </UncontrolledCollapse>
@@ -551,7 +653,7 @@ export default class ChessBoard extends React.Component {
                   <Badge color="secondary" className="float-right mt-2">{afterlife['0'].length}</Badge>
                 </h5>
                 <UncontrolledCollapse toggler="#Player1AfterlifeToggle">
-                  <Grid rows={afterlife['0'].length} cols={5} onClick={this.onClickPlayer1Afterlife}>
+                  <Grid rows={afterlife['0'].length} cols={5} onClick={this.onClickPlayer1Afterlife} colorMap={afterlifeColorMap['0']} style={whiteBroaderStyle}>
                     {afterlife['0']}
                   </Grid>
                 </UncontrolledCollapse>
@@ -572,7 +674,7 @@ export default class ChessBoard extends React.Component {
             <Row>
               <Col>
                 <h3>Board</h3>
-                <Grid rows={8} cols={8} onClick={this.onClickBoard} colorMap={boardColorMap}  style={boardStyle}>
+                <Grid rows={8} cols={8} onClick={this.onClickBoard} colorMap={boardColorMap}  style={backBoarderStyle}>
                   {board}
                 </Grid>
               </Col>
@@ -580,7 +682,7 @@ export default class ChessBoard extends React.Component {
             <Row>
               <Col>
                 <h3>Field</h3>
-                <Grid rows={8} cols={8} onClick={this.onClickField} colorMap={fieldColorMap}  style={boardStyle}>
+                <Grid rows={8} cols={8} onClick={this.onClickField} colorMap={fieldColorMap}  style={backBoarderStyle}>
                   {field}
                 </Grid>
               </Col>
@@ -598,7 +700,7 @@ export default class ChessBoard extends React.Component {
               <Col>
                 <h5>
                   <span>Draw</span>
-                  <Badge color="secondary" className="float-right mt-2">{draw['1']}</Badge>
+                  <Badge color="secondary" className="float-right mt-2">{counts['0'].draw}</Badge>
                 </h5>
               </Col>
             </Row>
@@ -606,7 +708,7 @@ export default class ChessBoard extends React.Component {
               <Col>
                 <h5>
                   <span>Action</span>
-                  <Badge color="secondary" className="float-right mt-2">{actions['1']}</Badge>
+                  <Badge color="secondary" className="float-right mt-2">{counts['0'].actions}</Badge>
                 </h5>
               </Col>
             </Row>
@@ -614,7 +716,7 @@ export default class ChessBoard extends React.Component {
               <Col>
                 <h5>
                   <span>Bag</span>
-                  <Badge color="secondary" className="float-right mt-2">{bags['1']}</Badge>
+                  <Badge color="secondary" className="float-right mt-2">{counts['0'].bag}</Badge>
                 </h5>
               </Col>
             </Row>
@@ -622,7 +724,7 @@ export default class ChessBoard extends React.Component {
               <Col>
                 <h5>
                   <span>Exile</span>
-                  <Badge color="secondary" className="float-right mt-2">{exile['1']}</Badge>
+                  <Badge color="secondary" className="float-right mt-2">{counts['0'].exile}</Badge>
                 </h5>
               </Col>
             </Row>
@@ -634,7 +736,7 @@ export default class ChessBoard extends React.Component {
                   <Badge color="secondary" className="float-right mt-2">{hands['1'].length}</Badge>
                 </h5>
                 <UncontrolledCollapse toggler="#Player2HandToggle" isOpen={true}>
-                  <Grid rows={1} cols={5} onClick={this.onClickPlayer2Hand} colorMap={handColorMap['1']} style={handStyle}>
+                  <Grid rows={1} cols={5} onClick={this.onClickPlayer2Hand} colorMap={handColorMap['1']} style={whiteBroaderStyle}>
                     {hands['1']}
                   </Grid>
                 </UncontrolledCollapse>
@@ -647,7 +749,7 @@ export default class ChessBoard extends React.Component {
                   <Badge color="secondary" className="float-right mt-2">{slots['1'].length}</Badge>
                 </h5>
                 <UncontrolledCollapse toggler="#Player2PlayerToggle" isOpen={true}>
-                  <Grid rows={1} cols={5} onClick={this.onClickPlayer2Slots}  colorMap={handColorMap['1']} style={handStyle}>
+                  <Grid rows={1} cols={5} onClick={this.onClickPlayer2Slots}  colorMap={playerColorMap['1']} style={whiteBroaderStyle}>
                     {slots['1']}
                   </Grid>
                 </UncontrolledCollapse>
@@ -660,7 +762,7 @@ export default class ChessBoard extends React.Component {
                   <Badge color="secondary" className="float-right mt-2">{units['1'].length}</Badge>
                 </h5>
                 <UncontrolledCollapse toggler="#Player2UnitToggle" isOpen={true}>
-                  <Grid rows={commanders['1']} cols={5} onClick={this.onClickPlayer2Units}  colorMap={unitsColorMap['1']} style={unitstyle}>
+                  <Grid rows={counts['1'].units} cols={5} onClick={this.onClickPlayer2Units}  colorMap={unitsColorMap['1']} style={whiteBroaderStyle}>
                     {units['1']}
                   </Grid>
                 </UncontrolledCollapse>
@@ -674,7 +776,7 @@ export default class ChessBoard extends React.Component {
                   <Badge color="secondary" className="float-right mt-2">{reinforcements['1'].length}</Badge>
                 </h5>
                 <UncontrolledCollapse toggler="#Player2ReinforcementsToggle">
-                  <Grid rows={reinforcements['1'].length} cols={5} onClick={this.onClickPlayer2Reinforcements}>
+                  <Grid rows={reinforcements['1'].length} cols={5} onClick={this.onClickPlayer2Reinforcements} colorMap={reinforcementsColorMap['1']} style={whiteBroaderStyle}>
                     {reinforcements['1']}
                   </Grid>
                 </UncontrolledCollapse>
@@ -687,7 +789,7 @@ export default class ChessBoard extends React.Component {
                   <Badge color="secondary" className="float-right mt-2">{afterlife['1'].length}</Badge>
                 </h5>
                 <UncontrolledCollapse toggler="#Player2AfterlifeToggle">
-                  <Grid rows={afterlife['1'].length} cols={5} onClick={this.onClickPlayer2Afterlife}>
+                  <Grid rows={afterlife['1'].length} cols={5} onClick={this.onClickPlayer2Afterlife} colorMap={afterlifeColorMap['1']} style={whiteBroaderStyle}>
                     {afterlife['1']}
                   </Grid>
                 </UncontrolledCollapse>
