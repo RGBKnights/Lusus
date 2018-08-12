@@ -1,4 +1,4 @@
-import { getCubitsDatabase, TYPES, MOVEMENT } from './cubits';
+import { getCubitsDatabase, CUBITS, TYPES, MOVEMENT } from './cubits';
 
 export class Logic {
   getCollection() {
@@ -259,7 +259,8 @@ export class Logic {
         if(move.type !== MOVEMENT.invalid) {
           moves.push(move);
         }
-      } else if (modifier.key === '102') { // Pawn - Attack
+      } 
+      if (modifier.key === '102') { // Pawn - Attack
         let x = source.x + forward;
         let y1 = source.y - 1;
         let y2 = source.y + 1;
@@ -275,7 +276,8 @@ export class Logic {
             moves.push(move);
           }
         }
-      } else if (modifier.key === '103') { // Pawn - Double Move
+      } 
+      if (modifier.key === '103') { // Pawn - Double Move
         if(unit.moved === true) {
           continue;
         }
@@ -286,20 +288,23 @@ export class Logic {
         if(move.type !== MOVEMENT.invalid) {
           moves.push(move);
         }
-      } else if(modifier === '104') { // King
+      } 
+      if(modifier === '104') { // King
         if(unit.moved === true) {
           continue;
         }
 
-      } else if(modifier.key === '105') { // King
+      } 
+      if(modifier.key === '105') { // King
         if(unit.moved === true) {
           continue;
         }
 
-      } else if(modifier.key === '1000') { // Orthogonal
+      } 
+      if(modifier.key === CUBITS.Orthogonal || modifier.key === CUBITS.Cardinal) { // Orthogonal or Cardinal
         let steps,x,y;
 
-        for (x = source.x - 1, steps = 0; x > 0 && steps < modifier.data.distance; x--, steps++) {
+        for (x = source.x - 1, steps = 0; x >= 0 && steps < modifier.data.distance; x--, steps++) {
           let move = this.getMoveAtPosition(g, playerId, opponentId, x, source.y);
           if(move.type === MOVEMENT.passive) {
             moves.push(move);
@@ -321,7 +326,7 @@ export class Logic {
             break;
           }
         }
-        for (y = source.y - 1, steps = 0; y > 0 && steps < modifier.data.distance; y--, steps++) {
+        for (y = source.y - 1, steps = 0; y >= 0 && steps < modifier.data.distance; y--, steps++) {
           let move = this.getMoveAtPosition(g, playerId, opponentId, source.x, y);
           if(move.type === MOVEMENT.passive) {
             moves.push(move);
@@ -343,7 +348,9 @@ export class Logic {
             break;
           }
         }
-      } else if(modifier.key === '1001') { // Diagonal
+      }
+
+      if(modifier.key === CUBITS.Diagonal || modifier.key === CUBITS.Cardinal) { // Diagonal or Cardinal
         let steps,x,y;
 
         for (x = source.x + 1, y = source.y + 1, steps = 0; x < 8 && y < 8 && steps < modifier.data.distance; x++, y++, steps++) {
@@ -358,7 +365,7 @@ export class Logic {
           }
         }
 
-        for (x = source.x - 1, y = source.y - 1, steps = 0; x > 0 && y >= 0 && steps < modifier.data.distance; x--, y--, steps++) {
+        for (x = source.x - 1, y = source.y - 1, steps = 0; x >= 0 && y >= 0 && steps < modifier.data.distance; x--, y--, steps++) {
           let move = this.getMoveAtPosition(g, playerId, opponentId, x, y);
           if(move.type === MOVEMENT.passive) {
             moves.push(move);
@@ -394,7 +401,8 @@ export class Logic {
           }
         }
 
-      } else if(modifier.key === '1003') { // Pattern
+      }
+      if(modifier.key === CUBITS.Pattern) { // Pattern
         let targets = [];
         targets.push({ x: source.x + modifier.data.steps[0], y: source.y + modifier.data.steps[1] });
         targets.push({ x: source.x + modifier.data.steps[0], y: source.y - modifier.data.steps[1] });
@@ -413,7 +421,8 @@ export class Logic {
           }
         }
         
-      } else if(modifier.key === '1004') { // Sidestep
+      } 
+      if(modifier.key === CUBITS.SideStep) { // Sidestep
         let targets = [];
         targets.push({ x: source.x, y: source.y + 1 });
         targets.push({ x: source.x, y: source.y - 1 });
@@ -445,7 +454,7 @@ export class Logic {
     return {x: destination.x, y: destination.y, type: MOVEMENT.invalid};
   }
 
-  playerHasCubit(g, playerId, cubitId) {
+  hasCubit(g, playerId, cubitId) {
     for (let a = 0; a < g.players[playerId].units.length; a++) {
       const unit = g.players[playerId].units[a];     
       for (let b = 0; b < unit.slots.length; b++) {
@@ -466,4 +475,58 @@ export class Logic {
     return false;
   }
 
+  getCubitValue(g, playerId, collection) {
+    let value = 0;
+
+    
+
+    if(!Array.isArray(collection)) {
+      collection = [collection];
+    }
+
+    for (let a = 0; a < g.players[playerId].units.length; a++) {
+      const unit = g.players[playerId].units[a];     
+      for (let b = 0; b < unit.slots.length; b++) {
+        const data =  unit.slots[b];
+        if(collection.includes(data.cubit) === true) {
+          let cubit = this.getCubit(data.cubit);
+          value += cubit.data.amount;
+        }
+      }
+    }
+
+    for (let a = 0; a < g.players[playerId].slots.length; a++) {
+      const data = g.players[playerId].slots[a];
+      if(collection.includes(data.cubit) === true) {
+        let cubit = this.getCubit(data.cubit);
+        value += cubit.data.amount;
+      }
+    }
+
+    return value;
+  }
+
+  getNumberOfDraws(g, playerId) {
+    let offset = this.getCubitValue(g, playerId, [CUBITS.DrawPlusOne, CUBITS.DrawNegOne]);
+    let amount = g.players[playerId].draw + offset;
+    return Math.min(amount, 5);
+  }
+
+  getNumberOfActions(g, playerId) {
+    let offset = 0;
+    let amount = g.players[playerId].actions + offset;
+    return Math.min(amount, 2);
+  }
+
+  onPlayed(g, playerId, cubitId) {
+
+  }
+
+  onActivated(g, playerId, cubitId) {
+
+  }
+
+  onRemoved(g, playerId, cubitId) {
+
+  }
 }

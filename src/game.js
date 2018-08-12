@@ -84,8 +84,6 @@ const ChessGame = Game({
         return;
       }
 
-      const PLAYER_SLOT_LIMIT = 5;
-
       // Create Copy
       let g = clone(G);
 
@@ -97,8 +95,17 @@ const ChessGame = Game({
       if(cubit.targetWhere !== TARGET_WHERE.player) {
         return;
       }
+      if(cubit.targetWhat !== TARGET_WHAT.any) {
+        let targetSelf = ctx.currentPlayer === playerId;
+        if(cubit.targetWhat === TARGET_WHAT.self && !targetSelf) {
+          return;
+        } else if(cubit.targetWhat === TARGET_WHAT.opponent && targetSelf) {
+          return;
+        }
+      }
 
       // If slots is not greater then limit
+      const PLAYER_SLOT_LIMIT = 5;
       if (g.players[playerId].slots.length >= PLAYER_SLOT_LIMIT) {
         return;
       }
@@ -264,8 +271,8 @@ const ChessGame = Game({
           g.players[ctx.currentPlayer].bag =  g.players[ctx.currentPlayer].bag.concat(hand);
 
           // Check for end of game
-          let total = g.players[ctx.currentPlayer].bag;
-          let amount = g.players[ctx.currentPlayer].draw;
+          let total = g.players[ctx.currentPlayer].bag.length;
+          let amount = gl.getNumberOfDraws(g, ctx.currentPlayer);
           if(total < amount) {
            
             ctx.events.endGame(opponentId);  // End the Game

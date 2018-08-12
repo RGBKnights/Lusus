@@ -6,7 +6,7 @@ import { Container, Row, Col, Alert, Badge, UncontrolledCollapse  } from 'reacts
 import { Token, Grid } from 'boardgame.io/ui';
 // Logic
 import { Logic } from './logic';
-import { Cubits, MOVEMENT } from './cubits';
+import { CUBITS, MOVEMENT } from './cubits';
 // Cubits
 import CubitLogo from './cubits/cubit';
 import CubitText from './cubits/text';
@@ -354,8 +354,8 @@ export default class ChessBoard extends React.Component {
     };
 
     let knowledge = {
-      '0': gl.playerHasCubit(this.props.G, '1', Cubits.Knowledge),
-      '1': gl.playerHasCubit(this.props.G, '0', Cubits.Knowledge)
+      '0': gl.hasCubit(this.props.G, '1', CUBITS.Knowledge),
+      '1': gl.hasCubit(this.props.G, '0', CUBITS.Knowledge)
     }
 
     // Cards in Hand
@@ -393,14 +393,13 @@ export default class ChessBoard extends React.Component {
     unitKey = 0;
     for (const p in players) {
       const player = this.props.G.players[p];
+      
+      commanders[p] = player.units.length;
 
       for (let a = 0; a < player.units.length; a++) {
         const unit = player.units[a];
 
         let unitComponent = this.getUnitComponent(unit.type, unit.color, teams[p]);
-
-        // count commanders
-        commanders[p]++;
 
         // Push units to units 1st column
         units[p].push(<Token key={unitKey++} x={0} y={a}>{unitComponent}</Token>);
@@ -525,17 +524,17 @@ export default class ChessBoard extends React.Component {
     let counts = {
       '0': {
         bag: this.props.G.players['0'].bag.length,
-        draw: this.props.G.players['0'].draw,
-        actions: this.props.G.players['0'].actions,
+        draw: gl.getNumberOfDraws(this.props.G, '0'),
+        actions: gl.getNumberOfActions(this.props.G, '0'),
         exile: this.props.G.players['0'].exile.length,
         units: commanders['0']
       },
       '1': {
         bag: this.props.G.players['1'].bag.length,
-        draw:  this.props.G.players['1'].draw,
-        actions: this.props.G.players['1'].actions,
+        draw: gl.getNumberOfDraws(this.props.G, '1'),
+        actions: gl.getNumberOfActions(this.props.G, '1'),
         exile: this.props.G.players['1'].exile.length,
-        units: commanders['0']
+        units: commanders['1']
       }
     }
 
@@ -623,7 +622,7 @@ export default class ChessBoard extends React.Component {
               <Col>
                 <h5 id="Player1UnitToggle">
                   <u style={toggleStyles}>Units</u>
-                  <Badge color="secondary" className="float-right mt-2">{units['0'].length}</Badge>
+                  <Badge color="secondary" className="float-right mt-2">{counts['0'].units}</Badge>
                 </h5>
                 <UncontrolledCollapse toggler="#Player1UnitToggle" isOpen={true}>
                   <Grid rows={counts['0'].units} cols={5} onClick={this.onClickPlayer1Units}  colorMap={unitsColorMap['0']} style={whiteBroaderStyle}>
@@ -700,7 +699,7 @@ export default class ChessBoard extends React.Component {
               <Col>
                 <h5>
                   <span>Draw</span>
-                  <Badge color="secondary" className="float-right mt-2">{counts['0'].draw}</Badge>
+                  <Badge color="secondary" className="float-right mt-2">{counts['1'].draw}</Badge>
                 </h5>
               </Col>
             </Row>
@@ -708,7 +707,7 @@ export default class ChessBoard extends React.Component {
               <Col>
                 <h5>
                   <span>Action</span>
-                  <Badge color="secondary" className="float-right mt-2">{counts['0'].actions}</Badge>
+                  <Badge color="secondary" className="float-right mt-2">{counts['1'].actions}</Badge>
                 </h5>
               </Col>
             </Row>
@@ -716,7 +715,7 @@ export default class ChessBoard extends React.Component {
               <Col>
                 <h5>
                   <span>Bag</span>
-                  <Badge color="secondary" className="float-right mt-2">{counts['0'].bag}</Badge>
+                  <Badge color="secondary" className="float-right mt-2">{counts['1'].bag}</Badge>
                 </h5>
               </Col>
             </Row>
@@ -724,7 +723,7 @@ export default class ChessBoard extends React.Component {
               <Col>
                 <h5>
                   <span>Exile</span>
-                  <Badge color="secondary" className="float-right mt-2">{counts['0'].exile}</Badge>
+                  <Badge color="secondary" className="float-right mt-2">{counts['1'].exile}</Badge>
                 </h5>
               </Col>
             </Row>
@@ -759,7 +758,7 @@ export default class ChessBoard extends React.Component {
               <Col>
                 <h5 id="Player2UnitToggle">
                   <u style={toggleStyles}>Units</u>
-                  <Badge color="secondary" className="float-right mt-2">{units['1'].length}</Badge>
+                  <Badge color="secondary" className="float-right mt-2">{counts['1'].units}</Badge>
                 </h5>
                 <UncontrolledCollapse toggler="#Player2UnitToggle" isOpen={true}>
                   <Grid rows={counts['1'].units} cols={5} onClick={this.onClickPlayer2Units}  colorMap={unitsColorMap['1']} style={whiteBroaderStyle}>
