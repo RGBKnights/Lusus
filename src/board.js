@@ -3,16 +3,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 // UI
 import { 
-  Container, 
-  Row, 
-  Col, 
+  Container,Row, Col, 
   Badge, 
   UncontrolledCollapse,
-  Navbar,
-  NavbarBrand,
-  Nav,
-  NavItem,
-  Button
+  Navbar, NavbarBrand, Nav, NavItem,
+  Button,
+  Modal, ModalHeader, ModalBody, ModalFooter,
+  Media
 } from 'reactstrap';
 import { Token, Grid } from 'boardgame.io/ui';
 // Logic
@@ -31,8 +28,7 @@ import CubitImmune from './cubits/immune';
 import CubitGuard from './cubits/guard';
 import CubitDrawPlus from './cubits/drawplus';
 import CubitDrawMinus from './cubits/drawminus';
-import CubitActionPlus from './cubits/actionplus';
-import CubitActionMinus from './cubits/actionminus';
+import CubitDoubleAction from './cubits/doubleaction';
 import CubitCondemn  from './cubits/condemn'
 import CubitHitRun from './cubits/hitrun'
 import CubitKnowledge from './cubits/knowledge'
@@ -80,15 +76,16 @@ export default class ChessBoard extends React.Component {
     this.action = null; 
 
     // Menu
-    this.toggle = this.toggle.bind(this);
     this.state = {
-      isOpen: false
+      modal: false
     };
+
+    this.toggle = this.toggle.bind(this);
   }
 
   toggle() {
     this.setState({
-      isOpen: !this.state.isOpen
+      modal: !this.state.modal
     });
   }
 
@@ -122,64 +119,63 @@ export default class ChessBoard extends React.Component {
   }
 
   getCubitComponent(cubitix, team) {
+    let cubit = gl.getCubit(cubitix);
+
     let cubitComponent = null;
     switch (cubitix) {
       case '0':
-        cubitComponent = <CubitLogo color={team} />;
+        cubitComponent = <CubitLogo name={cubit.name} color={team} />;
         break;
       case CUBITS.Orthogonal:
-        cubitComponent = <CubitOrthogonal color={team} />;
+        cubitComponent = <CubitOrthogonal name={cubit.name} color={team} />;
         break;
       case CUBITS.Diagonal:
-        cubitComponent = <CubitDiagonal color={team} />;
+        cubitComponent = <CubitDiagonal name={cubit.name} color={team} />;
         break;
       case CUBITS.Cardinal:
-        cubitComponent = <CubitCardinal color={team} />;
+        cubitComponent = <CubitCardinal name={cubit.name} color={team} />;
         break;
       case CUBITS.Pattern:
-        cubitComponent = <CubitPattern color={team} />;
+        cubitComponent = <CubitPattern name={cubit.name} color={team} />;
         break;
       case CUBITS.SideStep:
-        cubitComponent = <CubitSidestep color={team} />;
+        cubitComponent = <CubitSidestep name={cubit.name} color={team} />;
         break;
       case CUBITS.Swap:
-        cubitComponent = <CubitSwap color={team} />;
+        cubitComponent = <CubitSwap name={cubit.name} color={team} />;
         break;
       case CUBITS.HitAndRun:
-        cubitComponent = <CubitHitRun color={team} />;
+        cubitComponent = <CubitHitRun name={cubit.name} color={team} />;
         break;
       case CUBITS.DrawNegOne:
-        cubitComponent = <CubitDrawMinus color={team} />;
+        cubitComponent = <CubitDrawMinus name={cubit.name} color={team} />;
         break;
       case CUBITS.DrawPlusOne:
-        cubitComponent = <CubitDrawPlus color={team} />;
-      break;
-        case CUBITS.ActionNegOne:
-        cubitComponent = <CubitActionMinus color={team} />;
-      break;
-        case CUBITS.ActionPlusOne:
-        cubitComponent = <CubitActionPlus color={team} />;
+        cubitComponent = <CubitDrawPlus name={cubit.name} color={team} />;
+        break;
+      case CUBITS.DoubleAction:
+        cubitComponent = <CubitDoubleAction name={cubit.name} color={team} />;
         break;
       case CUBITS.Knowledge:
-        cubitComponent = <CubitKnowledge color={team} />;
+        cubitComponent = <CubitKnowledge name={cubit.name} color={team} />;
         break;
       case CUBITS.Guard:
-        cubitComponent = <CubitGuard color={team} />;
+        cubitComponent = <CubitGuard name={cubit.name} color={team} />;
         break;
       case CUBITS.Condemn:
-        cubitComponent = <CubitCondemn color={team} />;
+        cubitComponent = <CubitCondemn name={cubit.name} color={team} />;
         break;
       case CUBITS.Revert:
-        cubitComponent = <CubitImmune color={team} />;
+        cubitComponent = <CubitImmune name={cubit.name} color={team} />;
         break;
       case CUBITS.Sacrifice:
-        cubitComponent = <CubitSacrifice color={team} />;
+        cubitComponent = <CubitSacrifice name={cubit.name} color={team} />;
         break;
       case CUBITS.KingOfHill:
-        cubitComponent = <CubitKingOfHill color={team} />;
+        cubitComponent = <CubitKingOfHill name={cubit.name} color={team} />;
         break;
       default:
-        cubitComponent = <CubitText color={team} value={cubitix} />;
+        cubitComponent = <CubitText name={cubit.name} color={team} value={cubitix} />;
         break;
     }
 
@@ -593,12 +589,9 @@ export default class ChessBoard extends React.Component {
               <NavbarBrand href="/">Lusus <small>Tactical Chess</small></NavbarBrand>
               <Nav className="ml-auto" navbar>
                 <NavItem>
-                  <Button color="primary" onClick={this.onSkipPhase} active={this.props.ctx.phase === 'Action'}>Skip Phase</Button>{' '}
-                  <Button color="warning" onClick={this.onEndTurn} active={this.props.ctx.phase === 'Maintenance'}>End Turn</Button>
-                </NavItem>
-              </Nav>
-              <Nav className="ml-auto" navbar>
-                <NavItem>
+                  <Button color="primary" onClick={this.onSkipPhase} disabled={this.props.ctx.phase !== 'Action'}>Skip Phase</Button>{' '}
+                  <Button color="warning" onClick={this.onEndTurn} disabled={this.props.ctx.phase !== 'Maintenance'}>End Turn</Button>{' '}
+                  <Button color="info" onClick={this.toggle}>?</Button>{' '}
                   <ConnectionStatus connected={connected}></ConnectionStatus>
                 </NavItem>
               </Nav>
@@ -654,7 +647,7 @@ export default class ChessBoard extends React.Component {
                   <u style={toggleStyles}>Hand</u>
                   <Badge color="secondary" className="float-right mt-2">{hands['0'].length}</Badge>
                 </h5>
-                <UncontrolledCollapse toggler="#Player1HandToggle">
+                <UncontrolledCollapse toggler="#Player1HandToggle" isOpen={true}>
                   <Grid rows={1} cols={5} onClick={this.onClickPlayer1Hand} onMouseOver={this.onTokenMouseOver} colorMap={handColorMap['0']} style={whiteBroaderStyle}>
                     {hands['0']}
                   </Grid>
@@ -667,7 +660,7 @@ export default class ChessBoard extends React.Component {
                   <u style={toggleStyles}>Player</u>
                   <Badge color="secondary" className="float-right mt-2">{slots['0'].length}</Badge>
                 </h5>
-                <UncontrolledCollapse toggler="#Player1PlayerToggle">
+                <UncontrolledCollapse toggler="#Player1PlayerToggle" isOpen={true}>
                   <Grid rows={1} cols={5} onClick={this.onClickPlayer1Slots} colorMap={playerColorMap['0']} style={whiteBroaderStyle}>
                     {slots['0']}
                   </Grid>
@@ -680,7 +673,7 @@ export default class ChessBoard extends React.Component {
                   <u style={toggleStyles}>Units</u>
                   <Badge color="secondary" className="float-right mt-2">{counts['0'].units}</Badge>
                 </h5>
-                <UncontrolledCollapse toggler="#Player1UnitToggle">
+                <UncontrolledCollapse toggler="#Player1UnitToggle" isOpen={true}>
                   <Grid rows={counts['0'].units} cols={5} onClick={this.onClickPlayer1Units}  colorMap={unitsColorMap['0']} style={whiteBroaderStyle}>
                     {units['0']}
                   </Grid>
@@ -728,23 +721,20 @@ export default class ChessBoard extends React.Component {
             </Row>
             <Row>
               <Col>
-                <h3>Board / Field</h3>
+                <h3>Board</h3>
                 <Grid rows={8} cols={8} onClick={this.onClickBoard} colorMap={boardColorMap}  style={backBoarderStyle}>
-                  {field}
                   {board}
                 </Grid>
               </Col>
             </Row>
-            {/*
             <Row>
               <Col>
                 <h3>Field</h3>
                 <Grid rows={8} cols={8} onClick={this.onClickField} colorMap={fieldColorMap}  style={backBoarderStyle}>
-                  
+                  {field}
                 </Grid>
               </Col>
             </Row>
-            */}
           </Col>
           <Col xs={3}>
             <Row>
@@ -793,7 +783,7 @@ export default class ChessBoard extends React.Component {
                   <u style={toggleStyles}>Hand</u>
                   <Badge color="secondary" className="float-right mt-2">{hands['1'].length}</Badge>
                 </h5>
-                <UncontrolledCollapse toggler="#Player2HandToggle">
+                <UncontrolledCollapse toggler="#Player2HandToggle" isOpen={true}>
                   <Grid rows={1} cols={5} onClick={this.onClickPlayer2Hand} colorMap={handColorMap['1']} style={whiteBroaderStyle}>
                     {hands['1']}
                   </Grid>
@@ -806,7 +796,7 @@ export default class ChessBoard extends React.Component {
                   <u style={toggleStyles}>Player</u>
                   <Badge color="secondary" className="float-right mt-2">{slots['1'].length}</Badge>
                 </h5>
-                <UncontrolledCollapse toggler="#Player2PlayerToggle">
+                <UncontrolledCollapse toggler="#Player2PlayerToggle" isOpen={true}>
                   <Grid rows={1} cols={5} onClick={this.onClickPlayer2Slots}  colorMap={playerColorMap['1']} style={whiteBroaderStyle}>
                     {slots['1']}
                   </Grid>
@@ -819,7 +809,7 @@ export default class ChessBoard extends React.Component {
                   <u style={toggleStyles}>Units</u>
                   <Badge color="secondary" className="float-right mt-2">{counts['1'].units}</Badge>
                 </h5>
-                <UncontrolledCollapse toggler="#Player2UnitToggle">
+                <UncontrolledCollapse toggler="#Player2UnitToggle" isOpen={true}>
                   <Grid rows={counts['1'].units} cols={5} onClick={this.onClickPlayer2Units}  colorMap={unitsColorMap['1']} style={whiteBroaderStyle}>
                     {units['1']}
                   </Grid>
@@ -855,6 +845,49 @@ export default class ChessBoard extends React.Component {
             </Row>
           </Col>
         </Row>
+        <Modal isOpen={this.state.modal} toggle={this.toggle} size="lg" >
+          <ModalHeader toggle={this.toggle}>Help</ModalHeader>
+          <ModalBody>
+            <Media>
+              <Media left href="#">
+                <div style={{width: 64, height: 64}}>
+                  <Grid rows={1} cols={1}>
+                    <Token x={0} y={0}>
+                      <CubitOrthogonal name={"Othogonal"} color={'b'} />
+                    </Token>
+                  </Grid>
+                </div>
+              </Media>
+              <Media body>
+                <Media heading>
+                  Orthogonal
+                </Media>
+                Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
+              </Media>
+            </Media>
+            <hr />
+            <Media>
+              <Media left href="#">
+                <div style={{width: 64, height: 64}}>
+                  <Grid rows={1} cols={1}>
+                    <Token x={0} y={0}>
+                      <CubitDiagonal name={"Diagonal"} color={'b'} />
+                    </Token>
+                  </Grid>
+                </div>
+              </Media>
+              <Media body>
+                <Media heading>
+                  Diagonal
+                </Media>
+                Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
+              </Media>
+            </Media>
+          </ModalBody>
+          <ModalFooter>
+            <Button color="secondary" onClick={this.toggle}>Close</Button>
+          </ModalFooter>
+        </Modal>
       </Container>
     );
   }

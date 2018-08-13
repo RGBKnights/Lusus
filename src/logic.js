@@ -514,9 +514,9 @@ export class Logic {
   }
 
   getNumberOfActions(g, playerId) {
-    let offset = this.getCubitValue(g, playerId, [CUBITS.ActionPlusOne, CUBITS.ActionNegOne]);
+    let offset = this.getCubitValue(g, playerId, [CUBITS.DoubleAction]);
     let amount =  g.players[playerId].actions.default + offset;
-    return Math.max(Math.min(amount, 5), 1);  // Min: 1, Max: 5
+    return Math.max(Math.min(amount, 5), 1);  // Min: 1, Max: 3
   }
 
   onPlayed(g, ctx, cubit) {

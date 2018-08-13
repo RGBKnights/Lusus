@@ -47,24 +47,23 @@ export const TARGET_WHAT = {
 };
 
 export const CUBITS = {
-  Unknown: '0',
-  Orthogonal: '1000',
-  Diagonal: '1001',
-  Cardinal: '1002',
-  Pattern: '1003',
-  SideStep: '1004',
-  Swap: '1005',
-  HitAndRun: '1006',
-  DrawNegOne: '1007',
-  DrawPlusOne: '1008',
-  ActionNegOne: '1009',
-  ActionPlusOne: '1010',
-  Knowledge: '1011',
-  Guard: '1012',
-  Condemn: '1013',
-  Revert: '1014',
-  Sacrifice: '1015',
-  KingOfHill: '1016'
+  Unknown: '',
+  Orthogonal: '4ca1291d-5298-ea4a-8b6b-6ffbfdeefda1',
+  Diagonal: 'b1cc8951-61af-0cf3-9e71-d2db03885226',
+  Cardinal: 'a39e2c74-0968-eb73-7ea8-c71b21608685',
+  Pattern: '2ca5a85e-116a-7971-6bbb-693d17f6ce3f',
+  SideStep: 'd1f075a1-2d8c-8b2a-5776-b5c711134e67',
+  Swap: '0b6d75f8-a2c2-29dc-e32c-c53a0fb1aeea',
+  HitAndRun: '0d4db427-b342-d587-e5ce-3a2f83183c6d',
+  DrawNegOne: '68308f8c-2087-b64d-7bd8-97b98488e5aa',
+  DrawPlusOne: '1fa0d186-0237-e13e-7449-f54092211149',
+  DoubleAction: '40617317-15e1-5aa3-8cdd-3d3d131e9b4f',
+  Knowledge: '0994b86a-4709-f096-63c9-07c6e1008bfd',
+  Guard: '14f7ba84-92ba-d5b7-e468-d799eb0ed724',
+  Condemn: 'b0dca050-b7d4-f83a-554f-4cfc4f2c7854',
+  Revert: 'ff4ec85e-c8ad-858c-b97b-5338742bdc8e',
+  Sacrifice: 'b7eb543b-31b8-87da-9e6c-d5d1056070e5',
+  KingOfHill: '99d4a12e-e368-7700-5cd0-46548040fced'
 };
 
 export function getCubitsDatabase() {
@@ -211,25 +210,9 @@ export function getCubitsDatabase() {
     }
   };
 
-  collection[CUBITS.ActionNegOne] = {
-    key: CUBITS.ActionNegOne,
-    name: "Action -1", 
-    types: [TYPES.unknown], 
-    rarity: RARITY.unknown, 
-    targetWhere: TARGET_WHERE.player,
-    targetWhat: TARGET_WHAT.opponent,
-    activatable: false,
-    durationType: 0,
-    durationAmount: 0,
-    hidden: false,
-    data: {
-      amount: -1
-    }
-  };
-
-  collection[CUBITS.ActionPlusOne] = {
-    key: CUBITS.ActionPlusOne,
-    name: "Action +1", 
+  collection[CUBITS.DoubleAction] = {
+    key: CUBITS.DoubleAction,
+    name: "Double Action", 
     types: [TYPES.unknown], 
     rarity: RARITY.unknown, 
     targetWhere: TARGET_WHERE.player,
