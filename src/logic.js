@@ -13,7 +13,6 @@ export class Logic {
       const data = slots[i];
       let cubit = collection[data.cubit];
       if(cubit) {
-        cubit.key = data.cubit;
         cubits.push(cubit);
       }
     }
@@ -47,20 +46,20 @@ export class Logic {
       }
     }
 
-    // hands[0].push('1009');
-    // hands[1].push('1009');
-
-    return {      
+    return {
+      arena: null,
       players: {
         '0': {
           draw: 3,
-          actions: 1,
+          actions: {
+            default: 1,
+            used: 0,
+          },
           reinforcements: [],
           bag: bags[0],
           hand: hands[0],
           exile: [],
           afterlife: [],
-          arena: null,
           slots: [],
           field: [],
           units: [
@@ -84,13 +83,15 @@ export class Logic {
         },
         '1': {
           draw: 3,
-          actions: 1,
+          actions: {
+            default: 1,
+            used: 0,
+          },
           reinforcements: [],
           bag: bags[1],
           hand: hands[1],
           exile: [],
           afterlife: [],
-          arena: null,
           slots: [],
           field: [],
           units: [
@@ -226,7 +227,7 @@ export class Logic {
         data: {
           distance: 8
         }
-      });      
+      });
     } else if(unit.type === 'N') {
       // Move Pattern
       modifiers.push({
@@ -509,24 +510,58 @@ export class Logic {
   getNumberOfDraws(g, playerId) {
     let offset = this.getCubitValue(g, playerId, [CUBITS.DrawPlusOne, CUBITS.DrawNegOne]);
     let amount = g.players[playerId].draw + offset;
-    return Math.min(amount, 5);
+    return Math.max(Math.min(amount, 5), 1); // Min: 1, Max: 5
   }
 
   getNumberOfActions(g, playerId) {
-    let offset = 0;
-    let amount = g.players[playerId].actions + offset;
-    return Math.min(amount, 2);
+    let offset = this.getCubitValue(g, playerId, [CUBITS.ActionPlusOne, CUBITS.ActionNegOne]);
+    let amount =  g.players[playerId].actions.default + offset;
+    return Math.max(Math.min(amount, 5), 1);  // Min: 1, Max: 5
   }
 
-  onPlayed(g, playerId, cubitId) {
+  onPlayed(g, ctx, cubit) {
+
+    let event = {
+      actionCost: 1,
+      forceEndTurn: false,
+      data: cubit.data,
+    };
+
+    if(cubit.key === CUBITS.ActionPlusOne) {
+      event.actionCost = 0;
+    } else if(cubit.key === CUBITS.KingOfHill) {
+      let options = {
+        '1': {x: 3, y: 3},
+        '2': {x: 3, y: 4},
+        '3': {x: 4, y: 3},
+        '4': {x: 4, y: 4},
+      }
+      const die = ctx.random.D4();
+      event.data.location = options[die];
+    }
+
+    // handled actions
+    let total = this.getNumberOfActions(g, ctx.currentPlayer);
+    g.players[ctx.currentPlayer].actions.used += event.actionCost;
+
+    // If ran out of actions auto end phase
+    if(g.players[ctx.currentPlayer].actions.used >= total) {
+      ctx.events.endPhase();
+    }
+
+    // If skip turn
+    if(event.forceEndTurn === true) {
+      ctx.events.endTurn();
+    }
+
+    return event;
+  }
+
+  onActivated(g, playerId, cubit) {
 
   }
 
-  onActivated(g, playerId, cubitId) {
-
-  }
-
-  onRemoved(g, playerId, cubitId) {
+  onRemoved(g, playerId, cubit) {
 
   }
 }

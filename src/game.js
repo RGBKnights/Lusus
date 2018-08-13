@@ -60,17 +60,18 @@ const ChessGame = Game({
         return;
       }
 
+      // Get event
+      let event = gl.onPlayed(g, ctx, cubit);
+
       // Data
-      let data = {
+      let cubix = {
         cubit: cubitix,
+        data: event.data,
         controller: ctx.currentPlayer,
       }
 
       // add it slot of unit 
-      unit.slots.push(data);
-
-      // Move to next Phase
-      ctx.events.endPhase();
+      unit.slots.push(cubix);
 
       // Return Copy
       return g;
@@ -87,11 +88,18 @@ const ChessGame = Game({
       // Create Copy
       let g = clone(G);
 
+      // If slots is not greater then limit
+      const PLAYER_SLOT_LIMIT = 5;
+      if (g.players[playerId].slots.length >= PLAYER_SLOT_LIMIT) {
+        return;
+      }
+
       // Remove source from hand 
       let cubitix = g.players[ctx.currentPlayer].hand.splice(handId, 1).shift();
-
-      // confirm that cubit is allow to make this move
+      
       let cubit = gl.getCubit(cubitix);
+      
+      // confirm that cubit is allow to make this move
       if(cubit.targetWhere !== TARGET_WHERE.player) {
         return;
       }
@@ -104,23 +112,18 @@ const ChessGame = Game({
         }
       }
 
-      // If slots is not greater then limit
-      const PLAYER_SLOT_LIMIT = 5;
-      if (g.players[playerId].slots.length >= PLAYER_SLOT_LIMIT) {
-        return;
-      }
+      // Get event
+      let event = gl.onPlayed(g, ctx, cubit);
 
-      // Data
-      let data = {
+       // Data
+       let cubix = {
         cubit: cubitix,
-        controller: ctx.currentPlayer,
+        data: event.data,
+        controller: ctx.currentPlayer,       
       }
 
       // Add it slot of unit 
-      g.players[playerId].slots.push(data);
-
-      // Move to next Phase
-      ctx.events.endPhase();
+      g.players[playerId].slots.push(cubix);
 
       // Return Copy
       return g;
@@ -149,15 +152,22 @@ const ChessGame = Game({
         return;
       }
 
+      // Get event
+      let event = gl.onPlayed(g, ctx, cubit);
+
       // Create data to store cubit location on field
-      let data = {
+      let cubix = {
         cubit: cubitix,
+        data: event.data,
+        controller: ctx.currentPlayer,
         x: x, 
-        y: y
+        y: y,
       };
 
+      ctx.events.endPhase();
+
       // Add data to field
-      g.players[ctx.currentPlayer].field.push(data);
+      g.players[ctx.currentPlayer].field.push(cubix);
 
       // Return Copy
       return g;
@@ -180,14 +190,18 @@ const ChessGame = Game({
         return;
       }
 
-      // Add cubit to arena
-      for (let i = 0; i < ctx.numPlayers; i++) {
-        g.players[i.toString()].arena = null;
-      }
-      g.players[ctx.currentPlayer].arena = cubitix;
+      // Get event
+      let event = gl.onPlayed(g, ctx, cubit);
 
-      // Move to next Phase
-      ctx.events.endPhase();
+      // Create data to store cubit on arena
+      let cubix = {
+        cubit: cubitix,
+        data: event.data,
+        controller: ctx.currentPlayer,
+      };
+
+      // Add cubit to arena
+      g.arena = cubix;
 
       // Return Copy
       return g;
@@ -235,14 +249,49 @@ const ChessGame = Game({
       ally.y = move.y;
       ally.moved = true;
 
-      // Move to next Phase
       ctx.events.endPhase();
 
       return g;
     },
+    maintenance: function(G, ctx) {
+      let opponentId = ctx.currentPlayer === '0' ? '1' : '0';
+          
+      let g = clone(G);
+
+      // Get hand
+      let hand = g.players[ctx.currentPlayer].hand.slice();
+
+      // Remove hand
+      g.players[ctx.currentPlayer].hand = [];
+
+      // Add hand back to bag
+      g.players[ctx.currentPlayer].bag =  g.players[ctx.currentPlayer].bag.concat(hand);
+
+      // Check for end of game
+      let total = g.players[ctx.currentPlayer].bag.length;
+      let amount = gl.getNumberOfDraws(g, ctx.currentPlayer);
+      if(total < amount) {
+       
+        ctx.events.endGame(opponentId);  // End the Game
+
+      } else {
+        g.players[ctx.currentPlayer].bag = ctx.random.Shuffle(g.players[ctx.currentPlayer].bag);
+
+        for (let x = 0; x < amount; x++) {
+          let cubit = g.players[ctx.currentPlayer].bag.pop();
+          g.players[ctx.currentPlayer].hand.push(cubit);
+        }
+
+        // Move to next Player & Phase
+        ctx.events.endPhase();
+        ctx.events.endTurn();
+      }
+
+      return g;
+    }
   },
   flow: {
-    phases: [  
+    phases: [
       {
         name: 'Action',
         allowedMoves: ['playCubitOnUnit', 'playCubitOnPlayer', 'playCubitOnField', 'playCubitOnArena'],
@@ -253,45 +302,7 @@ const ChessGame = Game({
       },
       {
         name: 'Maintenance',
-        allowedMoves: [],
-        onPhaseBegin: function(G, ctx) {
-          // NOTE: Happens on the server...
-
-          let opponentId = ctx.currentPlayer === '0' ? '1' : '0';
-          
-          let g = clone(G);
-
-          // Get hand
-          let hand = g.players[ctx.currentPlayer].hand.slice();
-
-          // Remove hand
-          g.players[ctx.currentPlayer].hand = [];
-
-          // Add hand back to bag
-          g.players[ctx.currentPlayer].bag =  g.players[ctx.currentPlayer].bag.concat(hand);
-
-          // Check for end of game
-          let total = g.players[ctx.currentPlayer].bag.length;
-          let amount = gl.getNumberOfDraws(g, ctx.currentPlayer);
-          if(total < amount) {
-           
-            ctx.events.endGame(opponentId);  // End the Game
-
-          } else {
-            g.players[ctx.currentPlayer].bag = ctx.random.Shuffle(g.players[ctx.currentPlayer].bag);
-
-            for (let x = 0; x < amount; x++) {
-              let cubit = g.players[ctx.currentPlayer].bag.pop();
-              g.players[ctx.currentPlayer].hand.push(cubit);
-            }
-            
-            // Move to next Player & Phase
-            ctx.events.endPhase();
-            ctx.events.endTurn();
-          }
-
-          return g;
-        }
+        allowedMoves: ['maintenance'],
       },
     ],
   },

@@ -57,17 +57,20 @@ export const CUBITS = {
   HitAndRun: '1006',
   DrawNegOne: '1007',
   DrawPlusOne: '1008',
-  Knowledge: '1009',
-  Guard: '1010',
-  Condemn: '1011',
-  Revert: '1012',
-  Sacrifice: '1013',
-  KingOfHill: '1014'
+  ActionNegOne: '1009',
+  ActionPlusOne: '1010',
+  Knowledge: '1011',
+  Guard: '1012',
+  Condemn: '1013',
+  Revert: '1014',
+  Sacrifice: '1015',
+  KingOfHill: '1016'
 };
 
 export function getCubitsDatabase() {
   let collection = {};
-  collection[CUBITS.Orthogonal] = { 
+  collection[CUBITS.Orthogonal] = {
+    key: CUBITS.Orthogonal,
     name: "Orthogonal",
     types: [TYPES.movement],
     rarity: RARITY.unknown,
@@ -82,7 +85,8 @@ export function getCubitsDatabase() {
     }
   };
 
-  collection[CUBITS.Diagonal] = { 
+  collection[CUBITS.Diagonal] = {
+    key: CUBITS.Diagonal,
     name: "Diagonal", 
     types: [TYPES.movement], 
     rarity: RARITY.unknown, 
@@ -97,7 +101,8 @@ export function getCubitsDatabase() {
     }
   };
 
-  collection[CUBITS.Cardinal] = { 
+  collection[CUBITS.Cardinal] = {
+    key: CUBITS.Cardinal,
     name: "Cardinal", 
     types: [TYPES.movement], 
     rarity: RARITY.unknown, 
@@ -112,7 +117,8 @@ export function getCubitsDatabase() {
     }
   };
 
-  collection[CUBITS.Pattern] = { 
+  collection[CUBITS.Pattern] = {
+    key: CUBITS.Pattern,
     name: "Pattern", 
     types: [TYPES.movement], 
     rarity: RARITY.unknown, 
@@ -128,6 +134,7 @@ export function getCubitsDatabase() {
   };
 
   collection[CUBITS.SideStep] = {
+    key: CUBITS.SideStep,
     name: "Sidestep", 
     types: [TYPES.movement], 
     rarity: RARITY.unknown, 
@@ -144,6 +151,7 @@ export function getCubitsDatabase() {
 
   collection[CUBITS.Swap] = { 
     // Not implemented - Needs [Movement Activation]
+    key: CUBITS.Swap,
     name: "Swap", 
     types: [TYPES.movement], 
     rarity: RARITY.unknown, 
@@ -158,6 +166,7 @@ export function getCubitsDatabase() {
 
   collection[CUBITS.HitAndRun] = {
     // Not implemented - Needs [Movement Activation]
+    key: CUBITS.HitAndRun,
     name: "Hit & Run", 
     types: [TYPES.movement], 
     rarity: RARITY.unknown, 
@@ -170,7 +179,8 @@ export function getCubitsDatabase() {
     data: {}
   };
 
-  collection[CUBITS.DrawNegOne] = { 
+  collection[CUBITS.DrawNegOne] = {
+    key: CUBITS.DrawNegOne,
     name: "Draw -1", 
     types: [TYPES.unknown], 
     rarity: RARITY.unknown, 
@@ -186,6 +196,7 @@ export function getCubitsDatabase() {
   };
 
   collection[CUBITS.DrawPlusOne] = {
+    key: CUBITS.DrawPlusOne,
     name: "Draw +1", 
     types: [TYPES.unknown], 
     rarity: RARITY.unknown, 
@@ -200,7 +211,40 @@ export function getCubitsDatabase() {
     }
   };
 
+  collection[CUBITS.ActionNegOne] = {
+    key: CUBITS.ActionNegOne,
+    name: "Action -1", 
+    types: [TYPES.unknown], 
+    rarity: RARITY.unknown, 
+    targetWhere: TARGET_WHERE.player,
+    targetWhat: TARGET_WHAT.opponent,
+    activatable: false,
+    durationType: 0,
+    durationAmount: 0,
+    hidden: false,
+    data: {
+      amount: -1
+    }
+  };
+
+  collection[CUBITS.ActionPlusOne] = {
+    key: CUBITS.ActionPlusOne,
+    name: "Action +1", 
+    types: [TYPES.unknown], 
+    rarity: RARITY.unknown, 
+    targetWhere: TARGET_WHERE.player,
+    targetWhat: TARGET_WHAT.self,
+    activatable: false,
+    durationType: 0,
+    durationAmount: 0,
+    hidden: false,
+    data: {
+      amount: 1
+    }
+  };
+
   collection[CUBITS.Knowledge] = {
+    key: CUBITS.Knowledge,
     name: "Knowledge", 
     types: [TYPES.unknown], 
     rarity: RARITY.unknown, 
@@ -215,6 +259,7 @@ export function getCubitsDatabase() {
 
   collection[CUBITS.Guard] = { 
     // Not implemented - Effects movement modifiers...?
+    key: CUBITS.Guard,
     name: "Guard", 
     types: [TYPES.unknown], 
     rarity: RARITY.unknown, 
@@ -229,6 +274,7 @@ export function getCubitsDatabase() {
 
   collection[CUBITS.Condemn] = {
     // Not implemented - effects ability to place cubit on unit
+    key: CUBITS.Condemn,
     name: "Condemn", 
     types: [TYPES.unknown], 
     rarity: RARITY.unknown, 
@@ -243,6 +289,7 @@ export function getCubitsDatabase() {
 
   collection[CUBITS.Revert] = {
     // Not implemented - Needs [Traps]
+    key: CUBITS.Revert,
     name: "Revert",
     types: [TYPES.traps], 
     rarity: RARITY.unknown, 
@@ -257,6 +304,7 @@ export function getCubitsDatabase() {
 
   collection[CUBITS.Sacrifice] = {
     // Not implemented - Needs [Movement Trigger]
+    key: CUBITS.Sacrifice,
     name: "Sacrifice",
     types: [TYPES.unknown], 
     rarity: RARITY.unknown, 
@@ -270,7 +318,8 @@ export function getCubitsDatabase() {
   };
 
   collection[CUBITS.KingOfHill] = {
-    name: "King of Hill", 
+    key: CUBITS.KingOfHill,
+    name: "King of Hill",
     types: [TYPES.victory], 
     rarity: RARITY.unknown, 
     targetWhere: TARGET_WHERE.arena,
@@ -279,6 +328,9 @@ export function getCubitsDatabase() {
     durationType: 0,
     durationAmount: 0,
     hidden: false,
+    data: {
+      location: null
+    }
   };
 
   return collection;

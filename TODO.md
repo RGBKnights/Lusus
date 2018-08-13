@@ -5,7 +5,8 @@ Stuff I am working on now or next. Also there is a RoadMap list with the long te
 
 ## TODO
 
-* Implement - Draw +/-
+* Implement - Actions +/-
+* Add buttons for Skip Phase and End Turn (call maintenance() move)...
 * Implement - Movement Activation (cubits that can do a different movement on the Move Phase based on the activation)
 * Implement logic for each Cubit
 
