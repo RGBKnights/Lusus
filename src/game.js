@@ -1,6 +1,6 @@
 import { Game, } from 'boardgame.io/core';
 import { Logic, } from './logic';
-import { MOVEMENT, TARGET_WHERE, TARGET_WHAT } from './cubits';
+import { MOVEMENT, TARGET_WHERE, TARGET_WHAT, CUBITS } from './cubits';
 
 let clone = require('clone');
 
@@ -57,6 +57,11 @@ const ChessGame = Game({
       } else if(cubit.targetWhat === TARGET_WHAT.knight && unit.type !== 'N' ) {
         return;
       } else if(cubit.targetWhat === TARGET_WHAT.rook && unit.type !== 'R') {
+        return;
+      }
+      
+      let isCondemned = gl.unitHasCubit(g, playerId, unitId, CUBITS.Condemn); 
+      if(isCondemned) {
         return;
       }
 

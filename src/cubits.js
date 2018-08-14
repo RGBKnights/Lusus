@@ -58,8 +58,8 @@ export const CUBITS = {
   DrawPlusOne: '1fa0d186-0237-e13e-7449-f54092211149',
   DoubleAction: '40617317-15e1-5aa3-8cdd-3d3d131e9b4f', 
   Knowledge: '0994b86a-4709-f096-63c9-07c6e1008bfd',
-  Condemn: 'b0dca050-b7d4-f83a-554f-4cfc4f2c7854',        // Not implemented - effects ability to place cubit on unit
-  KingOfHill: '99d4a12e-e368-7700-5cd0-46548040fced'      // Not implemented - Needs end game check...
+  Condemn: 'b0dca050-b7d4-f83a-554f-4cfc4f2c7854',
+  KingOfHill: '99d4a12e-e368-7700-5cd0-46548040fced'      
 };
 
 const DEFAULT_DESCRIPTION = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque porta libero eu lorem consequat tincidunt. Ut eget purus erat. Proin pulvinar turpis ac orci rhoncus cursus. Nunc consequat felis diam, nec consequat tortor tincidunt vitae. Aenean rhoncus elit quis sem viverra ultricies et eu libero. Maecenas lacinia iaculis nunc, eu molestie lacus convallis at.";

@@ -207,6 +207,11 @@ export default class ChessBoard extends React.Component {
       this.action = null;
       return;
     }
+
+    if(this.props.ctx.phase === 'Movement' && this.action == null) {
+      this.action.cubitix = {x: x, y: y};
+      return;
+    }
   };
 
   onClickPlayer2Units = ({ x, y }) => {
@@ -360,8 +365,8 @@ export default class ChessBoard extends React.Component {
     };
 
     let knowledge = {
-      '0': gl.hasCubit(this.props.G, '1', CUBITS.Knowledge),
-      '1': gl.hasCubit(this.props.G, '0', CUBITS.Knowledge)
+      '0': gl.playerHasCubit(this.props.G, '1', CUBITS.Knowledge),
+      '1': gl.playerHasCubit(this.props.G, '0', CUBITS.Knowledge)
     }
 
     // Cards in Hand
