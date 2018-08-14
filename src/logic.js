@@ -67,7 +67,7 @@ export class Logic {
             { key: '2', type: 'N', color: '#F9FF33', x: 0, y: 1, limit: 3, slots: [], moved: false },
             { key: '3', type: 'B', color: '#008000', x: 0, y: 2, limit: 3, slots: [], moved: false },
             { key: '4', type: 'Q', color: '#33FFA8', x: 0, y: 3, limit: 2, slots: [], moved: false },
-            { key: '5', type: 'K', color: '#33F6FF', x: 0, y: 4, limit: 1, slots: [], moved: false },
+            { key: '5', type: 'K', color: '#33F6FF', x: 3, y: 4, limit: 1, slots: [], moved: false },
             { key: '6', type: 'B', color: '#3346FF', x: 0, y: 5, limit: 3, slots: [], moved: false },
             { key: '7', type: 'N', color: '#800080', x: 0, y: 6, limit: 3, slots: [], moved: false },
             { key: '8', type: 'R', color: '#FF0000', x: 0, y: 7, limit: 4, slots: [], moved: false },
@@ -176,13 +176,13 @@ export class Logic {
     } else if(unit.type === 'K') {
       // Move Cardinal 1
       modifiers.push({
-        key: '1000',
+        key: CUBITS.Orthogonal,
         data: {
           distance: 1
         }
       });
       modifiers.push({
-        key: '1001',
+        key: CUBITS.Diagonal,
         data: {
           distance: 1
         }
@@ -200,14 +200,14 @@ export class Logic {
     } else if(unit.type === 'Q') {
       /// Move Orthogonal
       modifiers.push({
-        key: '1000',
+        key: CUBITS.Orthogonal,
         data: {
           distance: 8
         }
       });
       // Move Diagonal
       modifiers.push({
-        key: '1001',
+        key: CUBITS.Diagonal,
         data: {
           distance: 8
         }
@@ -215,7 +215,7 @@ export class Logic {
     } else if(unit.type === 'R') {
       // Move Orthogonal
       modifiers.push({
-        key: '1000',
+        key: CUBITS.Orthogonal,
         data: {
           distance: 8
         }
@@ -223,7 +223,7 @@ export class Logic {
     } else if(unit.type === 'B') {
       // Move Diagonal
       modifiers.push({
-        key: '1001',
+        key: CUBITS.Diagonal,
         data: {
           distance: 8
         }
@@ -231,7 +231,7 @@ export class Logic {
     } else if(unit.type === 'N') {
       // Move Pattern
       modifiers.push({
-        key: '1003',
+        key: CUBITS.Pattern,
         data: {
           steps: [2,1]
         }
@@ -519,6 +519,46 @@ export class Logic {
     return Math.max(Math.min(amount, 5), 1);  // Min: 1, Max: 3
   }
 
+  getHandSizeLimit() {
+    return 5; // Fix size...
+  }
+
+  checkForEndGame(g, ctx) {
+    let opponentId = ctx.currentPlayer === '0' ? '1' : '0';
+
+    // Check for - Arena win condition
+    if(g.arena && g.arena.cubit === CUBITS.KingOfHill) {
+      let units = g.players[ctx.currentPlayer].units;
+      let location = g.arena.data.location;
+      let found = units.find(u => u.type === "K" && u.x === location.x  && u.y=== location.y)
+      if(found) {
+        ctx.events.endGame(ctx.currentPlayer);
+        return true;
+      }
+    }
+
+    // Check for - opponent King unit
+    {
+      let units = g.players[opponentId].units;
+      let found = units.find(u => u.type === "K");
+      if(!found) {
+        ctx.events.endGame(ctx.currentPlayer);
+        return true;
+      }
+    }
+
+    // Check for - Player ran out of cubits
+    let total = g.players[ctx.currentPlayer].bag.length;
+    let amount = this.getNumberOfDraws(g, ctx.currentPlayer);
+    if(total < amount) {
+      ctx.events.endGame(opponentId);
+      return true;
+    }
+
+    // Else THE GAME MUST GO ON!
+    return false;
+  }
+
   onPlayed(g, ctx, cubit) {
 
     let event = {
@@ -527,7 +567,7 @@ export class Logic {
       data: cubit.data,
     };
 
-    if(cubit.key === CUBITS.ActionPlusOne) {
+    if(cubit.key === CUBITS.DoubleAction) {
       event.actionCost = 0;
     } else if(cubit.key === CUBITS.KingOfHill) {
       let options = {

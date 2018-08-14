@@ -89,7 +89,7 @@ const ChessGame = Game({
       let g = clone(G);
 
       // If slots is not greater then limit
-      const PLAYER_SLOT_LIMIT = 5;
+      const PLAYER_SLOT_LIMIT = gl.getHandSizeLimit();
       if (g.players[playerId].slots.length >= PLAYER_SLOT_LIMIT) {
         return;
       }
@@ -235,12 +235,6 @@ const ChessGame = Game({
       if(move.type === MOVEMENT.capture) {
         let index = g.players[opponentId].units.findIndex(function(u) { return u.x === destination.x && u.y === destination.y; });
         let enemy = g.players[opponentId].units.splice(index, 1).shift();
-        if(enemy.type === 'K') {
-          // TODO: make sure it is the only kind left on the opponents team
-          ctx.events.endGame(ctx.currentPlayer);
-          return g;
-        }
-
         g.players[opponentId].afterlife.push(enemy);
       }
 
@@ -254,9 +248,9 @@ const ChessGame = Game({
       return g;
     },
     maintenance: function(G, ctx) {
-      let opponentId = ctx.currentPlayer === '0' ? '1' : '0';
-          
       let g = clone(G);
+
+      // Check for other ending conditions....
 
       // Get hand
       let hand = g.players[ctx.currentPlayer].hand.slice();
@@ -267,30 +261,30 @@ const ChessGame = Game({
       // Add hand back to bag
       g.players[ctx.currentPlayer].bag =  g.players[ctx.currentPlayer].bag.concat(hand);
 
-      // Check for end of game
-      let total = g.players[ctx.currentPlayer].bag.length;
-      let amount = gl.getNumberOfDraws(g, ctx.currentPlayer);
-      if(total < amount) {
-       
-        ctx.events.endGame(opponentId);  // End the Game
-
-      } else {
-        g.players[ctx.currentPlayer].bag = ctx.random.Shuffle(g.players[ctx.currentPlayer].bag);
-
-        for (let x = 0; x < amount; x++) {
-          let cubit = g.players[ctx.currentPlayer].bag.pop();
-          g.players[ctx.currentPlayer].hand.push(cubit);
-        }
-
-        // Move to next Player & Phase
-        ctx.events.endPhase();
-        ctx.events.endTurn();
+      let result = gl.checkForEndGame(g, ctx);
+      if(result === true) {
+        return g;
       }
+        
+      g.players[ctx.currentPlayer].bag = ctx.random.Shuffle(g.players[ctx.currentPlayer].bag);
+
+      let amount = gl.getNumberOfDraws(g, ctx.currentPlayer);
+      for (let x = 0; x < amount; x++) {
+        let cubit = g.players[ctx.currentPlayer].bag.pop();
+        g.players[ctx.currentPlayer].hand.push(cubit);
+      }
+
+      // Move to next Player & Phase
+      ctx.events.endPhase();
+      ctx.events.endTurn();
 
       return g;
     }
   },
   flow: {
+    endTurn: true,
+    endPhase: true,
+    endGame: true,
     phases: [
       {
         name: 'Action',

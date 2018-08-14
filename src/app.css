@@ -10,3 +10,8 @@
 .debug-ui .player.current {
   background-color: #007bff;
 }
+
+.nav-item > button {
+  margin-left: 3px;
+  margin-right: 3px;
+}

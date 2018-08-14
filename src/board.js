@@ -1,61 +1,47 @@
 // Framework
 import React from 'react';
 import PropTypes from 'prop-types';
+
 // UI
 import { 
   Container,Row, Col, 
   Badge, 
   UncontrolledCollapse,
   Navbar, NavbarBrand, Nav, NavItem,
-  Button,
-  Modal, ModalHeader, ModalBody, ModalFooter,
-  Media
+  Button
 } from 'reactstrap';
 import { Token, Grid } from 'boardgame.io/ui';
-// Logic
+import {
+  CubitLogo,
+  CubitText,
+  CubitOrthogonal,
+  CubitDiagonal,
+  CubitCardinal,
+  CubitPattern,
+  CubitSidestep,
+  CubitSwap,
+  CubitDrawPlus,
+  CubitDrawMinus,
+  CubitDoubleAction,
+  CubitCondemn,
+  CubitKnowledge,
+  CubitKingOfHill
+} from './ui/cubits';
+import { 
+  UnitKing, 
+  UnitBishop, 
+  UnitKnight, 
+  UnitRook, 
+  UnitQueen, 
+  UnitPawn 
+} from './ui/units';
+import HelpModal from './help';
+
+// Game
 import { Logic } from './logic';
 import { CUBITS, MOVEMENT } from './cubits';
-// Cubits
-import CubitLogo from './cubits/cubit';
-import CubitText from './cubits/text';
-import CubitOrthogonal from './cubits/orthogonal';
-import CubitDiagonal from './cubits/diagonal';
-import CubitCardinal from './cubits/cardinal';
-import CubitPattern from './cubits/pattern';
-import CubitSidestep from './cubits/sidestep';
-import CubitSwap from './cubits/swap';
-import CubitImmune from './cubits/immune';
-import CubitGuard from './cubits/guard';
-import CubitDrawPlus from './cubits/drawplus';
-import CubitDrawMinus from './cubits/drawminus';
-import CubitDoubleAction from './cubits/doubleaction';
-import CubitCondemn  from './cubits/condemn'
-import CubitHitRun from './cubits/hitrun'
-import CubitKnowledge from './cubits/knowledge'
-import CubitSacrifice from './cubits/sacrifice'
-import CubitKingOfHill from './cubits/kingofhill'
-// import * as Cubits from './cubits'
-// Units
-import UnitKing from './units/king';
-import UnitBishop from './units/bishop';
-import UnitKnight from './units/knight';
-import UnitRook from './units/rook';
-import UnitQueen from './units/queen';
-import UnitPawn from './units/pawn';
 
 let gl = new Logic();
-
-function ConnectionStatus(props) {
-  if (props.connected) {
-    return (
-      <Button color="success" title="Connected!">✓</Button>
-    );
-  } else {
-    return (
-      <Button color="danger" title="Disconnected...">X</Button>
-    );
-  }
-}
 
 export default class ChessBoard extends React.Component {
   static propTypes = {
@@ -73,20 +59,12 @@ export default class ChessBoard extends React.Component {
     super(params);
 
     // UI
-    this.action = null; 
-
-    // Menu
-    this.state = {
-      modal: false
-    };
-
-    this.toggle = this.toggle.bind(this);
+    this.action = null;
+    this.help = React.createRef();
   }
 
-  toggle() {
-    this.setState({
-      modal: !this.state.modal
-    });
+  onHelp = () => {
+    this.help.current.toggle();
   }
 
   getUnitComponent(type, color, team) {
@@ -144,9 +122,6 @@ export default class ChessBoard extends React.Component {
       case CUBITS.Swap:
         cubitComponent = <CubitSwap name={cubit.name} color={team} />;
         break;
-      case CUBITS.HitAndRun:
-        cubitComponent = <CubitHitRun name={cubit.name} color={team} />;
-        break;
       case CUBITS.DrawNegOne:
         cubitComponent = <CubitDrawMinus name={cubit.name} color={team} />;
         break;
@@ -159,17 +134,8 @@ export default class ChessBoard extends React.Component {
       case CUBITS.Knowledge:
         cubitComponent = <CubitKnowledge name={cubit.name} color={team} />;
         break;
-      case CUBITS.Guard:
-        cubitComponent = <CubitGuard name={cubit.name} color={team} />;
-        break;
       case CUBITS.Condemn:
         cubitComponent = <CubitCondemn name={cubit.name} color={team} />;
-        break;
-      case CUBITS.Revert:
-        cubitComponent = <CubitImmune name={cubit.name} color={team} />;
-        break;
-      case CUBITS.Sacrifice:
-        cubitComponent = <CubitSacrifice name={cubit.name} color={team} />;
         break;
       case CUBITS.KingOfHill:
         cubitComponent = <CubitKingOfHill name={cubit.name} color={team} />;
@@ -496,7 +462,7 @@ export default class ChessBoard extends React.Component {
     if(this.props.G.arena) {
       let a = this.props.G.arena;
       let cubitComponent = this.getCubitComponent(a.cubit, teams[a.controller]);
-      arena.push(<Token x={0} y={0} >{cubitComponent}</Token>);
+      arena.push(<Token key={0} x={0} y={0} >{cubitComponent}</Token>);
 
       if(a.cubit === CUBITS.KingOfHill) {
         let cubitComponent = this.getCubitComponent(a.cubit, teams[a.controller]);
@@ -581,6 +547,27 @@ export default class ChessBoard extends React.Component {
       }
     }
 
+    let gameMenu = []
+    if(this.props.ctx.gameover) {
+      if(this.props.ctx.gameover === this.props.playerID) {
+        gameMenu.push(<Button key={"GameOver"} color="success" >Game Over! You Won</Button>);
+      } else {
+        gameMenu.push(<Button key={"GameOver"} color="danger" >Game Over! You Lost</Button>);
+      }
+    } else {
+      gameMenu.push(<Button key={"ShipPhase"} color="primary" onClick={this.onSkipPhase} disabled={this.props.ctx.phase !== 'Action'}>Skip Phase</Button>);
+      gameMenu.push(<Button key={"EndTurn"} color="warning" onClick={this.onEndTurn} disabled={this.props.ctx.phase !== 'Maintenance'}>End Turn</Button>);
+    }
+    
+    let mainMenu = [];
+    mainMenu.push(<Button key={"Help"} color="info" onClick={this.onHelp} title="Help">?</Button>);
+
+    if (connected) {
+      mainMenu.push(<Button key={"Connection"} color="success" title="Connected!">✓</Button>);
+    } else {
+      mainMenu.push(<Button key={"Connection"} color="danger" title="Disconnected...">X</Button>);
+    }
+
     return (
       <Container>
         <Row>
@@ -589,10 +576,12 @@ export default class ChessBoard extends React.Component {
               <NavbarBrand href="/">Lusus <small>Tactical Chess</small></NavbarBrand>
               <Nav className="ml-auto" navbar>
                 <NavItem>
-                  <Button color="primary" onClick={this.onSkipPhase} disabled={this.props.ctx.phase !== 'Action'}>Skip Phase</Button>{' '}
-                  <Button color="warning" onClick={this.onEndTurn} disabled={this.props.ctx.phase !== 'Maintenance'}>End Turn</Button>{' '}
-                  <Button color="info" onClick={this.toggle}>?</Button>{' '}
-                  <ConnectionStatus connected={connected}></ConnectionStatus>
+                  {gameMenu}
+                </NavItem>
+              </Nav>
+              <Nav className="ml-auto" navbar>
+                <NavItem>
+                  {mainMenu}
                 </NavItem>
               </Nav>
             </Navbar>
@@ -845,49 +834,7 @@ export default class ChessBoard extends React.Component {
             </Row>
           </Col>
         </Row>
-        <Modal isOpen={this.state.modal} toggle={this.toggle} size="lg" >
-          <ModalHeader toggle={this.toggle}>Help</ModalHeader>
-          <ModalBody>
-            <Media>
-              <Media left href="#">
-                <div style={{width: 64, height: 64}}>
-                  <Grid rows={1} cols={1}>
-                    <Token x={0} y={0}>
-                      <CubitOrthogonal name={"Othogonal"} color={'b'} />
-                    </Token>
-                  </Grid>
-                </div>
-              </Media>
-              <Media body>
-                <Media heading>
-                  Orthogonal
-                </Media>
-                Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
-              </Media>
-            </Media>
-            <hr />
-            <Media>
-              <Media left href="#">
-                <div style={{width: 64, height: 64}}>
-                  <Grid rows={1} cols={1}>
-                    <Token x={0} y={0}>
-                      <CubitDiagonal name={"Diagonal"} color={'b'} />
-                    </Token>
-                  </Grid>
-                </div>
-              </Media>
-              <Media body>
-                <Media heading>
-                  Diagonal
-                </Media>
-                Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
-              </Media>
-            </Media>
-          </ModalBody>
-          <ModalFooter>
-            <Button color="secondary" onClick={this.toggle}>Close</Button>
-          </ModalFooter>
-        </Modal>
+        <HelpModal ref={this.help} />
       </Container>
     );
   }
