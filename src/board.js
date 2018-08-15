@@ -39,7 +39,7 @@ import HelpModal from './help';
 
 // Game
 import { Logic } from './logic';
-import { CUBITS, MOVEMENT } from './cubits';
+import { CUBITS, MOVEMENT, TARGET_WHERE } from './cubits';
 
 let gl = new Logic();
 
@@ -150,12 +150,17 @@ export default class ChessBoard extends React.Component {
 
   onClickBoard = ({ x, y }) => {
     if(this.props.ctx.phase === 'Movement' && this.action == null) {
-      this.action = { source: { x:x, y:y } };
+      this.action = {
+        where: TARGET_WHERE.board,
+        location: { x:x, y:y },
+        cubit: null
+      };
       this.forceUpdate();
       return;
     }
+
     if(this.props.ctx.phase === 'Movement' && this.action != null) {
-      this.props.moves.moveUnit(this.action.source.x, this.action.source.y, x, y);
+      this.props.moves.moveUnit(this.action.location.x, this.action.location.y, x, y, this.action.cubit);
       this.action = null;
       return;
     }
@@ -169,86 +174,102 @@ export default class ChessBoard extends React.Component {
     }
   };
 
-  onClickPlayer1Hand = ({ x, y }) => {
-    if(this.props.ctx.phase === 'Action') {
-      this.action = { cubitix: x };
-      this.forceUpdate();
+  onClickArena = ({ x, y }) => {
+    if(this.props.ctx.phase === 'Action' && this.action != null) {
+      this.props.moves.playCubitOnArena(this.action.location.x);
+      this.action = null;
       return;
     }
+  };
+
+  onClickPlayer1Hand = ({ x, y }) => {
+    this.onClickPlayerHand("0", {x: x, y: y});
   };
 
   onClickPlayer2Hand = ({ x, y }) => {
-    if(this.props.ctx.phase === 'Action') {
-      this.action = { cubitix: x };
-      this.forceUpdate();
-      return;
-    }
+    this.onClickPlayerHand("1", {x: x, y: y});
   };
 
-  onClickPlayer1Slots = ({ x, y }) => {
-    if(this.props.ctx.phase === 'Action' && this.action != null) {
-      this.props.moves.playCubitOnPlayer(this.action.cubitix, '0');
-      this.action = null;
+  onClickPlayerHand = (playerId, location) => {
+    if(this.props.ctx.phase === 'Action') {
+      let data = gl.whatIsAtLocation(this.props.G, playerId, TARGET_WHERE.hand, location.x, location.y);
+      if(data.cubit) {
+        this.action = {
+          player: playerId,
+          where: TARGET_WHERE.hand,
+          location: location,
+          cubit: data.cubit
+        };
+        this.forceUpdate();
+      }
       return;
     }
+  }
+
+  onClickPlayer1Slots = ({ x, y }) => {
+    this.onClickPlayerSlots("0", {x: x, y: y});
   };
 
   onClickPlayer2Slots = ({ x, y }) => {
-    if(this.props.ctx.phase === 'Action' && this.action != null) {
-      this.props.moves.playCubitOnPlayer(this.action.cubitix, '1');
-      this.action = null;
-      return;
-    }
+    this.onClickPlayerSlots("1", {x: x, y: y});
   };
 
-  onClickPlayer1Units = ({ x, y }) => {
+  onClickPlayerSlots = (playerId, location) => {
     if(this.props.ctx.phase === 'Action' && this.action != null) {
-      this.props.moves.playCubitOnUnit(this.action.cubitix, '0', y);
+      this.props.moves.playCubitOnPlayer(this.action.location.x, '1');
       this.action = null;
       return;
     }
+  }
 
-    if(this.props.ctx.phase === 'Movement' && this.action == null) {
-      this.action.cubitix = {x: x, y: y};
-      return;
-    }
+  onClickPlayer1Units = ({ x, y }) => {
+    this.onClickPlayerUnits("0", {x: x, y: y});
   };
 
   onClickPlayer2Units = ({ x, y }) => {
+    this.onClickPlayerUnits("1", {x: x, y: y});
+  };
+
+  onClickPlayerUnits = (playerId, location) => {
     if(this.props.ctx.phase === 'Action' && this.action != null) {
-      this.props.moves.playCubitOnUnit(this.action.cubitix, '1', y);
+      this.props.moves.playCubitOnUnit(this.action.location.x, playerId, location.y);
       this.action = null;
       return;
     }
-  };
 
+    if(this.props.ctx.phase === 'Movement') {
+      let data = gl.whatIsAtLocation(this.props.G, this.props.playerID, TARGET_WHERE.units, location.x, location.y);
+      if(data.cubit) {
+        this.action = {
+          player: playerId,
+          where: TARGET_WHERE.units,
+          location: location,
+          cubit: data.cubit,
+          unit: data.unit
+        };
+        this.forceUpdate();
+      }
+      return;
+    }
+  }
+
+  /*
   onClickPlayer1Reinforcements = ({ x, y }) => {
-    console.log("Player 1 - Reinforcements", {x,y});
+    // console.log("Player 1 - Reinforcements", {x,y});
   };
 
   onClickPlayer2Reinforcements = ({ x, y }) => {
-    console.log("Player 2 - Reinforcements", {x,y});
+    // console.log("Player 2 - Reinforcements", {x,y});
   };
 
   onClickPlayer1Afterlife = ({ x, y }) => {
-    console.log("Player 1 - Afterlife", {x,y});
+    // console.log("Player 1 - Afterlife", {x,y});
   };
 
   onClickPlayer2Afterlife = ({ x, y }) => {
-    console.log("Player 2 - Afterlife", {x,y});
+    // console.log("Player 2 - Afterlife", {x,y});
   };
-
-  onClickArena = ({ x, y }) => {
-    if(this.props.ctx.phase === 'Action' && this.action != null) {
-      this.props.moves.playCubitOnArena(this.action.cubitix);
-      this.action = null;
-      return;
-    }
-  };
-
-  onTokenMouseOver = ({ x, y }) => {
-    // console.log("Test");
-  };
+  */
 
   onSkipPhase = () => {
     if(this.props.ctx.phase === 'Action') {
@@ -312,7 +333,11 @@ export default class ChessBoard extends React.Component {
     // Get moves in a unit is selected on board
     let moves = [];
     if(this.props.ctx.phase === 'Movement' && this.action != null) {
-      moves = gl.moves(this.props.G, this.props.playerID, this.action.source);
+      if(this.action.where === TARGET_WHERE.board) {
+        moves = gl.moves(this.props.G, this.props.playerID, this.action.location);
+      } else if (this.action.where === TARGET_WHERE.units) {
+        moves = gl.activeMoves(this.props.G, this.props.playerID, this.action.location.y, this.action.cubit);
+      }
     }
 
     // Populate the board and field color maps
@@ -377,8 +402,11 @@ export default class ChessBoard extends React.Component {
       // Color Map
       if (this.props.playerID === p) {
         for (let x = 0; x < 5; x++) {
-          let color = (this.props.ctx.phase === 'Action' && this.action != null && this.action.cubitix === x) ? selectedColor : backgroundColor;
-          handColorMap[p][`${x},${0}`] = color;
+          if(this.props.ctx.phase === 'Action' && this.action && this.action.location.x === x) {
+            handColorMap[p][`${x},${0}`] = selectedColor;
+          } else {
+            handColorMap[p][`${x},${0}`] = backgroundColor;
+          }
         }
       } else {
         for (let x = 0; x < 5; x++) {
@@ -431,7 +459,12 @@ export default class ChessBoard extends React.Component {
         // Grid colours
         unitsColorMap[p][`${0},${a}`] = backgroundColor;
         for (let c= 0; c < unit.limit; c++) {
-          unitsColorMap[p][`${c+1},${a}`] = backgroundColor;
+          let x = c+1;
+          if(this.action != null && this.action.player === p && this.action.where === TARGET_WHERE.units && this.action.location.x === x && this.action.location.y === a) {
+            unitsColorMap[p][`${x},${a}`] = passiveMoveColor;
+          } else {
+            unitsColorMap[p][`${x},${a}`] = backgroundColor;
+          }
         }
 
       }

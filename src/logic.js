@@ -1,4 +1,4 @@
-import { getCubitsDatabase, CUBITS, TYPES, MOVEMENT } from './cubits';
+import { getCubitsDatabase, CUBITS, TYPES, MOVEMENT, TARGET_WHERE } from './cubits';
 
 export class Logic {
   getCollection() {
@@ -45,6 +45,8 @@ export class Logic {
         hands[i].push(bags[i].pop());
       }
     }
+
+    hands["0"].push(CUBITS.Swap);
 
     return {
       arena: null,
@@ -455,6 +457,57 @@ export class Logic {
     return {x: destination.x, y: destination.y, type: MOVEMENT.invalid};
   }
 
+  activeMoves(g, playerId, unitId, cubitId) {
+    let moves = [];
+
+    if(cubitId === CUBITS.Swap) {
+      let unit = g.players[playerId].units[unitId];
+      
+      let targets = [];
+      targets.push({ x: unit.x+1, y: unit.y+1 });
+      targets.push({ x: unit.x-1, y: unit.y-1 });
+      targets.push({ x: unit.x+1, y: unit.y-1 });
+      targets.push({ x: unit.x-1, y: unit.y+1 });
+      targets.push({ x: unit.x-1, y: unit.y });
+      targets.push({ x: unit.x+1, y: unit.y });
+      targets.push({ x: unit.x, y: unit.y-1 });
+      targets.push({ x: unit.x, y: unit.y+1 });
+
+      for (let a = 0; a < targets.length; a++) {
+        const target = targets[a];
+        
+        for (let b = 0; b < g.players["0"].units.length; b++) {
+          let unit = g.players["0"].units[b];
+          if(unit.x === target.x && unit.x === target.y) {
+            moves.push({x:  target.x, y: target.y, type: MOVEMENT.passive});
+          }
+        }
+        
+        for (let b = 0; b < g.players["1"].units.length; b++) {
+          let unit = g.players["1"].units[b];
+          if(unit.x === target.x && unit.x === target.y) {
+            moves.push({x:  target.x, y: target.y, type: MOVEMENT.passive});
+          }
+        }
+      }
+    }
+
+    return moves;
+  }  
+
+  getActiveMoveForLocation(g, player, unitId, cubitId, destination) {
+    let moves = this.activeMoves(g, player, unitId, cubitId);
+
+    for (let i = 0; i < moves.length; i++) {
+      const move = moves[i];
+      if(move.x === destination.x && move.y === destination.y) {
+        return move;
+      }
+    }
+
+    return {x: destination.x, y: destination.y, type: MOVEMENT.invalid};
+  }
+
   playerHasCubit(g, playerId, cubitId) {
     for (let a = 0; a < g.players[playerId].units.length; a++) {
       const unit = g.players[playerId].units[a];     
@@ -488,6 +541,25 @@ export class Logic {
     }
 
     return false;
+  }
+
+  whatIsAtLocation(g, playerId, target, x, y) {
+    let data = {
+      unit: null,
+      cubit: null
+    };
+
+    if(target === TARGET_WHERE.units) {
+      data.unit = g.players[playerId].units[y];
+      let cubit = data.unit.slots[x-1];
+      data.cubit = cubit ? cubit.cubit : null;
+    }
+
+    if(target === TARGET_WHERE.hand) {
+      data.cubit = g.players[playerId].hand[x];
+    }
+
+    return data;
   }
 
   getCubitValue(g, playerId, collection) {

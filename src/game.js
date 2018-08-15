@@ -211,7 +211,7 @@ const ChessGame = Game({
       // Return Copy
       return g;
     },
-    moveUnit: function(G, ctx, sx, sy, dx, dy) {
+    moveUnit: function(G, ctx, sx, sy, dx, dy, cubitId) {
       // Input Contacts
       if (sx === undefined) {
         return;
@@ -232,23 +232,49 @@ const ChessGame = Game({
 
       let g = clone(G);
 
-      let move = gl.getMoveForLocation(g, ctx.currentPlayer, source, destination);
-      if(move.type === MOVEMENT.invalid) {
-        return;
+      if(cubitId === null) {
+        let move = gl.getMoveForLocation(g, ctx.currentPlayer, source, destination);
+        if(move.type === MOVEMENT.invalid) {
+          return;
+        }
+  
+        if(move.type === MOVEMENT.capture) {
+          let index = g.players[opponentId].units.findIndex(function(u) { return u.x === destination.x && u.y === destination.y; });
+          let enemy = g.players[opponentId].units.splice(index, 1).shift();
+          g.players[opponentId].afterlife.push(enemy);
+        }
+  
+        let ally = g.players[ctx.currentPlayer].units.find(function(u) { return u.x === source.x && u.y === source.y; });
+        ally.x = move.x;
+        ally.y = move.y;
+        ally.moved = true;
+  
+        ctx.events.endPhase();
+        
+      } else if (cubitId === CUBITS.Swap) {
+        let unitId = sy;
+    
+        let move = gl.getActiveMoveForLocation(g, ctx.currentPlayer, unitId, cubitId, destination);
+        if(move.type === MOVEMENT.invalid) {
+          return;
+        }
+
+        let unitSource = g.players[ctx.currentPlayer].units[unitId];
+        source = {x: unitSource.x, y: unitSource.y};
+
+        let units = [].concat(g.players["0"].units).concat(g.players["1"].units);
+        let unitDestination = units.find(function(u) { return u.x === destination.x && u.y === destination.y; });
+
+        unitSource.x = destination.x;
+        unitSource.y = destination.y;
+        unitSource.moved = true;
+
+        unitDestination.x = source.x;
+        unitDestination.y = source.y;
+        unitSource.moved = true;
+
+        ctx.events.endPhase();
       }
-
-      if(move.type === MOVEMENT.capture) {
-        let index = g.players[opponentId].units.findIndex(function(u) { return u.x === destination.x && u.y === destination.y; });
-        let enemy = g.players[opponentId].units.splice(index, 1).shift();
-        g.players[opponentId].afterlife.push(enemy);
-      }
-
-      let ally = g.players[ctx.currentPlayer].units.find(function(u) { return u.x === source.x && u.y === source.y; });
-      ally.x = move.x;
-      ally.y = move.y;
-      ally.moved = true;
-
-      ctx.events.endPhase();
 
       return g;
     },
