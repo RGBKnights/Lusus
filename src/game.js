@@ -237,14 +237,27 @@ const ChessGame = Game({
         if(move.type === MOVEMENT.invalid) {
           return;
         }
+
+        let ally = g.players[ctx.currentPlayer].units.find(function(u) { return u.x === source.x && u.y === source.y; });
   
         if(move.type === MOVEMENT.capture) {
           let index = g.players[opponentId].units.findIndex(function(u) { return u.x === destination.x && u.y === destination.y; });
-          let enemy = g.players[opponentId].units.splice(index, 1).shift();
-          g.players[opponentId].afterlife.push(enemy);
+          let enemy = g.players[opponentId].units[index];
+
+          // Things like Revert and Hit/Run should be handled here...?
+          // TODO: change this out for Revert...
+          var hasHitRun = gl.unitHasCubit(g, opponentId, index, CUBITS.HitRun);
+          if(hasHitRun) {
+            let cubitix = enemy.slots.findIndex(function(c) { return c.cubit === CUBITS.HitRun; });
+            let cubit = enemy.slots.splice(cubitix, 1).shift();
+            return g;
+          }
+          
+          // If nothing else then send to afterlife...
+          let captured = g.players[opponentId].units.splice(index, 1).shift();
+          g.players[opponentId].afterlife.push(captured);
         }
   
-        let ally = g.players[ctx.currentPlayer].units.find(function(u) { return u.x === source.x && u.y === source.y; });
         ally.x = move.x;
         ally.y = move.y;
         ally.moved = true;

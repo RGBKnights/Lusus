@@ -272,7 +272,7 @@ export function getCubitsDatabase() {
     rarity: RARITY.unknown, 
     targetWhere: TARGET_WHERE.units,
     targetWhat: TARGET_WHAT.self,
-    activatable: true,
+    activatable: false,
     durationType: 0,
     durationAmount: 0,
     hidden: false,
