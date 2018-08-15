@@ -25,7 +25,8 @@ import {
   CubitDoubleAction,
   CubitCondemn,
   CubitKnowledge,
-  CubitKingOfHill
+  CubitKingOfHill,
+  CubitHitRun
 } from './ui/cubits';
 
 // Game
@@ -92,6 +93,9 @@ export default class HelpModal extends React.Component {
         break;
       case CUBITS.KingOfHill:
         cubitComponent = <CubitKingOfHill name={cubit.name} color={team} />;
+        break;
+      case CUBITS.HitRun:
+        cubitComponent = <CubitHitRun name={cubit.name} color={team} />;
         break;
       default:
         cubitComponent = <CubitText name={cubit.name} color={team} value={cubit.key} />;

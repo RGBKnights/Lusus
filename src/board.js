@@ -25,7 +25,8 @@ import {
   CubitDoubleAction,
   CubitCondemn,
   CubitKnowledge,
-  CubitKingOfHill
+  CubitKingOfHill,
+  CubitHitRun
 } from './ui/cubits';
 import { 
   UnitKing, 
@@ -140,6 +141,9 @@ export default class ChessBoard extends React.Component {
       case CUBITS.KingOfHill:
         cubitComponent = <CubitKingOfHill name={cubit.name} color={team} />;
         break;
+      case CUBITS.HitRun:
+        cubitComponent = <CubitHitRun name={cubit.name} color={team} />;
+        break;
       default:
         cubitComponent = <CubitText name={cubit.name} color={team} value={cubitix} />;
         break;
@@ -239,7 +243,7 @@ export default class ChessBoard extends React.Component {
 
     if(this.props.ctx.phase === 'Movement') {
       let data = gl.whatIsAtLocation(this.props.G, this.props.playerID, TARGET_WHERE.units, location.x, location.y);
-      if(data.cubit) {
+      if(data.cubit != null && data.activatable === true) {
         this.action = {
           player: playerId,
           where: TARGET_WHERE.units,

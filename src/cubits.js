@@ -53,23 +53,22 @@ export const CUBITS = {
   Cardinal: 'a39e2c74-0968-eb73-7ea8-c71b21608685',
   Pattern: '2ca5a85e-116a-7971-6bbb-693d17f6ce3f',
   SideStep: 'd1f075a1-2d8c-8b2a-5776-b5c711134e67',
-  Swap: '0b6d75f8-a2c2-29dc-e32c-c53a0fb1aeea',           // Not implemented - Needs [Movement Activation]
+  Swap: '0b6d75f8-a2c2-29dc-e32c-c53a0fb1aeea',
   DrawNegOne: '68308f8c-2087-b64d-7bd8-97b98488e5aa',
   DrawPlusOne: '1fa0d186-0237-e13e-7449-f54092211149',
   DoubleAction: '40617317-15e1-5aa3-8cdd-3d3d131e9b4f', 
   Knowledge: '0994b86a-4709-f096-63c9-07c6e1008bfd',
   Condemn: 'b0dca050-b7d4-f83a-554f-4cfc4f2c7854',
-  KingOfHill: '99d4a12e-e368-7700-5cd0-46548040fced'      
+  KingOfHill: '99d4a12e-e368-7700-5cd0-46548040fced', 
+  HitRun: 'e3d77369-b78d-4236-bf53-b6f44b9fdfff', // Not Implemented - Working on it...
 };
-
-const DEFAULT_DESCRIPTION = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque porta libero eu lorem consequat tincidunt. Ut eget purus erat. Proin pulvinar turpis ac orci rhoncus cursus. Nunc consequat felis diam, nec consequat tortor tincidunt vitae. Aenean rhoncus elit quis sem viverra ultricies et eu libero. Maecenas lacinia iaculis nunc, eu molestie lacus convallis at.";
 
 export function getCubitsDatabase() {
   let collection = {};
   collection[CUBITS.Orthogonal] = {
     key: CUBITS.Orthogonal,
     name: "Orthogonal",
-    description: DEFAULT_DESCRIPTION,
+    description: "Horizontal or Vertical movement of 8 spaces",
     types: [TYPES.movement],
     rarity: RARITY.unknown,
     targetWhere: TARGET_WHERE.units,
@@ -86,7 +85,7 @@ export function getCubitsDatabase() {
   collection[CUBITS.Diagonal] = {
     key: CUBITS.Diagonal,
     name: "Diagonal", 
-    description: DEFAULT_DESCRIPTION,
+    description: "Diagonal movement of 8 spaces",
     types: [TYPES.movement], 
     rarity: RARITY.unknown, 
     targetWhere: TARGET_WHERE.units,
@@ -103,7 +102,7 @@ export function getCubitsDatabase() {
   collection[CUBITS.Cardinal] = {
     key: CUBITS.Cardinal,
     name: "Cardinal", 
-    description: DEFAULT_DESCRIPTION,
+    description: "Movement in any direction of 8 spaces",
     types: [TYPES.movement], 
     rarity: RARITY.unknown, 
     targetWhere: TARGET_WHERE.units,
@@ -120,7 +119,7 @@ export function getCubitsDatabase() {
   collection[CUBITS.Pattern] = {
     key: CUBITS.Pattern,
     name: "Pattern", 
-    description: DEFAULT_DESCRIPTION,
+    description: "You will move, unobstructed, to the end of 2/1 move pattern",
     types: [TYPES.movement], 
     rarity: RARITY.unknown, 
     targetWhere: TARGET_WHERE.units,
@@ -137,7 +136,7 @@ export function getCubitsDatabase() {
   collection[CUBITS.SideStep] = {
     key: CUBITS.SideStep,
     name: "Sidestep", 
-    description: DEFAULT_DESCRIPTION,
+    description: "Move 1 space to the perpendicular of the forward direction of the unit",
     types: [TYPES.movement], 
     rarity: RARITY.unknown, 
     targetWhere: TARGET_WHERE.units,
@@ -154,7 +153,7 @@ export function getCubitsDatabase() {
   collection[CUBITS.Swap] = {   
     key: CUBITS.Swap,
     name: "Swap", 
-    description: DEFAULT_DESCRIPTION,
+    description: "Swap any adjacent unit as this units move",
     types: [TYPES.movement], 
     rarity: RARITY.unknown, 
     targetWhere: TARGET_WHERE.units,
@@ -169,7 +168,7 @@ export function getCubitsDatabase() {
   collection[CUBITS.DrawNegOne] = {
     key: CUBITS.DrawNegOne,
     name: "Draw -1", 
-    description: DEFAULT_DESCRIPTION,
+    description: "Increases the amount the players draws by 1",
     types: [TYPES.unknown], 
     rarity: RARITY.unknown, 
     targetWhere: TARGET_WHERE.player,
@@ -186,7 +185,7 @@ export function getCubitsDatabase() {
   collection[CUBITS.DrawPlusOne] = {
     key: CUBITS.DrawPlusOne,
     name: "Draw +1", 
-    description: DEFAULT_DESCRIPTION,
+    description: "decreases the amount the players draws by 1",
     types: [TYPES.unknown], 
     rarity: RARITY.unknown, 
     targetWhere: TARGET_WHERE.player,
@@ -203,7 +202,7 @@ export function getCubitsDatabase() {
   collection[CUBITS.DoubleAction] = {
     key: CUBITS.DoubleAction,
     name: "Double Action", 
-    description: DEFAULT_DESCRIPTION,
+    description: "Increases the amount actions a player can preform by 1",
     types: [TYPES.unknown], 
     rarity: RARITY.unknown, 
     targetWhere: TARGET_WHERE.player,
@@ -220,7 +219,7 @@ export function getCubitsDatabase() {
   collection[CUBITS.Knowledge] = {
     key: CUBITS.Knowledge,
     name: "Knowledge", 
-    description: DEFAULT_DESCRIPTION,
+    description: "The opponents hand is revealed",
     types: [TYPES.unknown], 
     rarity: RARITY.unknown, 
     targetWhere: TARGET_WHERE.player,
@@ -236,7 +235,7 @@ export function getCubitsDatabase() {
     
     key: CUBITS.Condemn,
     name: "Condemn", 
-    description: DEFAULT_DESCRIPTION,
+    description: "No additional cubits can be placed on this unit",
     types: [TYPES.unknown], 
     rarity: RARITY.unknown, 
     targetWhere: TARGET_WHERE.units,
@@ -251,7 +250,7 @@ export function getCubitsDatabase() {
   collection[CUBITS.KingOfHill] = {
     key: CUBITS.KingOfHill,
     name: "King of Hill",
-    description: DEFAULT_DESCRIPTION,
+    description: "If your King unit is on this space at end of your turn you win the game",
     types: [TYPES.victory], 
     rarity: RARITY.unknown, 
     targetWhere: TARGET_WHERE.arena,
@@ -263,6 +262,21 @@ export function getCubitsDatabase() {
     data: {
       location: null
     }
+  };
+
+  collection[CUBITS.HitRun] = {
+    key: CUBITS.HitRun,
+    name: "Hit & Run",
+    description: "After capturing a unit you may move the unit passively",
+    types: [TYPES.unknown], 
+    rarity: RARITY.unknown, 
+    targetWhere: TARGET_WHERE.units,
+    targetWhat: TARGET_WHAT.self,
+    activatable: true,
+    durationType: 0,
+    durationAmount: 0,
+    hidden: false,
+    data: {}
   };
 
   return collection;

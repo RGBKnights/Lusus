@@ -46,6 +46,8 @@ export class Logic {
       }
     }
 
+    hands["0"].push(CUBITS.HitRun);
+
     return {
       arena: null,
       players: {
@@ -544,13 +546,18 @@ export class Logic {
   whatIsAtLocation(g, playerId, target, x, y) {
     let data = {
       unit: null,
-      cubit: null
+      cubit: null,
+      activatable: false,
     };
 
     if(target === TARGET_WHERE.units) {
       data.unit = g.players[playerId].units[y];
-      let cubit = data.unit.slots[x-1];
-      data.cubit = cubit ? cubit.cubit : null;
+      let cubitix = data.unit.slots[x-1];
+      if(cubitix) {
+        let cubit = this.getCubit(cubitix.cubit);
+        data.cubit = cubit.key;
+        data.activatable = cubit.activatable;
+      }
     }
 
     if(target === TARGET_WHERE.hand) {

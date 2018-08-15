@@ -5,9 +5,8 @@ Stuff I am working on now or next. Also there is a RoadMap list with the long te
 
 ## TODO
 
-* Implement - SWAP
-* Implement - Movement Activation (cubits that can do a different movement on the Move Phase based on the activation)
 * Implement logic for each Cubit
+- https://docs.google.com/spreadsheets/d/1zCMueghs-PBdr3HhSXKGGcOPpCqyDbhRKm_A3itCUCg/edit#gid=0
 
 ## RoadMap
 
