@@ -608,13 +608,31 @@ export default class ChessBoard extends React.Component {
         <br />
         <Row>
           <Col>
+            <div className="text-center">
+              <h5>Player 1</h5>
+            </div>
+          </Col>
+          <Col>
             <Row>
               <Col>
-                <div className="text-center">
-                  <h5>Player 1</h5>
-                </div>
+                <h3>Arena</h3>
+              </Col>
+              <Col xs={2}>
+                <Grid rows={1} cols={1} onClick={this.onClickArena} colorMap={arenaColorMap}>
+                  {arena}
+                </Grid>
               </Col>
             </Row>
+          </Col>
+          <Col>
+            <div className="text-center">
+              <h5>Player 2</h5>
+            </div>
+          </Col>
+        </Row>
+
+        <Row>
+          <Col>
             <Row>
               <Col>
                 <h5>
@@ -661,24 +679,11 @@ export default class ChessBoard extends React.Component {
                 </UncontrolledCollapse>
               </Col>
             </Row>
-            <Row>
-              <Col>
-                <h5 id="Player1PlayerToggle">
-                  <u style={toggleStyles}>Player</u>
-                  <Badge color="secondary" className="float-right mt-2">{slots['0'].length}</Badge>
-                </h5>
-                <UncontrolledCollapse toggler="#Player1PlayerToggle" isOpen={true}>
-                  <Grid rows={1} cols={5} onClick={this.onClickPlayer1Slots} colorMap={playerColorMap['0']} style={whiteBroaderStyle}>
-                    {slots['0']}
-                  </Grid>
-                </UncontrolledCollapse>
-              </Col>
-            </Row>
             <hr />
             <Row>
               <Col>
                 <h5 id="Player1ReinforcementsToggle">
-                  <u style={toggleStyles}>Reinforcements</u>
+                  <u style={toggleStyles}>Reserves</u>
                   <Badge color="secondary" className="float-right mt-2">{reinforcements['0'].length}</Badge>
                 </h5>
                 <UncontrolledCollapse toggler="#Player1ReinforcementsToggle">
@@ -704,7 +709,20 @@ export default class ChessBoard extends React.Component {
           </Col>
 
 
-          <Col>      
+          <Col>
+            <Row>
+              <Col>
+                <h5 id="Player1PlayerToggle">
+                  <u style={toggleStyles}>Player</u>
+                  <Badge color="secondary" className="float-right mt-2">{slots['0'].length}</Badge>
+                </h5>
+                <UncontrolledCollapse toggler="#Player1PlayerToggle" isOpen={true}>
+                  <Grid rows={1} cols={5} onClick={this.onClickPlayer1Slots} colorMap={playerColorMap['0']} style={whiteBroaderStyle}>
+                    {slots['0']}
+                  </Grid>
+                </UncontrolledCollapse>
+              </Col>
+            </Row>   
             <Row>
               <Col>
                 <h5 id="Player1UnitToggle">
@@ -721,16 +739,7 @@ export default class ChessBoard extends React.Component {
           </Col>
 
           <Col xs={4}>
-            <Row>
-              <Col>
-                <h3>Arena</h3>
-              </Col>
-              <Col xs={2}>
-                <Grid rows={1} cols={1} onClick={this.onClickArena} colorMap={arenaColorMap}>
-                  {arena}
-                </Grid>
-              </Col>
-            </Row>
+           
             <Row>
               <Col>
                 <h3>Board</h3>
@@ -752,6 +761,19 @@ export default class ChessBoard extends React.Component {
           <Col>
             <Row>
               <Col>
+                <h5 id="Player2PlayerToggle">
+                  <u style={toggleStyles}>Player</u>
+                  <Badge color="secondary" className="float-right mt-2">{slots['1'].length}</Badge>
+                </h5>
+                <UncontrolledCollapse toggler="#Player2PlayerToggle" isOpen={true}>
+                  <Grid rows={1} cols={5} onClick={this.onClickPlayer2Slots}  colorMap={playerColorMap['1']} style={whiteBroaderStyle}>
+                    {slots['1']}
+                  </Grid>
+                </UncontrolledCollapse>
+              </Col>
+            </Row>
+            <Row>
+              <Col>
                 <h5 id="Player2UnitToggle">
                   <u style={toggleStyles}>Units</u>
                   <Badge color="secondary" className="float-right mt-2">{counts['1'].units}</Badge>
@@ -767,13 +789,6 @@ export default class ChessBoard extends React.Component {
 
 
           <Col>
-            <Row>
-              <Col>
-                <div className="text-center">
-                  <h5>Player 2</h5>
-                </div>
-              </Col>
-            </Row>
             <Row>
               <Col>
                 <h5>
@@ -820,24 +835,11 @@ export default class ChessBoard extends React.Component {
                 </UncontrolledCollapse>
               </Col>
             </Row>
-            <Row>
-              <Col>
-                <h5 id="Player2PlayerToggle">
-                  <u style={toggleStyles}>Player</u>
-                  <Badge color="secondary" className="float-right mt-2">{slots['1'].length}</Badge>
-                </h5>
-                <UncontrolledCollapse toggler="#Player2PlayerToggle" isOpen={true}>
-                  <Grid rows={1} cols={5} onClick={this.onClickPlayer2Slots}  colorMap={playerColorMap['1']} style={whiteBroaderStyle}>
-                    {slots['1']}
-                  </Grid>
-                </UncontrolledCollapse>
-              </Col>
-            </Row>
             <hr />
             <Row>
               <Col>
                 <h5 id="Player2ReinforcementsToggle">
-                  <u style={toggleStyles}>Reinforcements</u>
+                  <u style={toggleStyles}>Reserves</u>
                   <Badge color="secondary" className="float-right mt-2">{reinforcements['1'].length}</Badge>
                 </h5>
                 <UncontrolledCollapse toggler="#Player2ReinforcementsToggle">
