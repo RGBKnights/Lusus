@@ -1,25 +1,26 @@
-// import React from 'react';
+import React from 'react';
 import { Client } from 'boardgame.io/react';
 import ChessBoard from './board';
 import ChessGame from './game';
+
+const uuidv4 = require('uuid/v4');
+
+var url = new URL(window.location);
+var params = new URLSearchParams(url.search);
+
+let flagDebug = params.has('d') ? params.get("d").toLowerCase() === "true" : false;
+let matchId = params.has('m') ? params.get("m") : uuidv4();
+let playerId = params.has('p') ? params.get("p") : null;
 
 const ClientApp = Client({
   game: ChessGame,
   board: ChessBoard,
   multiplayer: { server: 'localhost:8000' },
-  debug: true
+  debug: flagDebug
 });
 
-/*
 const App = () => (
-  <div>
-    <h1 className="text-center">Player 1 View</h1>
-    <ClientApp gameID="f5396086" playerID="0" />
-    <hr />
-    <h1 className="text-center">Player 2 View</h1>
-    <ClientApp gameID="f5396086" playerID="1" />
-  </div>
+  <ClientApp gameID={matchId} playerID={playerId} />
 );
-*/
 
-export default ClientApp;
+export default App;

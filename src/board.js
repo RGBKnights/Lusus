@@ -553,17 +553,30 @@ export default class ChessBoard extends React.Component {
     }
 
     let gameMenu = []
-    if(this.props.ctx.gameover) {
-      if(this.props.ctx.gameover === this.props.playerID) {
-        gameMenu.push(<Button key={"GameOver"} color="success" >Game Over! You Won</Button>);
+    if(this.props.playerID) {
+      // Connected Player
+      if(this.props.ctx.gameover) {
+        if(this.props.ctx.gameover === this.props.playerID) {
+          gameMenu.push(<Button key={"GameOver"} color="success" >Game Over! You Won</Button>);
+        } else {
+          gameMenu.push(<Button key={"GameOver"} color="danger" >Game Over! You Lost</Button>);
+        }
+      } else if(this.props.playerID === this.props.ctx.currentPlayer) {
+        gameMenu.push(<Button key={"ShipPhase"} color="primary" onClick={this.onSkipPhase} disabled={this.props.ctx.phase !== 'Action'}>Skip Phase</Button>);
+        gameMenu.push(<Button key={"EndTurn"} color="warning" onClick={this.onEndTurn} disabled={this.props.ctx.phase !== 'Maintenance'}>End Turn</Button>);
       } else {
-        gameMenu.push(<Button key={"GameOver"} color="danger" >Game Over! You Lost</Button>);
+        gameMenu.push(<Button key={"Waiting"} color="info" >Opponents Turn</Button>);
       }
     } else {
-      gameMenu.push(<Button key={"ShipPhase"} color="primary" onClick={this.onSkipPhase} disabled={this.props.ctx.phase !== 'Action'}>Skip Phase</Button>);
-      gameMenu.push(<Button key={"EndTurn"} color="warning" onClick={this.onEndTurn} disabled={this.props.ctx.phase !== 'Maintenance'}>End Turn</Button>);
+      // Spectator
+      if(this.props.ctx.gameover) {
+        let playerName = this.props.ctx.gameover + 1;
+        gameMenu.push(<Button key={"Spectator"} color="success" >Player {playerName} Won!</Button>);
+      } else {
+        gameMenu.push(<Button key={"Spectator"} color="info" >Spectator</Button>);
+      }
     }
-    
+
     let mainMenu = [];
     mainMenu.push(<Button key={"Help"} color="info" onClick={this.onHelp} title="Help">?</Button>);
 
@@ -594,7 +607,7 @@ export default class ChessBoard extends React.Component {
         </Row>
         <br />
         <Row>
-          <Col xs={3}>
+          <Col>
             <Row>
               <Col>
                 <div className="text-center">
@@ -661,19 +674,6 @@ export default class ChessBoard extends React.Component {
                 </UncontrolledCollapse>
               </Col>
             </Row>
-            <Row>
-              <Col>
-                <h5 id="Player1UnitToggle">
-                  <u style={toggleStyles}>Units</u>
-                  <Badge color="secondary" className="float-right mt-2">{counts['0'].units}</Badge>
-                </h5>
-                <UncontrolledCollapse toggler="#Player1UnitToggle" isOpen={true}>
-                  <Grid rows={counts['0'].units} cols={5} onClick={this.onClickPlayer1Units}  colorMap={unitsColorMap['0']} style={whiteBroaderStyle}>
-                    {units['0']}
-                  </Grid>
-                </UncontrolledCollapse>
-              </Col>
-            </Row>
             <hr />
             <Row>
               <Col>
@@ -702,7 +702,25 @@ export default class ChessBoard extends React.Component {
               </Col>
             </Row>
           </Col>
-          <Col>
+
+
+          <Col>      
+            <Row>
+              <Col>
+                <h5 id="Player1UnitToggle">
+                  <u style={toggleStyles}>Units</u>
+                  <Badge color="secondary" className="float-right mt-2">{counts['0'].units}</Badge>
+                </h5>
+                <UncontrolledCollapse toggler="#Player1UnitToggle" isOpen={true}>
+                  <Grid rows={counts['0'].units} cols={5} onClick={this.onClickPlayer1Units}  colorMap={unitsColorMap['0']} style={whiteBroaderStyle}>
+                    {units['0']}
+                  </Grid>
+                </UncontrolledCollapse>
+              </Col>
+            </Row>
+          </Col>
+
+          <Col xs={4}>
             <Row>
               <Col>
                 <h3>Arena</h3>
@@ -730,7 +748,25 @@ export default class ChessBoard extends React.Component {
               </Col>
             </Row>
           </Col>
-          <Col xs={3}>
+
+          <Col>
+            <Row>
+              <Col>
+                <h5 id="Player2UnitToggle">
+                  <u style={toggleStyles}>Units</u>
+                  <Badge color="secondary" className="float-right mt-2">{counts['1'].units}</Badge>
+                </h5>
+                <UncontrolledCollapse toggler="#Player2UnitToggle" isOpen={true}>
+                  <Grid rows={counts['1'].units} cols={5} onClick={this.onClickPlayer2Units}  colorMap={unitsColorMap['1']} style={whiteBroaderStyle}>
+                    {units['1']}
+                  </Grid>
+                </UncontrolledCollapse>
+              </Col>
+            </Row>           
+          </Col>
+
+
+          <Col>
             <Row>
               <Col>
                 <div className="text-center">
@@ -793,19 +829,6 @@ export default class ChessBoard extends React.Component {
                 <UncontrolledCollapse toggler="#Player2PlayerToggle" isOpen={true}>
                   <Grid rows={1} cols={5} onClick={this.onClickPlayer2Slots}  colorMap={playerColorMap['1']} style={whiteBroaderStyle}>
                     {slots['1']}
-                  </Grid>
-                </UncontrolledCollapse>
-              </Col>
-            </Row>
-            <Row>
-              <Col>
-                <h5 id="Player2UnitToggle">
-                  <u style={toggleStyles}>Units</u>
-                  <Badge color="secondary" className="float-right mt-2">{counts['1'].units}</Badge>
-                </h5>
-                <UncontrolledCollapse toggler="#Player2UnitToggle" isOpen={true}>
-                  <Grid rows={counts['1'].units} cols={5} onClick={this.onClickPlayer2Units}  colorMap={unitsColorMap['1']} style={whiteBroaderStyle}>
-                    {units['1']}
                   </Grid>
                 </UncontrolledCollapse>
               </Col>
