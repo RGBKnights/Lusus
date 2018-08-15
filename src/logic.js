@@ -46,8 +46,6 @@ export class Logic {
       }
     }
 
-    hands["0"].push(CUBITS.Swap);
-
     return {
       arena: null,
       players: {
