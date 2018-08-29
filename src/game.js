@@ -4,7 +4,6 @@ let clone = require('clone');
 const GameLogic = Game({
     name: 'Lusus',
     setup: (ctx) => {
-        console.log("Setup()", ctx.currentPlayer);
         return { counter: 0 }
      },
     moves: {
@@ -22,44 +21,32 @@ const GameLogic = Game({
             const g = clone(G);
             g.counter++;
             return g;
-        },
-        maintenance: (G, ctx) => {
-            const g = clone(G);
-            g.counter = 0;
-            return g;
-        },
+        }
     },
     flow: {
         endTurn: true,
         endPhase: true,
         endGame: true,
         phases: [
-          {
+        {
+            name: 'Upkeep'
+        },
+        {
             name: 'Action',
             allowedMoves: ['playCubit', 'activateCubit'],
             onPhaseBegin: (G, ctx) => {
                 const g = clone(G);
-                console.log("Action:onPhaseBegin()", ctx.currentPlayer);
+                console.log("Action:onPhaseBegin(" + ctx.turn + ")", ctx.currentPlayer);
                 return g;
             },
             onPhaseEnd: (G, ctx) => {
                 const g = clone(G);
-                console.log("Action:onPhaseEnd()", ctx.currentPlayer);
-                return g;
-            },
-            onTurnBegin: (G, ctx) => {
-                const g = clone(G);
-                console.log("Action:onTurnBegin()", ctx.currentPlayer);
-                return g;
-            },
-            onTurnEnd: (G, ctx) => {
-                const g = clone(G);
-                console.log("Action:onTurnEnd()", ctx.currentPlayer);
+                console.log("Action:onPhaseEnd(" + ctx.turn + ")", ctx.currentPlayer);
                 return g;
             },
             onMove: (G, ctx) => {
                 const g = clone(G);
-                console.log("Action:onMove()", ctx.currentPlayer);
+                console.log("Action:onMove(" + ctx.turn + ")", ctx.currentPlayer);
                 return g;
             },
           },
@@ -68,27 +55,17 @@ const GameLogic = Game({
             allowedMoves: ['moveUnit'],
             onPhaseBegin: (G, ctx) => {
                 const g = clone(G);
-                console.log("Movement:onPhaseBegin()", ctx.currentPlayer);
+                console.log("Movement:onPhaseBegin(" + ctx.turn + ")", ctx.currentPlayer);
                 return g;
             },
             onPhaseEnd: (G, ctx) => {
                 const g = clone(G);
-                console.log("Movement:onPhaseEnd()", ctx.currentPlayer);
-                return g;
-            },
-            onTurnBegin: (G, ctx) => {
-                const g = clone(G);
-                console.log("Movement:onTurnBegin()", ctx.currentPlayer);
-                return g;
-            },
-            onTurnEnd: (G, ctx) => {
-                const g = clone(G);
-                console.log("Movement:onTurnEnd()", ctx.currentPlayer);
+                console.log("Movement:onPhaseEnd(" + ctx.turn + ")", ctx.currentPlayer);
                 return g;
             },
             onMove: (G, ctx) => {
                 const g = clone(G);
-                console.log("Movement:onMove()", ctx.currentPlayer);
+                console.log("Movement:onMove(" + ctx.turn + ")", ctx.currentPlayer);
                 return g;
             },
           },
@@ -97,27 +74,17 @@ const GameLogic = Game({
             allowedMoves: ['activateCubit', 'moveUnit'],
             onPhaseBegin: (G, ctx) => {
                 const g = clone(G);
-                console.log("Reaction:onPhaseBegin()", ctx.currentPlayer);
+                console.log("Reaction:onPhaseBegin(" + ctx.turn + ")", ctx.currentPlayer);
                 return g;
             },
             onPhaseEnd: (G, ctx) => {
                 const g = clone(G);
-                console.log("Reaction:onPhaseEnd()", ctx.currentPlayer);
-                return g;
-            },
-            onTurnBegin: (G, ctx) => {
-                const g = clone(G);
-                console.log("Reaction: onTurnBegin()", ctx.currentPlayer);
-                return g;
-            },
-            onTurnEnd: (G, ctx) => {
-                const g = clone(G);
-                console.log("Reaction:onTurnEnd()", ctx.currentPlayer);
+                console.log("Reaction:onPhaseEnd(" + ctx.turn + ")", ctx.currentPlayer);
                 return g;
             },
             onMove: (G, ctx) => {
                 const g = clone(G);
-                console.log("Reaction:onMove()", ctx.currentPlayer);
+                console.log("Reaction:onMove(" + ctx.turn + ")", ctx.currentPlayer);
                 return g;
             },
           },
@@ -125,27 +92,17 @@ const GameLogic = Game({
             name: 'Maintenance',
             onPhaseBegin: (G, ctx) => {
                 const g = clone(G);
-                console.log("Maintenance:onPhaseBegin()", ctx.currentPlayer);
+                console.log("Maintenance:onPhaseBegin(" + ctx.turn + ")", ctx.currentPlayer);
                 return g;
             },
             onPhaseEnd: (G, ctx) => {
                 const g = clone(G);
-                console.log("Maintenance:onPhaseEnd()", ctx.currentPlayer);
-                return g;
-            },
-            onTurnBegin: (G, ctx) => {
-                const g = clone(G);
-                console.log("Maintenance:onTurnBegin()", ctx.currentPlayer);
-                return g;
-            },
-            onTurnEnd: (G, ctx) => {
-                const g = clone(G);
-                console.log("Maintenance:onTurnEnd()", ctx.currentPlayer);
+                console.log("Maintenance:onPhaseEnd(" + ctx.turn + ")", ctx.currentPlayer);
                 return g;
             },
             onMove: (G, ctx) => {
                 const g = clone(G);
-                console.log("Maintenance:onMove()", ctx.currentPlayer);
+                console.log("Maintenance:onMove(" + ctx.turn + ")", ctx.currentPlayer);
                 return g;
             },
           },
