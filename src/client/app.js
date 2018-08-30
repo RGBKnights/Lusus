@@ -1,7 +1,7 @@
 import React from 'react';
 import { Client } from 'boardgame.io/react';
 import GameBoard from './board';
-import GameLogic from '../game';
+import GameLogic from '../game/logic';
 
 const ClientApp = Client({
   game: GameLogic,

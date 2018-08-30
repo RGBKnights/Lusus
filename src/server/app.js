@@ -1,5 +1,5 @@
 import { Server } from 'boardgame.io/server';
-import GameLogic from '../game';
+import GameLogic from '../game/logic';
 
 const server = Server({ games: [GameLogic] });
 
