@@ -29,21 +29,22 @@ export const CLASSIFICATIONS = {
     Trap: 2,
 };
 
-export const BOARDS = {
+export const LOCATIONS = {
     Unknown: 0,
-    Hand: 1,
-    Player: 2,
-    Units: 3,
-    Field: 4,
-    Arena: 5,
-    Afterlife: 6,
-    Exile: 7,
-    //Reinforcements: 0,
+    Bag: 1,
+    Hand: 2,
+    Player: 3,
+    Units: 4,
+    Field: 5,
+    Arena: 6,
+    Afterlife: 7,
+    Exile: 8,
+    Reinforcements: 9,
 };
 
 export const TARGETS = {
     Invalid: 0,
-    Empty: 1,
+    Passive: 1,
     Enemy: 2,
     Ally: 3,
     Self: 4,
@@ -78,33 +79,56 @@ export class BaseCubit {
         this.description = desc;
         this.types = [];
         this.rarity = RARITY_TYPES.Unknown;
-        this.hidden =  false;
-        this.ownership = null;      // Which bag did the cubit come from
-        this.controller = null;     // who current can perfrom actions on this cubit
+        // Which bag did the cubit come from
+        this.ownership = null;
+        // Who currently can perform actions on this cubit             
+        this.controller = null;
         this.moves = 0,
         this.turns = 0,
         this.movement = [];
         this.duration = { type: DURATION_TYPES.Unknown, amount: null };
-        this.locations = [];
+        this.locations = []; // { where: LOCATIONS.Unknown, x: 0, y: 0 }
         this.children = []
     }
 
-    isAlive() {
-        let where = this.locations.filter(l => l.board === BOARDS.Afterlife || l.board === BOARDS.Exile);
-        return where.length > 0;
+    isType(type) {
+        return this.types.includes(type);
     }
 
-    isHidden(cubits, player, opponent) {
-        // Add check if the cubit should be hidden dynamicaly:
-        // 1. Hand is hidden by default
-        // 1a. hand is revaled by Knownedgle
-        // 2. Check the hidden flag
+    isVisible(cubits, player, opponent) {
+        if(this.at(LOCATIONS.Bag)) {
+          return false;
+        }
 
-        return this.hidden;
+        if(this.at(LOCATIONS.Exile)) {
+          return false;
+        }
+
+        if(this.controller === player) {
+          return true;
+        }
+        
+        if(this.controller === opponent) {
+          if(this.at(LOCATIONS.Hand)) {
+            let hasKnowledge = KnowledgeCubit.hasEffect(cubits, player, opponent);
+            if(hasKnowledge) {
+              return true;
+            }
+
+            return false;
+          }
+          if(this.at(LOCATIONS.Reinforcements)) {
+            return false;
+          }
+
+          return true;
+        }
+
+        return false;
     }
 
-    hasKey(key) {
-        return key === this.key;
+    at(where) {
+        return this.locations.filter(l => l.where === where).length > 0;
     }
 
     hasChild(key) {
@@ -117,7 +141,7 @@ export class BaseCubit {
         return result;
     }
 
-    onMoved(cubits) {
+    onMoved(cubits, player, opponent) {
         this.moves++;
         this.children.forEach(function(cubit) {
             cubit.onMoved(cubits);
@@ -137,11 +161,15 @@ export class BaseCubit {
     }
 
     onActivated(cubits) {
-        // Overriten...
+        // Overrides...
     }
 
     onPlayed(cubits)  {
-        // Overriten...
+        // Overrides...
+    }
+
+    static hasEffect(cubits, player, opponent) {
+      return false;
     }
 }
 
@@ -152,11 +180,11 @@ export class KingUnit extends BaseCubit {
         this.types.push(CLASSIFICATIONS.Unit);
         this.movement.push({ type: MOVEMENT_TYPES.Orthogonal, distance: 1, });
         this.movement.push({ type: MOVEMENT_TYPES.Diagonal, distance: 1, });
-        this.movement.push({ type: MOVEMENT_TYPES.Castle }); // Conditional on having no moves
+        this.movement.push({ type: MOVEMENT_TYPES.Castle });
     }
 
-    onMoved = (cubits) => {
-        super.onMoved(cubits);
+    onMoved = (cubits, player, opponent) => {
+        super.onMoved(cubits, player, opponent);
 
         // Remove Castle from the movement when moved.
         this.movement = this.movement.filter(m => (m.type === MOVEMENT_TYPES.Castle) === false);
@@ -210,14 +238,23 @@ export class PawnUnit extends BaseCubit {
         data.movement.push({ type: MOVEMENT_TYPES.Fork, distance: 1 });
     }
 
-    onMoved = (cubits) => {
-        super.onMoved(cubits);
+    onMoved = (cubits, player, opponent) => {
+        super.onMoved(cubits, player, opponent);
 
         // Remove Dash from the movement when moved.
         this.movement = this.movement.filter(m => (m.type === MOVEMENT_TYPES.Forward && m.distance === 2) === false);
     }
 }
 
+export class KnowledgeCubit extends BaseCubit {
+  constructor() {
+      super(CUBITS.Knowledge, "Knowledge", "");
+  }
+
+  static hasEffect(cubits, player, opponent) {
+    return cubits.filter(c => c.key === CUBITS.Knowledge && c.controller === player && c.at(LOCATIONS.Player)).length > 0;
+  }
+}
 
 export function getCubitsDatabase() {
     let collection = [];
