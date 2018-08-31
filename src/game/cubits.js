@@ -435,275 +435,160 @@ export function getCubitsDatabase() {
 }
 
 export function getStartingCubits(ctx) {
-    let player1 = ctx.random.Shuffle(getCubitsDatabase());
-    player1.forEach(function(cubit) {
-        cubit.ownership = "0";
-        cubit.locations.push({where: LOCATIONS.Bag });
+    let collection = [];
+
+    let players = ["0", "1"];
+
+    let main = [
+        {player: "0", offset: 0},
+        {player: "1", offset: 7},
+    ];
+    let support = [
+        {player: "0", offset: 1},
+        {player: "1", offset: 6},
+    ];
+
+    players.forEach(function(p) {
+        let cubits = ctx.random.Shuffle(getCubitsDatabase());
+        cubits.forEach(function(cubit) {
+            cubit.ownership = p;
+            cubit.locations.push({where: LOCATIONS.Bag })
+            collection.push(cubit);
+        });
     });
 
-    {
-        let cubit = new UnitRook();
-        cubit.color = "#FF5733";
-        cubit.ownership = "0";
-        cubit.locations.push({where: LOCATIONS.Field, x: 0, y: 0 });
-        cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 0 });
-        player1.push(cubit);
-    }
-    {
-        let cubit = new UnitKnight();
-        cubit.color = "#F9FF33";
-        cubit.ownership = "0";
-        cubit.locations.push({where: LOCATIONS.Field, x: 0, y: 1 });
-        cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 1 });
-        player1.push(cubit);
-    }
-    {
-        let cubit = new UnitBishop();
-        cubit.color = "#008000";
-        cubit.ownership = "0";
-        cubit.locations.push({where: LOCATIONS.Field, x: 0, y: 2 });
-        cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 2 });
-        player1.push(cubit);
-    }
-    {
-        let cubit = new UnitQueen();
-        cubit.color = "#33FFA8";
-        cubit.ownership = "0";
-        cubit.locations.push({where: LOCATIONS.Field, x: 0, y: 3 });
-        cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 3 });
-        player1.push(cubit);
-    }
-    {
-        let cubit = new UnitKing();
-        cubit.color = "#33F6FF";
-        cubit.ownership = "0";
-        cubit.locations.push({where: LOCATIONS.Field, x: 0, y: 4 });
-        cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 4 });
-        player1.push(cubit);
-    }
-    {
-        let cubit = new UnitBishop();
-        cubit.color = "#3346FF";
-        cubit.ownership = "0";
-        cubit.locations.push({where: LOCATIONS.Field, x: 0, y: 5 });
-        cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 5 });
-        player1.push(cubit);
-    }
-    {
-        let cubit = new UnitKnight();
-        cubit.color = "#800080";
-        cubit.ownership = "0";
-        cubit.locations.push({where: LOCATIONS.Field, x: 0, y: 6 });
-        cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 6 });
-        player1.push(cubit);
-    }
-    {
-        let cubit = new UnitRook();
-        cubit.color = "#FF0000";
-        cubit.ownership = "0";
-        cubit.locations.push({where: LOCATIONS.Field, x: 0, y: 7 });
-        cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 7 });
-        player1.push(cubit);
-    }
-    {
-        let cubit = new UnitPawn();
-        cubit.color = "#FF5733";
-        cubit.ownership = "0";
-        cubit.locations.push({where: LOCATIONS.Field, x: 1, y: 0 });
-        cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 8 });
-        player1.push(cubit);
-    }
-    {
-        let cubit = new UnitPawn();
-        cubit.color = "#F9FF33";
-        cubit.ownership = "0";
-        cubit.locations.push({where: LOCATIONS.Field, x: 1, y: 1 });
-        cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 9 });
-        player1.push(cubit);
-    }
-    {
-        let cubit = new UnitPawn();
-        cubit.color = "#008000";
-        cubit.ownership = "0";
-        cubit.locations.push({where: LOCATIONS.Field, x: 1, y: 2 });
-        cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 10 });
-        player1.push(cubit);
-    }
-    {
-        let cubit = new UnitPawn();
-        cubit.color = "#33FFA8";
-        cubit.ownership = "0";
-        cubit.locations.push({where: LOCATIONS.Field, x: 1, y: 3 });
-        cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 11 });
-        player1.push(cubit);
-    }
-    {
-        let cubit = new UnitPawn();
-        cubit.color = "#33F6FF";
-        cubit.ownership = "0";
-        cubit.locations.push({where: LOCATIONS.Field, x: 1, y: 4 });
-        cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 12 });
-        player1.push(cubit);
-    }
-    {
-        let cubit = new UnitPawn();
-        cubit.color = "#3346FF";
-        cubit.ownership = "0";
-        cubit.locations.push({where: LOCATIONS.Field, x: 1, y: 5 });
-        cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 13 });
-        player1.push(cubit);
-    }
-    {
-        let cubit = new UnitPawn();
-        cubit.color = "#800080";
-        cubit.ownership = "0";
-        cubit.locations.push({where: LOCATIONS.Field, x: 1, y: 6 });
-        cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 14 });
-        player1.push(cubit);
-    }
-    {
-        let cubit = new UnitPawn();
-        cubit.color = "#FF0000";
-        cubit.ownership = "0";
-        cubit.locations.push({where: LOCATIONS.Field, x: 1, y: 7 });
-        cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 15 });
-        player1.push(cubit);
-    }
-
-    let player2 = ctx.random.Shuffle(getCubitsDatabase());
-    player2.forEach(function(cubit) {
-        cubit.ownership = "1";
-        cubit.locations.push({where: LOCATIONS.Bag })
+    main.forEach(function(_) {
+        {
+            let cubit = new UnitRook();
+            cubit.color = "#FF5733";
+            cubit.ownership = _.player;
+            cubit.locations.push({where: LOCATIONS.Field, x: _.offset, y: 0 });
+            cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 0 });
+            collection.push(cubit);
+        }
+        {
+            let cubit = new UnitKnight();
+            cubit.color = "#F9FF33";
+            cubit.ownership = _.player;
+            cubit.locations.push({where: LOCATIONS.Field, x: _.offset, y: 1 });
+            cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 1 });
+            collection.push(cubit);
+        }
+        {
+            let cubit = new UnitBishop();
+            cubit.color = "#008000";
+            cubit.ownership = _.player;
+            cubit.locations.push({where: LOCATIONS.Field, x: _.offset, y: 2 });
+            cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 2 });
+            collection.push(cubit);
+        }
+        {
+            let cubit = new UnitQueen();
+            cubit.color = "#33FFA8";
+            cubit.ownership = _.player;
+            cubit.locations.push({where: LOCATIONS.Field, x: _.offset, y: 3 });
+            cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 3 });
+            collection.push(cubit);
+        }
+        {
+            let cubit = new UnitKing();
+            cubit.color = "#33F6FF";
+            cubit.ownership = _.player;
+            cubit.locations.push({where: LOCATIONS.Field, x: _.offset, y: 4 });
+            cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 4 });
+            collection.push(cubit);
+        }
+        {
+            let cubit = new UnitBishop();
+            cubit.color = "#3346FF";
+            cubit.ownership =  _.player;
+            cubit.locations.push({where: LOCATIONS.Field, x: _.offset, y: 5 });
+            cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 5 });
+            collection.push(cubit);
+        }
+        {
+            let cubit = new UnitKnight();
+            cubit.color = "#800080";
+            cubit.ownership = _.player;
+            cubit.locations.push({where: LOCATIONS.Field, x: _.offset, y: 6 });
+            cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 6 });
+            collection.push(cubit);
+        }
+        {
+            let cubit = new UnitRook();
+            cubit.color = "#FF0000";
+            cubit.ownership =  _.player;
+            cubit.locations.push({where: LOCATIONS.Field, x: _.offset, y: 7 });
+            cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 7 });
+            collection.push(cubit);
+        }
     });
-
-    {
-        let cubit = new UnitRook();
-        cubit.color = "#FF5733";
-        cubit.ownership = "1";
-        cubit.locations.push({where: LOCATIONS.Field, x: 7, y: 0 });
-        cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 0 });
-        player2.push(cubit);
-    }
-    {
-        let cubit = new UnitKnight();
-        cubit.color = "#F9FF33";
-        cubit.ownership = "1";
-        cubit.locations.push({where: LOCATIONS.Field, x: 7, y: 1 });
-        cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 1 });
-        player2.push(cubit);
-    }
-    {
-        let cubit = new UnitBishop();
-        cubit.color = "#008000";
-        cubit.ownership = "1";
-        cubit.locations.push({where: LOCATIONS.Field, x: 7, y: 2 });
-        cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 2 });
-        player2.push(cubit);
-    }
-    {
-        let cubit = new UnitQueen();
-        cubit.color = "#33FFA8";
-        cubit.ownership = "1";
-        cubit.locations.push({where: LOCATIONS.Field, x: 7, y: 3 });
-        cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 3 });
-        player2.push(cubit);
-    }
-    {
-        let cubit = new UnitKing();
-        cubit.color = "#33F6FF";
-        cubit.ownership = "1";
-        cubit.locations.push({where: LOCATIONS.Field, x: 7, y: 4 });
-        cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 4 });
-        player2.push(cubit);
-    }
-    {
-        let cubit = new UnitBishop();
-        cubit.color = "#3346FF";
-        cubit.ownership = "1";
-        cubit.locations.push({where: LOCATIONS.Field, x: 7, y: 5 });
-        cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 5 });
-        player2.push(cubit);
-    }
-    {
-        let cubit = new UnitKnight();
-        cubit.color = "#800080";
-        cubit.ownership = "1";
-        cubit.locations.push({where: LOCATIONS.Field, x: 7, y: 6 });
-        cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 6 });
-        player2.push(cubit);
-    }
-    {
-        let cubit = new UnitRook();
-        cubit.color = "#FF0000";
-        cubit.ownership = "1";
-        cubit.locations.push({where: LOCATIONS.Field, x: 7, y: 7 });
-        cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 7 });
-        player2.push(cubit);
-    }
-    {
-        let cubit = new UnitPawn();
-        cubit.color = "#FF5733";
-        cubit.ownership = "1";
-        cubit.locations.push({where: LOCATIONS.Field, x: 6, y: 0 });
-        cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 8 });
-        player2.push(cubit);
-    }
-    {
-        let cubit = new UnitPawn();
-        cubit.color = "#F9FF33";
-        cubit.ownership = "1";
-        cubit.locations.push({where: LOCATIONS.Field, x: 6, y: 1 });
-        cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 9 });
-        player2.push(cubit);
-    }
-    {
-        let cubit = new UnitPawn();
-        cubit.color = "#008000";
-        cubit.ownership = "1";
-        cubit.locations.push({where: LOCATIONS.Field, x: 6, y: 2 });
-        cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 10 });
-        player2.push(cubit);
-    }
-    {
-        let cubit = new UnitPawn();
-        cubit.color = "#33FFA8";
-        cubit.ownership = "1";
-        cubit.locations.push({where: LOCATIONS.Field, x: 6, y: 3 });
-        cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 11 });
-        player2.push(cubit);
-    }
-    {
-        let cubit = new UnitPawn();
-        cubit.color = "#33F6FF";
-        cubit.ownership = "1";
-        cubit.locations.push({where: LOCATIONS.Field, x: 6, y: 4 });
-        cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 12 });
-        player2.push(cubit);
-    }
-    {
-        let cubit = new UnitPawn();
-        cubit.color = "#3346FF";
-        cubit.ownership = "1";
-        cubit.locations.push({where: LOCATIONS.Field, x: 6, y: 5 });
-        cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 13 });
-        player2.push(cubit);
-    }
-    {
-        let cubit = new UnitPawn();
-        cubit.color = "#800080";
-        cubit.ownership = "1";
-        cubit.locations.push({where: LOCATIONS.Field, x: 6, y: 6 });
-        cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 14 });
-        player2.push(cubit);
-    }
-    {
-        let cubit = new UnitPawn();
-        cubit.color = "#FF0000";
-        cubit.ownership = "1";
-        cubit.locations.push({where: LOCATIONS.Field, x: 6, y: 7 });
-        cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 15 });
-        player2.push(cubit);
-    }
-
-    return [].concat(player1).concat(player2);
+    support.forEach(function(_) {
+        {
+            let cubit = new UnitPawn();
+            cubit.color = "#FF5733";
+            cubit.ownership =  _.player;
+            cubit.locations.push({where: LOCATIONS.Field, x: _.offset, y: 0 });
+            cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 8 });
+            collection.push(cubit);
+        }
+        {
+            let cubit = new UnitPawn();
+            cubit.color = "#F9FF33";
+            cubit.ownership = _.player;
+            cubit.locations.push({where: LOCATIONS.Field, x: _.offset, y: 1 });
+            cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 9 });
+            collection.push(cubit);
+        }
+        {
+            let cubit = new UnitPawn();
+            cubit.color = "#008000";
+            cubit.ownership = _.player;
+            cubit.locations.push({where: LOCATIONS.Field, x: _.offset, y: 2 });
+            cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 10 });
+            collection.push(cubit);
+        }
+        {
+            let cubit = new UnitPawn();
+            cubit.color = "#33FFA8";
+            cubit.ownership = _.player;
+            cubit.locations.push({where: LOCATIONS.Field, x: _.offset, y: 3 });
+            cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 11 });
+            collection.push(cubit);
+        }
+        {
+            let cubit = new UnitPawn();
+            cubit.color = "#33F6FF";
+            cubit.ownership = _.player;
+            cubit.locations.push({where: LOCATIONS.Field, x: _.offset, y: 4 });
+            cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 12 });
+            collection.push(cubit);
+        }
+        {
+            let cubit = new UnitPawn();
+            cubit.color = "#3346FF";
+            cubit.ownership = _.player;
+            cubit.locations.push({where: LOCATIONS.Field, x: _.offset, y: 5 });
+            cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 13 });
+            collection.push(cubit);
+        }
+        {
+            let cubit = new UnitPawn();
+            cubit.color = "#800080";
+            cubit.ownership = _.player;
+            cubit.locations.push({where: LOCATIONS.Field, x: _.offset, y: 6 });
+            cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 14 });
+            collection.push(cubit);
+        }
+        {
+            let cubit = new UnitPawn();
+            cubit.color = "#FF0000";
+            cubit.ownership = _.player;
+            cubit.locations.push({where: LOCATIONS.Field, x: _.offset, y: 7 });
+            cubit.locations.push({where: LOCATIONS.Units, x: 0, y: 15 });
+            collection.push(cubit);
+        }
+    });
+    
+    return collection;
 }
