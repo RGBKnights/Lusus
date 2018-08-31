@@ -4,24 +4,20 @@ let clone = require('clone');
 const GameLogic = Game({
     name: 'Lusus',
     setup: (ctx) => {
-        return { 
-            counter: 0 
-        };
+        let collection = getStartingCubits(ctx);
+        return { cubits: collection };
     },
     moves: {
         playCubit: (G, ctx) => {
             const g = clone(G);
-            g.counter++;
             return g;
         },
         activateCubit: (G, ctx) => {
             const g = clone(G);
-            g.counter++;
             return g;
         },
         moveUnit: (G, ctx) => {
             const g = clone(G);
-            g.counter++;
             return g;
         }
     },
