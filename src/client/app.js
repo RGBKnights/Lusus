@@ -6,7 +6,7 @@ import GameLogic from '../game/logic';
 const ClientApp = Client({
   game: GameLogic,
   board: GameBoard,
-  debug: true,
+  debug: false,
   multiplayer: false, // { server: 'localhost:8000' }
 });
 

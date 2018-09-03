@@ -4,10 +4,13 @@
   "private": true,
   "dependencies": {
     "boardgame.io": "^0.25.4",
+    "bootstrap": "^4.1.3",
     "clone": "^2.1.2",
     "react": "^16.4.2",
     "react-dom": "^16.4.2",
-    "react-scripts": "1.1.4"
+    "react-scripts": "1.1.4",
+    "reactstrap": "^6.4.0",
+    "socket.io-client": "^2.1.1"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -19,6 +22,8 @@
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
-    "babel-preset-zero": "^0.3.2"
+    "babel-preset-zero": "^0.3.2",
+    "nodemon": "^1.18.3",
+    "npx": "^10.2.0"
   }
 }

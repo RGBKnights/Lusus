@@ -84,8 +84,8 @@ export class BaseCubit {
         this.ownership = null;
         // Who currently can perform actions on this cubit             
         this.controller = null;
-        this.moves = 0,
-        this.turns = 0,
+        this.moves = 0;
+        this.turns = 0;
         this.movement = [];
         this.duration = { type: DURATION_TYPES.Unknown, amount: null };
         this.locations = []; // { where: LOCATIONS.Unknown, x: 0, y: 0 }
@@ -139,7 +139,7 @@ export class BaseCubit {
     hasOverlap(locations) {       
         locations.forEach(function(loc) {
             let results = this.locations.filter(l => l.where === loc.where && l.x === loc.x && l.y === loc.y).length > 0
-            if(results == true) {
+            if(results === true) {
                 return true;
             }
         });
@@ -150,13 +150,13 @@ export class BaseCubit {
     onMoved(g, ctx) {
         this.moves++;
 
-        // Find Childern...?
+        // Find children...?
     }
 
     onTurnEnd(g, ctx) {
         this.turns++;
 
-        // Find Childern...?
+        // Find children...?
     }
 
     onSelected(g, ctx) {
@@ -228,7 +228,7 @@ export class KnightUnit extends BaseCubit {
         super(CUBITS.UnitKnight, "Knight", "");
 
         this.types.push(CLASSIFICATIONS.Unit);
-        data.movement.push({ type: MOVEMENT_TYPES.Jump, step: [2,1] });
+        this.movement.push({ type: MOVEMENT_TYPES.Jump, step: [2,1] });
     }
 }
 
@@ -237,9 +237,9 @@ export class PawnUnit extends BaseCubit {
         super(CUBITS.UnitPawn, "Pawn", "");
 
         this.types.push(CLASSIFICATIONS.Unit);
-        data.movement.push({ type: MOVEMENT_TYPES.Forward, distance: 1 });
-        data.movement.push({ type: MOVEMENT_TYPES.Forward, distance: 2 });
-        data.movement.push({ type: MOVEMENT_TYPES.Fork, distance: 1 });
+        this.movement.push({ type: MOVEMENT_TYPES.Forward, distance: 1 });
+        this.movement.push({ type: MOVEMENT_TYPES.Forward, distance: 2 });
+        this.movement.push({ type: MOVEMENT_TYPES.Fork, distance: 1 });
     }
 
     onMoved = (g, ctx) => {
@@ -256,15 +256,6 @@ export class OrthogonalCubit extends BaseCubit {
 
         this.types.push(CLASSIFICATIONS.Movement);
         this.movement.push({ type: MOVEMENT_TYPES.Orthogonal, distance: 8, });
-    }
-}
-
-export class DiagonalCubit extends BaseCubit {
-    constructor() {
-        super(CUBITS.MovementDiagonal, "Diagonal", "");
-
-        this.types.push(CLASSIFICATIONS.Movement);
-        this.movement.push({ type: MOVEMENT_TYPES.Diagonal, distance: 8, });
     }
 }
 
@@ -459,7 +450,7 @@ export function getStartingCubits(ctx) {
 
     main.forEach(function(_) {
         {
-            let cubit = new UnitRook();
+            let cubit = new RookUnit();
             cubit.color = "#FF5733";
             cubit.ownership = _.player;
             cubit.locations.push({where: LOCATIONS.Field, x: _.offset, y: 0 });
@@ -467,7 +458,7 @@ export function getStartingCubits(ctx) {
             collection.push(cubit);
         }
         {
-            let cubit = new UnitKnight();
+            let cubit = new KnightUnit();
             cubit.color = "#F9FF33";
             cubit.ownership = _.player;
             cubit.locations.push({where: LOCATIONS.Field, x: _.offset, y: 1 });
@@ -475,7 +466,7 @@ export function getStartingCubits(ctx) {
             collection.push(cubit);
         }
         {
-            let cubit = new UnitBishop();
+            let cubit = new BishopUnit();
             cubit.color = "#008000";
             cubit.ownership = _.player;
             cubit.locations.push({where: LOCATIONS.Field, x: _.offset, y: 2 });
@@ -483,7 +474,7 @@ export function getStartingCubits(ctx) {
             collection.push(cubit);
         }
         {
-            let cubit = new UnitQueen();
+            let cubit = new QueenUnit();
             cubit.color = "#33FFA8";
             cubit.ownership = _.player;
             cubit.locations.push({where: LOCATIONS.Field, x: _.offset, y: 3 });
@@ -491,7 +482,7 @@ export function getStartingCubits(ctx) {
             collection.push(cubit);
         }
         {
-            let cubit = new UnitKing();
+            let cubit = new KingUnit();
             cubit.color = "#33F6FF";
             cubit.ownership = _.player;
             cubit.locations.push({where: LOCATIONS.Field, x: _.offset, y: 4 });
@@ -499,7 +490,7 @@ export function getStartingCubits(ctx) {
             collection.push(cubit);
         }
         {
-            let cubit = new UnitBishop();
+            let cubit = new BishopUnit();
             cubit.color = "#3346FF";
             cubit.ownership =  _.player;
             cubit.locations.push({where: LOCATIONS.Field, x: _.offset, y: 5 });
@@ -507,7 +498,7 @@ export function getStartingCubits(ctx) {
             collection.push(cubit);
         }
         {
-            let cubit = new UnitKnight();
+            let cubit = new KnightUnit();
             cubit.color = "#800080";
             cubit.ownership = _.player;
             cubit.locations.push({where: LOCATIONS.Field, x: _.offset, y: 6 });
@@ -515,7 +506,7 @@ export function getStartingCubits(ctx) {
             collection.push(cubit);
         }
         {
-            let cubit = new UnitRook();
+            let cubit = new RookUnit();
             cubit.color = "#FF0000";
             cubit.ownership =  _.player;
             cubit.locations.push({where: LOCATIONS.Field, x: _.offset, y: 7 });
@@ -525,7 +516,7 @@ export function getStartingCubits(ctx) {
     });
     support.forEach(function(_) {
         {
-            let cubit = new UnitPawn();
+            let cubit = new PawnUnit();
             cubit.color = "#FF5733";
             cubit.ownership =  _.player;
             cubit.locations.push({where: LOCATIONS.Field, x: _.offset, y: 0 });
@@ -533,7 +524,7 @@ export function getStartingCubits(ctx) {
             collection.push(cubit);
         }
         {
-            let cubit = new UnitPawn();
+            let cubit = new PawnUnit();
             cubit.color = "#F9FF33";
             cubit.ownership = _.player;
             cubit.locations.push({where: LOCATIONS.Field, x: _.offset, y: 1 });
@@ -541,7 +532,7 @@ export function getStartingCubits(ctx) {
             collection.push(cubit);
         }
         {
-            let cubit = new UnitPawn();
+            let cubit = new PawnUnit();
             cubit.color = "#008000";
             cubit.ownership = _.player;
             cubit.locations.push({where: LOCATIONS.Field, x: _.offset, y: 2 });
@@ -549,7 +540,7 @@ export function getStartingCubits(ctx) {
             collection.push(cubit);
         }
         {
-            let cubit = new UnitPawn();
+            let cubit = new PawnUnit();
             cubit.color = "#33FFA8";
             cubit.ownership = _.player;
             cubit.locations.push({where: LOCATIONS.Field, x: _.offset, y: 3 });
@@ -557,7 +548,7 @@ export function getStartingCubits(ctx) {
             collection.push(cubit);
         }
         {
-            let cubit = new UnitPawn();
+            let cubit = new PawnUnit();
             cubit.color = "#33F6FF";
             cubit.ownership = _.player;
             cubit.locations.push({where: LOCATIONS.Field, x: _.offset, y: 4 });
@@ -565,7 +556,7 @@ export function getStartingCubits(ctx) {
             collection.push(cubit);
         }
         {
-            let cubit = new UnitPawn();
+            let cubit = new PawnUnit();
             cubit.color = "#3346FF";
             cubit.ownership = _.player;
             cubit.locations.push({where: LOCATIONS.Field, x: _.offset, y: 5 });
@@ -573,7 +564,7 @@ export function getStartingCubits(ctx) {
             collection.push(cubit);
         }
         {
-            let cubit = new UnitPawn();
+            let cubit = new PawnUnit();
             cubit.color = "#800080";
             cubit.ownership = _.player;
             cubit.locations.push({where: LOCATIONS.Field, x: _.offset, y: 6 });
@@ -581,7 +572,7 @@ export function getStartingCubits(ctx) {
             collection.push(cubit);
         }
         {
-            let cubit = new UnitPawn();
+            let cubit = new PawnUnit();
             cubit.color = "#FF0000";
             cubit.ownership = _.player;
             cubit.locations.push({where: LOCATIONS.Field, x: _.offset, y: 7 });

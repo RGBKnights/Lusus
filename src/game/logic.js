@@ -1,4 +1,6 @@
 import { Game } from 'boardgame.io/core';
+import { getStartingCubits } from './cubits';
+
 let clone = require('clone');
 
 const GameLogic = Game({
