@@ -629,11 +629,15 @@ export function getStartingCubits(ctx) {
 export function getTargetsForPhase(cubits, phase, player = null) {
     let collection = [];
 
+    // Play Cubits
     if(phase === "Action") {
         for (let i = 0; i < 5; i++) {
             collection.push({ type: TARGETS.Self, player: player, location: new CubitLocation(LOCATIONS.Hand, i, 0) });
         }
-    } else if(phase === "Movement") {
+    }
+
+    // Move Unit
+    if(phase === "Movement") {
         let units = cubits.filter(c => c.is(LOCATIONS.Field) && c.isType(CLASSIFICATIONS.Unit));
         units.forEach(unit => {
             units.locations.forEach(location => {
