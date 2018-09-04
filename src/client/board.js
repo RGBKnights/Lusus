@@ -41,6 +41,12 @@ class GameBoard extends React.Component {
 
     let cubits = getCubitsFromGameState(this.props.G);
 
+    // c.ownership - Colour (Black vs White)
+    // c.controller - player (0 vs 1)
+    // c.locations[] - where
+
+    // Make new components for CheckerBoard (w,h) and StaticBoard (w,h)
+
     return (
       <Container fluid>
         <Row>
