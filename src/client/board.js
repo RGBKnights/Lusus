@@ -6,10 +6,7 @@ import {
 } from './cubits';
 
 import {
-  getCubit,
-  LOCATIONS, 
-  // TARGETS,
-  // CUBITS,
+  LOCATIONS
 } from '../game/cubits';
 
 // Bootstrap
@@ -35,7 +32,7 @@ class Board {
     this.state = this.parent.props.G;
 
     // Properties
-    this.name = name,
+    this.name = name;
     this.where = where;
     this.size = { width: width, height: height };
     this.player = player;
@@ -48,7 +45,7 @@ class Board {
     // Token colours based on player but maybe have a way to switch sides...
     this.teams = {'0': 'w', '1': 'b'};
     // Base boards
-    this.backgroundColor = '#959595';
+    //this.backgroundColor = '#959595';
     this.whiteColor = '#817F7F';
     this.backColor = '#ABAAAA';
     // Selection
@@ -72,7 +69,7 @@ class Board {
     this.grid = <Grid rows={this.size.height} cols={this.size.width} onClick={this.onCellClick} colorMap={this.background} style={this.style}>{tokens}</Grid>;
   }
 
-  getTokens() {
+  getTokens = () => {
     let collecton = [];
 
     for (let i = 0; i < this.cubits.length; i++) {
@@ -95,44 +92,52 @@ class Board {
     return collecton;
   }
 
-  generateColorMap() {
+  generateColorMap = () => {
     let data = {};
 
     for (let x = 0; x < this.size.width; x++) {
       for (let y = 0; y < this.size.height; y++) {
         const key = `${x},${y}`;
-        const color = this.checkered  === true ?  ((x + y) % 2 === 0) ? this.whiteColor : this.backColor : this.backgroundColor;
+        const color = ((x + y) % 2 === 0) ? this.whiteColor : this.backColor;
         data[key] = color;
       }
     }
 
     return data;
   }
- 
-  onCellClick = ({ x, y }) => {
-    // Find correct Cubit and set 'Selected' flag
-    let cubit = this.cubits.find(c => c.at(this.name, this.player, x, y));
-    if(cubit === undefined) {
-      return;
-    }
 
-    this.parent.props.moves.selectCubit(cubit.id);
-
-    // isSelected() => bool
-    // if cubit is selected : deselect()
-    // if cubit is unselected : select()
-
-    // hasTargets() => bool
-    // if cubit is selected AND targets.count less then targets.total : target()
-    
-    // this.parent.props.G.selection : {id}
-    // this.parent.props.G.targets : [{id}]
-    // this.parent.props.G.objective : #
-    
-    // moves.selectCubit(cubit)
-    // moves.activateCubit(cubit, targets)
+  hasSelection = () => {
+    return this.state.selection != null;
   }
 
+  isSelected = (x, y) => {
+    if(this.state.selection == null) {
+      return false;
+    }
+    
+    let cubit = this.cubits.find(c => c.at(this.where, this.player, x, y));
+    if(cubit != null && this.state.selection === cubit.id) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+ 
+  onCellClick = ({ x, y }) => {
+    if(this.hasSelection()) {
+      // Deselection
+      if(this.isSelected(x, y)) {
+        this.parent.props.moves.blur(); return;
+      }
+
+      // Add target
+    } else {
+      let cubit = this.cubits.find(c => c.at(this.where, this.player, x, y));
+      if(cubit) {
+        this.parent.props.moves.focus(cubit.id); return;
+      }
+    }
+  }
 }
 
 class GameBoard extends React.Component {
@@ -153,17 +158,13 @@ class GameBoard extends React.Component {
     this.connected = (this.props.isMultiplayer && this.props.isConnected);
   }
 
-  render() {
-    
+  render() {    
+    console.log("Targets", this.props.G.targets);
 
-    // TODO: Targets...
-    // A => Phases Targets (valid targets if nothing selected)
-    // B => Selected targets (valid targets if a Cubit is selected)
-
-    this.field = new Board(this, LOCATIONS.Field, "Units", 8, 8, true);
+    this.field = new Board(this, LOCATIONS.Field, "Board", 8, 8);
     this.units = {
-      "0": new Board(this, LOCATIONS.Units, "Units", 5, 16, false, "0"),
-      "1": new Board(this, LOCATIONS.Units, "Units",  5, 16, false, "1"),
+      "0": new Board(this, LOCATIONS.Units, "Units", 5, 16, "0"),
+      "1": new Board(this, LOCATIONS.Units, "Units", 5, 16, "1"),
     }
 
     return (

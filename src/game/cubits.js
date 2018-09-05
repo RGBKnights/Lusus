@@ -10,6 +10,14 @@ export const MOVEMENT_TYPES = {
     Backwards: 7,   // [NEW]
     Sidestep: 8,    // [NEW]
     Castle: 9,      // King
+    Swap: 10,      // Swap
+};
+
+export const MOVEMENT_OVERRIDES = {
+    Unknown: 0,
+    Passified: 1,
+    Enraged: 2,
+    Ally: 2,
 };
 
 export const DURATION_TYPES = {
@@ -44,15 +52,14 @@ export const LOCATIONS = {
     Reinforcements: 9,
 };
 
-/*
-export const TARGETS = {
+export const TARGET = {
     Invalid: 0,
-    Passive: 1,
-    Enemy: 2,
-    Ally: 3,
-    Self: 4,
+    Empty: 1,
+    Obstructed: 2,
+    Self: 3,
+    Enemy: 4,
+    Ally: 5,
 };
-*/
 
 export const CUBITS = {
     Unknown: '',
@@ -73,8 +80,20 @@ export const CUBITS = {
     DoubleAction: '40617317-15e1-5aa3-8cdd-3d3d131e9b4f', 
     Knowledge: '0994b86a-4709-f096-63c9-07c6e1008bfd',
     Condemn: 'b0dca050-b7d4-f83a-554f-4cfc4f2c7854',
-    KingOfHill: '99d4a12e-e368-7700-5cd0-46548040fced'
+    KingOfHill: '99d4a12e-e368-7700-5cd0-46548040fced',
+    Enrage: '765857db-7109-4b3a-b12f-2657ac4cc3cd',
+    Passify: '93eeb236-e43a-4b72-9f1f-5fb3687474fe',
 };
+
+export class TargetLocation {
+    constructor(type, where, player, x, y, cubit = null) {
+        this.type = type;
+        this.where = where;
+        this.player = player;
+        this.x = x;
+        this.y = y;
+    }
+}
 
 export class CubitLocation {
 
@@ -88,18 +107,34 @@ export class CubitLocation {
     }
 
     at(where, player = null, x = null, y = null) {
-        // This might not work...!
-        return (this.where == LOCATIONS.Unknown || this.where === where) &&
+        return (this.where === LOCATIONS.Unknown || this.where === where) &&
             (player == null || this.player === player) &&
             (x == null || this.x === x) &&
             (y == null || this.y === y);
     }
 
-    same(loc, ignore = false) {
-        return (this.where == LOCATIONS.Unknown || loc.where == LOCATIONS.Unknown || this.where === loc.where) &&
-            (ignore === true || this.player == null || loc.player == null || this.player === loc.player) &&
-            (this.x == null || loc.x == null || this.x === loc.x) &&
-            (this.y == null || loc.y == null || this.y === loc.y);
+    same(loc, where = null, player = null, x = null, y = null) {
+        let disableWhere = where === false;
+        let disablePlayer = player === false;
+        let disableX = x === false;
+        let disableY = y === false;
+
+        let overrideWhere = where != null && this.where === where;
+        let overridePlayer = player != null && this.player === player;
+        let overrideX = x != null && this.x === x;
+        let overrideY = y != null && this.y === y;
+
+        let equalWhere = this.where === loc.where;
+        let equalPlayer = this.player === loc.player;
+        let equalX = this.x === loc.x;
+        let equalY = this.y === loc.y;
+
+        let isWhere = (disableWhere || overrideWhere || equalWhere);
+        let isPlayer = (disablePlayer || overridePlayer || equalPlayer);
+        let isX = (disableX || overrideX || equalX);
+        let isY = (disableY|| overrideY || equalY);
+
+        return isWhere && isPlayer && isX && isY;
     }
 }
 
@@ -139,13 +174,14 @@ export class BaseCubit {
         return this.locations.filter(l => l.at(where, player, x, y)).length > 0;
     }
 
-    interecpts(cubit, ignore = false) {
-        cubit.locations.forEach(function(loc) {
-            let results = this.locations.filter(l => l.same(loc, ignore)).length > 0;
+    interecpts(locations, where = null, player = null, x = null, y = null) {
+        for (let i = 0; i < locations.length; i++) {
+            const loc = locations[i];
+            let results = this.locations.filter(l => l.same(loc, where, player, x, y)).length > 0;
             if(results === true) {
                 return true;
             }
-        });
+        }
         return false;
     }
 
@@ -161,12 +197,16 @@ export class BaseCubit {
         // Find children...?
     }
 
-    onSelected(g, ctx) {
-        if(g.selection === this.id) {
-            g.selection = null;
-        } else {
-            g.selection = this.id;
-        }
+    onFocus(g, ctx) {
+        g.selection = this.id;
+        g.objectives = 0;
+        g.targets = [];
+    }
+
+    onBlur(g, ctx) {
+        g.selection = null;
+        g.objectives = 0;
+        g.targets = [];
     }
 
     onActivated(g, ctx) {
@@ -176,9 +216,316 @@ export class BaseCubit {
     onPlayed(g, ctx)  {
         // Overrides...
     }
+
+    onRemoved(g, ctx)  {
+        // Overrides...
+    }
+
+    getTargets(g, ctx) {
+        return [];
+    }
+
+    hasChild(cubits, type) {
+        return false;
+    }
 }
 
-export class KingUnit extends BaseCubit {
+export class UnitCubit extends BaseCubit {
+
+    hasChild(cubits, type) {
+        let results = cubits.filter(c => c.key === type && c.interecpts(this.locations, LOCATIONS.Units, null, false, null)).length > 0;
+        return results;
+    }
+
+    getChildern(cubits, type = null) {
+        // TODO: interecpts DOSE NOT work! change it work correctly based on a supplied Where... and overrides for player / x / y
+        return cubits.filter(c => c.id !== this.id && (type == null || c.key === type) && c.interecpts(this.locations, LOCATIONS.Units, null, false, null));
+    }
+
+    getChildernMovment(cubits) {
+        let movment = [];
+        let kids = this.getChildern(cubits);
+        for (let i = 0; i < kids.length; i++) {
+            const cubit = kids[i];
+            for (let z = 0; z < cubit.movement.length; z++) {
+                const movmment = cubit.movement[z];
+                movment.push(movmment);
+            }
+        }
+        return movment;
+    }
+
+    vaildTarget(cubits, x, y) {
+        if(x < 0 || y < 0 || x > 7 || y > 7) {
+            return TARGET.Invalid;
+        }
+
+        let playerId = this.ownership;
+        let opponentId = playerId === '0' ? '1' : '0';
+        
+        let hasAlly = cubits.filter(c => c.at(LOCATIONS.Field, playerId, x, y)).length > 0;
+        if(hasAlly) {
+            return TARGET.Ally;
+        }
+
+        let hasEnemy = cubits.filter(c => c.at(LOCATIONS.Field, opponentId, x, y)).length > 0;
+        if(hasEnemy) {
+            return TARGET.Enemy;
+        }
+
+        return TARGET.Empty;
+    }
+
+    getTargets(g, ctx) {
+        let location = this.locations.find(l => l.where === LOCATIONS.Field && l.player === this.ownership);
+        if(location == null) {
+            return [];
+        }
+
+        let forward = this.ownership === '0' ? +1 : -1; // On the X
+
+        let cubits = getCubits(g);
+        let subMovements = this.getChildernMovment(cubits);
+        let movements = [].concat(this.movement).concat(subMovements);
+
+        let targets = [];
+        for (let i = 0; i < movements; i++) {
+            const movement = movements[i];
+            switch (movement.type) {
+                case MOVEMENT_TYPES.Orthogonal:
+                {
+                    let steps,x,y;
+                    for (x = location.x - 1, steps = 0; x >= 0 && steps < movement.distance; x--, steps++) {
+                        let type = this.vaildTarget(cubits, x, location.y);
+                        if(type === TARGET.Empty) {
+                             targets.push(new TargetLocation(type, LOCATIONS.Field, null, x, location.y));
+                        } else if(type === TARGET.Enemy) {
+                            targets.push(new TargetLocation(type, LOCATIONS.Field, null, x, location.y));
+                            break;
+                        } else {
+                            break;
+                        }
+                    }
+
+                    for (x = location.x + 1, steps = 0; x < 8 && steps < movement.distance; x++, steps++) {
+                        let type = this.vaildTarget(cubits, x, location.y);
+                        if(type === TARGET.Empty) {
+                            targets.push(new TargetLocation(type, LOCATIONS.Field, null,  x, location.y));
+                        } else if(type === TARGET.Enemy) {
+                            targets.push(new TargetLocation(type, LOCATIONS.Field, null, x, location.y));
+                            break;
+                        } else {
+                            break;
+                        }
+                    }
+                    
+                    for (y = location.y - 1, steps = 0; y >= 0 && steps < movement.distance; y--, steps++) {
+                        let type = this.vaildTarget(cubits, location.x, y);
+                        if(type === TARGET.Empty) {
+                            targets.push(new TargetLocation(type, LOCATIONS.Field, null, location.x, y));
+                        } else if(type === TARGET.Enemy) {
+                            targets.push(new TargetLocation(type, LOCATIONS.Field, null, location.x, y));
+                            break;
+                        } else {
+                            break;
+                        }
+                    }
+
+                    for (y = location.y + 1, steps = 0; y < 8 && steps < movement.distance; y++, steps++) {
+                        let type = this.vaildTarget(cubits, location.x, y);
+                        if(type === TARGET.Empty) {
+                            targets.push(new TargetLocation(type, LOCATIONS.Field, null, location.x, y));
+                        } else if(type === TARGET.Enemy) {
+                            targets.push(new TargetLocation(type, LOCATIONS.Field, null, location.x, y));
+                            break;
+                        } else {
+                            break;
+                        }
+                    }
+
+                    break;
+                }
+                case MOVEMENT_TYPES.Diagonal:
+                {
+                    let steps,x,y;
+
+                    for (x = location.x + 1, y = location.y + 1, steps = 0; x < 8 && y < 8 && steps < movement.distance; x++, y++, steps++) {
+                        let type = this.vaildTarget(cubits, x, y);
+                        if(type === TARGET.Empty) {
+                            targets.push(new TargetLocation(type, LOCATIONS.Field, null, x, y));
+                        } else if(type === TARGET.Enemy) {
+                            targets.push(new TargetLocation(type, LOCATIONS.Field, null, x, y));
+                            break;
+                        } else {
+                            break;
+                        }
+                    }
+
+                    for (x = location.x - 1, y = location.y - 1, steps = 0; x >= 0 && y >= 0 && steps < movement.distance; x--, y--, steps++) {
+                        let type = this.vaildTarget(cubits, x, y);
+                        if(type === TARGET.Empty) {
+                            targets.push(new TargetLocation(type, LOCATIONS.Field, null, x, y));
+                        } else if(type === TARGET.Enemy) {
+                            targets.push(new TargetLocation(type, LOCATIONS.Field, null, x, y));
+                            break;
+                        } else {
+                            break;
+                        }
+                    }
+
+                    for (x = location.x - 1, y = location.y +1, steps = 0; x >= 0 && y < 8 && steps < movement.distance; x--, y++, steps++) {
+                        let type = this.vaildTarget(cubits, x, y);
+                        if(type === TARGET.Empty) {
+                            targets.push(new TargetLocation(type, LOCATIONS.Field, null, x, y));
+                        } else if(type === TARGET.Enemy) {
+                            targets.push(new TargetLocation(type, LOCATIONS.Field, null, x, y));
+                            break;
+                        } else {
+                            break;
+                        }
+                    }
+
+                    for (x = location.x + 1, y = location.y - 1, steps = 0; x < 8 && y >= 0 && steps < movement.distance; x++, y--, steps++) {
+                        let type = this.vaildTarget(cubits, x, y);
+                        if(type === TARGET.Empty) {
+                            targets.push(new TargetLocation(type, LOCATIONS.Field, null, x, y));
+                        } else if(type === TARGET.Enemy) {
+                            targets.push(new TargetLocation(type, LOCATIONS.Field, null, x, y));
+                            break;
+                        } else {
+                            break;
+                        }
+                    }
+
+                    break;
+                }
+                case MOVEMENT_TYPES.Jump:
+                {
+                    let moves = [];
+                    moves.push({ x: location.x + movement.steps[0], y: location.y + movement.steps[1] });
+                    moves.push({ x: location.x + movement.steps[0], y: location.y - movement.steps[1] });
+                    moves.push({ x: location.x - movement.steps[0], y: location.y + movement.steps[1] });
+                    moves.push({ x: location.x - movement.steps[0], y: location.y - movement.steps[1] });
+                    moves.push({ x: location.x + movement.steps[1], y: location.y + movement.steps[0] });
+                    moves.push({ x: location.x - movement.steps[1], y: location.y + movement.steps[0] });
+                    moves.push({ x: location.x + movement.steps[1], y: location.y - movement.steps[0] });
+                    moves.push({ x: location.x - movement.steps[1], y: location.y - movement.steps[0] });
+
+                    for (let i = 0; i < moves.length; i++) {
+                        const move = moves[i];
+                        let type = this.vaildTarget(cubits, move.x, move.y);
+                        if(type === TARGET.Empty || type === TARGET.Enemy) {
+                            targets.push(new TargetLocation(type, LOCATIONS.Field, null, move.x, move.y));
+                        }
+                    }
+
+                    break;
+                }
+                case MOVEMENT_TYPES.Fork:
+                {
+                    let moves = [];
+                    moves.push({ x: location.x + forward, y: location.y - 1 });
+                    moves.push({ x: location.x + forward, y: location.y + 1 });
+
+                    for (let i = 0; i < moves.length; i++) {
+                        const move = moves[i];
+                        let type = this.vaildTarget(cubits, move.x, move.y);
+                        if(type === TARGET.Enemy) {
+                            targets.push(new TargetLocation(type, LOCATIONS.Field, null, move.x, move.y));
+                        }
+                    }
+
+                    break;
+                }
+                case MOVEMENT_TYPES.Forward:
+                {
+                    let steps,x;
+
+                    for (x = location.x + forward, steps = 0; x < 8 && steps < movement.distance; x++, steps++) {
+                        let type = this.vaildTarget(cubits, x, location.y);
+                        if(type === TARGET.Empty) {
+                            targets.push(new TargetLocation(type, LOCATIONS.Field, null, x, location.y));
+                        }
+                    }
+
+                    break;
+                }
+                case MOVEMENT_TYPES.Backwards:
+                {
+                    let steps,x;
+
+                    for (x = location.x - forward, steps = 0; x < 8 && steps < movement.distance; x++, steps++) {
+                        let type = this.vaildTarget(cubits, x, location.y);
+                        if(type === TARGET.Empty) {
+                            targets.push(new TargetLocation(type, LOCATIONS.Field, null, x, location.y));
+                        }
+                    }
+
+                    break;
+                }
+                case MOVEMENT_TYPES.Sidestep:
+                {
+                    let moves = [];
+                    moves.push({ x: location.x, y: location.y - 1 });
+                    moves.push({ x: location.x, y: location.y + 1 });
+
+                    for (let i = 0; i < moves.length; i++) {
+                        const move = moves[i];
+                        let type = this.vaildTarget(cubits, move.x, move.y);
+                        if(type === TARGET.Empty) {
+                            targets.push(new TargetLocation(type, LOCATIONS.Field, null, move.x, move.y));
+                        }
+                    }
+
+                    break;
+                }
+                case MOVEMENT_TYPES.Castle:
+                {
+                    // TODO: Finish Implementation...
+                    // 1. Find path to rooks
+                    // 2. If clear then put target as the Rook
+
+                    break;
+                }
+                case MOVEMENT_TYPES.Swap:
+                {
+                    let moves = [];
+                    moves.push({ x: location.x + 1, y: location.y });
+                    moves.push({ x: location.x - 1, y: location.y });
+                    moves.push({ x: location.x, y: location.y + 1 });
+                    moves.push({ x: location.x, y: location.y - 1 });
+                    moves.push({ x: location.x + 1, y: location.y + 1 });
+                    moves.push({ x: location.x - 1, y: location.y + 1 });
+                    moves.push({ x: location.x + 1, y: location.y - 1 });
+                    moves.push({ x: location.x - 1, y: location.y - 1 });
+
+                    for (let i = 0; i < moves.length; i++) {
+                        const move = moves[i];
+                        let type = this.vaildTarget(cubits, move.x, move.y);
+                        if(type === TARGET.Ally) {
+                            targets.push(new TargetLocation(type, LOCATIONS.Field, null,  move.x, move.y));
+                        }
+                    }
+
+                    break;
+                }
+                default:
+                    break;
+            }
+        }
+
+        if(this.hasChild(cubits, CUBITS.Enrage)) {
+            targets = targets.filter(t => t.type === TARGET.Enemy);
+        }
+        if(this.hasChild(cubits, CUBITS.Passify)) {
+            targets = targets.filter(t => t.type === TARGET.Empty);
+        }
+
+        return targets;
+    }
+}
+
+export class KingUnit extends UnitCubit {
     constructor() {
         super(CUBITS.UnitKing, "King", "King", "");
 
@@ -189,10 +536,11 @@ export class KingUnit extends BaseCubit {
         this.slots = 4;
     }
 
-    onSelected(g, ctx) {
-        super.onSelected(g, ctx);
+    onFocus(g, ctx) {
+        super.onFocus(g, ctx);
         
-        //TODO: stuff...!
+        g.objectives = 1;
+        g.targets = this.getTargets(g, ctx);
     }
 
     onMoved = (g, ctx) => {
@@ -203,7 +551,7 @@ export class KingUnit extends BaseCubit {
     }
 }
 
-export class QueenUnit extends BaseCubit {
+export class QueenUnit extends UnitCubit {
     constructor() {
         super(CUBITS.UnitQueen, "Queen", "Queen", "");
 
@@ -212,9 +560,16 @@ export class QueenUnit extends BaseCubit {
         this.movement.push({ type: MOVEMENT_TYPES.Diagonal, distance: 8, });
         this.slots = 4;
     }
+
+    onFocus(g, ctx) {
+        super.onFocus(g, ctx);
+        
+        g.objectives = 1;
+        g.targets = this.getTargets(g, ctx);
+    }
 }
 
-export class BishopUnit extends BaseCubit {
+export class BishopUnit extends UnitCubit {
     constructor() {
         super(CUBITS.UnitBishop, "Bishop", "Bishop", "");
 
@@ -222,9 +577,16 @@ export class BishopUnit extends BaseCubit {
         this.movement.push({ type: MOVEMENT_TYPES.Diagonal, distance: 8, });
         this.slots = 4;
     }
+
+    onFocus(g, ctx) {
+        super.onFocus(g, ctx);
+        
+        g.objectives = 1;
+        g.targets = this.getTargets(g, ctx);
+    }
 }
 
-export class RookUnit extends BaseCubit {
+export class RookUnit extends UnitCubit {
     constructor() {
         super(CUBITS.UnitRook, "Rook", "Rook", "");
 
@@ -232,9 +594,16 @@ export class RookUnit extends BaseCubit {
         this.movement.push({ type: MOVEMENT_TYPES.Orthogonal, distance: 8, });
         this.slots = 4;
     }
+
+    onFocus(g, ctx) {
+        super.onFocus(g, ctx);
+        
+        g.objectives = 1;
+        g.targets = this.getTargets(g, ctx);
+    }
 }
 
-export class KnightUnit extends BaseCubit {
+export class KnightUnit extends UnitCubit {
     constructor() {
         super(CUBITS.UnitKnight, "Knight", "Knight", "");
 
@@ -242,9 +611,16 @@ export class KnightUnit extends BaseCubit {
         this.movement.push({ type: MOVEMENT_TYPES.Jump, step: [2,1] });
         this.slots = 4;
     }
+
+    onFocus(g, ctx) {
+        super.onFocus(g, ctx);
+        
+        g.objectives = 1;
+        g.targets = this.getTargets(g, ctx);
+    }
 }
 
-export class PawnUnit extends BaseCubit {
+export class PawnUnit extends UnitCubit {
     constructor() {
         super(CUBITS.UnitPawn, "Pawn", "Pawn", "");
 
@@ -253,6 +629,15 @@ export class PawnUnit extends BaseCubit {
         this.movement.push({ type: MOVEMENT_TYPES.Forward, distance: 2 });
         this.movement.push({ type: MOVEMENT_TYPES.Fork, distance: 1 });
         this.slots = 4;
+    }
+
+    onFocus(g, ctx) {
+        super.onFocus(g, ctx);
+
+        debugger;
+        
+        g.objectives = 1;
+        g.targets = this.getTargets(g, ctx);
     }
 
     onMoved = (g, ctx) => {
@@ -314,6 +699,7 @@ export class SwapCubit extends BaseCubit {
         super(CUBITS.MovementSwap, "Swap", "Sw", "");
 
         this.types.push(CLASSIFICATIONS.Movement);
+        this.movement.push({ type: MOVEMENT_TYPES.Swap, distance: 1, });
     }
 }
 
@@ -323,15 +709,6 @@ export class DrawNegOneCubit extends BaseCubit {
 
         this.types.push(CLASSIFICATIONS.Unknown);
     }
-
-    /*
-    static isActive(g, ctx) {
-        let cubits = getCubits(g);
-        let player = ctx.currentPlayer;
-
-        return cubits.filter(c => c.key === CUBITS.DrawNegOne && c.controller === player && c.at(LOCATIONS.Player)).length > 0;
-    }
-    */
 }
 
 export class DrawPlusOneCubit extends BaseCubit {
@@ -340,15 +717,6 @@ export class DrawPlusOneCubit extends BaseCubit {
 
         this.types.push(CLASSIFICATIONS.Unknown);
     }
-
-    /*
-    static isActive(g, ctx) {
-        let cubits = getCubits(g);
-        let player = ctx.currentPlayer;
-
-        return cubits.filter(c => c.key === CUBITS.DrawPlusOne && c.controller === player && c.at(LOCATIONS.Player)).length > 0;
-    }
-    */
 }
 
 export class DoubleActionCubit extends BaseCubit {
@@ -370,14 +738,6 @@ export class KnowledgeCubit extends BaseCubit {
     constructor() {
         super(CUBITS.Knowledge, "Knowledge", "Kn", "");
     }
-  
-    /*
-    static isActive(g, ctx) {
-        let cubits = getCubits(g);
-        let player = ctx.currentPlayer;
-        return cubits.filter(c => c.key === CUBITS.Knowledge && c.controller === player && c.at(LOCATIONS.Player)).length > 0;
-    }
-    */
 }
 
 export class CondemnCubit extends BaseCubit {
@@ -403,23 +763,6 @@ export class KingOfHillCubit extends BaseCubit {
 
         this.locations.push(location);
     }
-
-    /*
-    static isActive(g, ctx) {
-        let cubits = getCubits(g);
-        let player = ctx.currentPlayer;
-
-        let cubits = cubits.filter(c => c.key === CUBITS.KingOfHill && c.at(LOCATIONS.Arena));
-        cubits.forEach(function(cubit) {
-            let result = cubits.filter(c => c.key === CUBITS.KingUnit && c.controller === player && c.interecpts(cubit, true)).length > 0;
-            if(result ===  true) {
-                return true;
-            }
-        });
-
-        return false;
-    }
-    */
 }
 
 export function getCubits(g) {
@@ -462,16 +805,20 @@ export function getStartingCubits(ctx) {
         {player: "1", offset: 6},
     ];
 
-    players.forEach(function(p) {
+    for (let x = 0; x < players.length; x++) {
+        const p = players[x];
         let cubits = getDatabase();
-        cubits.forEach(function(cubit) {
+
+        for (let y = 0; y < cubits.length; y++) {
+            const cubit = cubits[y];
             cubit.ownership = p;
             cubit.locations.push(new CubitLocation(LOCATIONS.Bag))
             collection.push(cubit);
-        });
-    });
+        }
+    }
 
-    main.forEach(function(_) {
+    for (let i = 0; i < main.length; i++) {
+        const _ = main[i];
         {
             let cubit = new RookUnit();
             cubit.index = 
@@ -537,8 +884,11 @@ export function getStartingCubits(ctx) {
             cubit.locations.push(new CubitLocation(LOCATIONS.Units, _.player, 0, 7 ));
             collection.push(cubit);
         }
-    });
-    support.forEach(function(_) {
+    }
+
+    for (let i = 0; i < support.length; i++) {
+        const _ = support[i];
+
         {
             let cubit = new PawnUnit();
             cubit.color = "#FF5733";
@@ -603,7 +953,7 @@ export function getStartingCubits(ctx) {
             cubit.locations.push(new CubitLocation(LOCATIONS.Units, _.player, 0, 15 ));
             collection.push(cubit);
         }
-    });
+    }
     
     return collection;
 }

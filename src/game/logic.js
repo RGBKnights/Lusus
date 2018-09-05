@@ -1,5 +1,5 @@
 import { Game } from 'boardgame.io/core';
-import { getStartingCubits, getCubit, CubitLocation, TARGETS, LOCATIONS } from './cubits';
+import { getStartingCubits, getCubit } from './cubits';
 
 let clone = require('clone');
 
@@ -15,21 +15,19 @@ const GameLogic = Game({
         };
     },
     moves: {
-        selectCubit: (G, ctx, id) => {
+        focus: (G, ctx, id) => {
             const g = clone(G);
             let cubit = getCubit(g, id);
-            cubit.onSelected(g, ctx);
+            cubit.onFocus(g, ctx);
             return g;
         },
-        playCubit: (G, ctx) => {
+        blur: (G, ctx) => {
             const g = clone(G);
+            let cubit = getCubit(g, g.selection);
+            cubit.onBlur(g, ctx);
             return g;
         },
-        activateCubit: (G, ctx) => {
-            const g = clone(G);
-            return g;
-        },
-        moveUnit: (G, ctx) => {
+        target: (G, ctx) => {
             const g = clone(G);
             return g;
         }
@@ -37,7 +35,8 @@ const GameLogic = Game({
     flow: {
         endTurn: true,
         endPhase: true,
-        endGame: true
+        endGame: true,
+        optimisticUpdate: (G, ctx, move) => false,
     }
   });
 
