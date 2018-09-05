@@ -26,7 +26,7 @@ import { getCubits } from '../game/cubits';
 
 class Board {
 
-  constructor(parent, where, name, width, height, checkered, player = null) {
+  constructor(parent, where, name, width, height, player = null) {
     // Bindings (this)
     this.onCellClick = this.onCellClick.bind(this);
 
@@ -40,23 +40,35 @@ class Board {
     this.size = { width: width, height: height };
     this.player = player;
     
+    // Cubits
     let collection = getCubits(this.state);
     this.cubits = collection.filter(c => c.at(this.where, player));
 
     // Styling
+    // Token colours based on player but maybe have a way to switch sides...
     this.teams = {'0': 'w', '1': 'b'};
+    // Base boards
     this.backgroundColor = '#959595';
     this.whiteColor = '#817F7F';
     this.backColor = '#ABAAAA';
+    // Selection
     this.selectedColor = '#4E9334';
+    // Targeting
     this.passiveMoveColor = '#4E9334';
     this.captureMoveColor = '#BE8E3F';
-    this.checkered = checkered;
-    this.style = {strokeWidth:0.05,stroke:'#fff'};
-    this.background = this.generateColorMap();
+    // Missing: Ally...?
+    // Missing: Self...?
 
     // UI
+    // Grid styling
+    this.style = {strokeWidth:0.05,stroke:'#fff'};
+    // Grid Color Map
+    this.background = this.generateColorMap();
+
+    // Tokens
     let tokens = this.getTokens();
+
+    // Grid
     this.grid = <Grid rows={this.size.height} cols={this.size.width} onClick={this.onCellClick} colorMap={this.background} style={this.style}>{tokens}</Grid>;
   }
 
