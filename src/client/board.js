@@ -6,6 +6,7 @@ import {
 } from './cubits';
 
 import {
+  getCubit,
   LOCATIONS, 
   // TARGETS,
   // CUBITS,
@@ -21,25 +22,26 @@ import {
 import { Token, Grid } from 'boardgame.io/ui';
 
 // Logic
-import { getCubitsFromGameState } from '../game/cubits';
+import { getCubits } from '../game/cubits';
 
 class Board {
 
-  constructor(parent, n, w, h, checkered, player = null) {
+  constructor(parent, where, name, width, height, checkered, player = null) {
     // Bindings (this)
     this.onCellClick = this.onCellClick.bind(this);
 
     // Game Logic
     this.parent = parent;
+    this.state = this.parent.props.G;
 
     // Properties
-    this.name = n;
-    this.size = { width: w, height: h };
+    this.name = name,
+    this.where = where;
+    this.size = { width: width, height: height };
     this.player = player;
     
-    let collection = getCubitsFromGameState(this.parent.props.G);
-    this.cubits = collection.filter(c => c.at(this.name, player));
-    
+    let collection = getCubits(this.state);
+    this.cubits = collection.filter(c => c.at(this.where, player));
 
     // Styling
     this.teams = {'0': 'w', '1': 'b'};
@@ -54,26 +56,31 @@ class Board {
     this.background = this.generateColorMap();
 
     // UI
-    let tokens = [];
-    
+    let tokens = this.getTokens();
+    this.grid = <Grid rows={this.size.height} cols={this.size.width} onClick={this.onCellClick} colorMap={this.background} style={this.style}>{tokens}</Grid>;
+  }
+
+  getTokens() {
+    let collecton = [];
+
     for (let i = 0; i < this.cubits.length; i++) {
       const cubit = this.cubits[i];
       const color = cubit.color;
       const team = this.teams[cubit.ownership];
       
       // Locations
-      let locations = cubit.locations.filter(l => l.where === this.name);
+      let locations = cubit.locations.filter(l => l.where === this.where);
       for (let l = 0; l < locations.length; l++) {
         const location = locations[l];
-        tokens.push(<Token key={location.key} x={location.x} y={location.y}><CubitText name={cubit.name} value={cubit.alias} team={team} color={color} /></Token>);  
+        collecton.push(<Token key={location.key} x={location.x} y={location.y}><CubitText name={cubit.name} value={cubit.alias} team={team} color={color} /></Token>);  
 
-        if(cubit.selected === true) {
+        if(this.state.selection === cubit.id) {
           this.background[`${location.x},${location.y}`] = this.selectedColor;
         }
       }
     }
 
-    this.grid = <Grid rows={this.size.height} cols={this.size.width} onClick={this.onCellClick} colorMap={this.background} style={this.style}>{tokens}</Grid>;
+    return collecton;
   }
 
   generateColorMap() {
@@ -92,12 +99,26 @@ class Board {
  
   onCellClick = ({ x, y }) => {
     // Find correct Cubit and set 'Selected' flag
-    let cubit = this.cubits.find(c => c.isAt(this.name, x, y, this.player));
+    let cubit = this.cubits.find(c => c.at(this.name, this.player, x, y));
     if(cubit === undefined) {
       return;
     }
 
-    this.parent.props.moves.selectCubit(this.name, x, y, this.player);
+    this.parent.props.moves.selectCubit(cubit.id);
+
+    // isSelected() => bool
+    // if cubit is selected : deselect()
+    // if cubit is unselected : select()
+
+    // hasTargets() => bool
+    // if cubit is selected AND targets.count less then targets.total : target()
+    
+    // this.parent.props.G.selection : {id}
+    // this.parent.props.G.targets : [{id}]
+    // this.parent.props.G.objective : #
+    
+    // moves.selectCubit(cubit)
+    // moves.activateCubit(cubit, targets)
   }
 
 }
@@ -127,10 +148,10 @@ class GameBoard extends React.Component {
     // A => Phases Targets (valid targets if nothing selected)
     // B => Selected targets (valid targets if a Cubit is selected)
 
-    this.field = new Board(this, LOCATIONS.Field, 8, 8, true);
+    this.field = new Board(this, LOCATIONS.Field, "Units", 8, 8, true);
     this.units = {
-      "0": new Board(this, LOCATIONS.Units, 5, 16, false, "0"),
-      "1": new Board(this, LOCATIONS.Units, 5, 16, false, "1"),
+      "0": new Board(this, LOCATIONS.Units, "Units", 5, 16, false, "0"),
+      "1": new Board(this, LOCATIONS.Units, "Units",  5, 16, false, "1"),
     }
 
     return (

@@ -44,6 +44,7 @@ export const LOCATIONS = {
     Reinforcements: 9,
 };
 
+/*
 export const TARGETS = {
     Invalid: 0,
     Passive: 1,
@@ -51,6 +52,7 @@ export const TARGETS = {
     Ally: 3,
     Self: 4,
 };
+*/
 
 export const CUBITS = {
     Unknown: '',
@@ -76,11 +78,28 @@ export const CUBITS = {
 
 export class CubitLocation {
 
-    constructor(where = null, x = null, y = null) {
+    constructor(where = null, player = null, x = null, y = null, hidden = null) {
         this.key = uuidv4();
         this.where = where == null ? LOCATIONS.Unknown : where;
+        this.player = player;
         this.x = x;
         this.y = y;
+        this.hidden = hidden;
+    }
+
+    at(where, player = null, x = null, y = null) {
+        // This might not work...!
+        return (this.where == LOCATIONS.Unknown || this.where === where) &&
+            (player == null || this.player === player) &&
+            (x == null || this.x === x) &&
+            (y == null || this.y === y);
+    }
+
+    same(loc, ignore = false) {
+        return (this.where == LOCATIONS.Unknown || loc.where == LOCATIONS.Unknown || this.where === loc.where) &&
+            (ignore === true || this.player == null || loc.player == null || this.player === loc.player) &&
+            (this.x == null || loc.x == null || this.x === loc.x) &&
+            (this.y == null || loc.y == null || this.y === loc.y);
     }
 }
 
@@ -96,11 +115,9 @@ export class BaseCubit {
         this.rarity = RARITY_TYPES.Unknown;
         
         // Dyanmic
-        // own owns the Cubit vs where is Cubit
+        this.id = uuidv4();
+        // own owns the Cubit
         this.ownership = null;
-        this.controller = null;
-        // Is the cubit selected
-        this.selected = false;
         // Take moves and turns
         this.moves = 0;
         this.turns = 0;
@@ -110,59 +127,25 @@ export class BaseCubit {
         this.duration = { type: DURATION_TYPES.Unknown, amount: null };
         // which boards and the location dose the cubit show up
         this.locations = [];
+        // number of childern the cubit is allowed to have
+        this.slots = 0;
     }
 
     isType(type) {
         return this.types.includes(type);
     }
 
-    isVisible(cubits, player, opponent) {
-        if(this.at(LOCATIONS.Bag)) {
-          return false;
-        }
-
-        if(this.at(LOCATIONS.Exile)) {
-          return false;
-        }
-
-        if(this.controller === player) {
-          return true;
-        }
-        
-        if(this.controller === opponent) {
-          if(this.at(LOCATIONS.Hand)) {
-            if(KnowledgeCubit.isActive(cubits, player, opponent)) {
-              return true;
-            }
-
-            return false;
-          }
-          if(this.at(LOCATIONS.Reinforcements)) {
-            return false;
-          }
-
-          return true;
-        }
-
-        return false;
+    at(where, player = null, x = null, y = null) {
+        return this.locations.filter(l => l.at(where, player, x, y)).length > 0;
     }
 
-    at(where, controller = null) {
-        return this.locations.filter(l => l.where === where).length > 0 && (controller == null || this.controller === controller);
-    }
-
-    isAt(where, x, y, controller = null) {
-        return this.locations.filter(l => l.where === where && l.x === x && l.y === y).length > 0  && (controller == null || this.controller === controller);
-    }
-
-    hasOverlap(locations) {       
-        locations.forEach(function(loc) {
-            let results = this.locations.filter(l => l.where === loc.where && l.x === loc.x && l.y === loc.y).length > 0
+    interecpts(cubit, ignore = false) {
+        cubit.locations.forEach(function(loc) {
+            let results = this.locations.filter(l => l.same(loc, ignore)).length > 0;
             if(results === true) {
                 return true;
             }
         });
-
         return false;
     }
 
@@ -179,8 +162,11 @@ export class BaseCubit {
     }
 
     onSelected(g, ctx) {
-        this.selected = !this.selected;
-        g.targets = [];
+        if(g.selection === this.id) {
+            g.selection = null;
+        } else {
+            g.selection = this.id;
+        }
     }
 
     onActivated(g, ctx) {
@@ -189,10 +175,6 @@ export class BaseCubit {
 
     onPlayed(g, ctx)  {
         // Overrides...
-    }
-
-    static isActive(g, ctx) {
-      return false;
     }
 }
 
@@ -204,12 +186,13 @@ export class KingUnit extends BaseCubit {
         this.movement.push({ type: MOVEMENT_TYPES.Orthogonal, distance: 1, });
         this.movement.push({ type: MOVEMENT_TYPES.Diagonal, distance: 1, });
         this.movement.push({ type: MOVEMENT_TYPES.Castle });
+        this.slots = 4;
     }
 
     onSelected(g, ctx) {
         super.onSelected(g, ctx);
-
         
+        //TODO: stuff...!
     }
 
     onMoved = (g, ctx) => {
@@ -227,6 +210,7 @@ export class QueenUnit extends BaseCubit {
         this.types.push(CLASSIFICATIONS.Unit);
         this.movement.push({ type: MOVEMENT_TYPES.Orthogonal, distance: 8, });
         this.movement.push({ type: MOVEMENT_TYPES.Diagonal, distance: 8, });
+        this.slots = 4;
     }
 }
 
@@ -236,6 +220,7 @@ export class BishopUnit extends BaseCubit {
 
         this.types.push(CLASSIFICATIONS.Unit);
         this.movement.push({ type: MOVEMENT_TYPES.Diagonal, distance: 8, });
+        this.slots = 4;
     }
 }
 
@@ -245,6 +230,7 @@ export class RookUnit extends BaseCubit {
 
         this.types.push(CLASSIFICATIONS.Unit);
         this.movement.push({ type: MOVEMENT_TYPES.Orthogonal, distance: 8, });
+        this.slots = 4;
     }
 }
 
@@ -254,6 +240,7 @@ export class KnightUnit extends BaseCubit {
 
         this.types.push(CLASSIFICATIONS.Unit);
         this.movement.push({ type: MOVEMENT_TYPES.Jump, step: [2,1] });
+        this.slots = 4;
     }
 }
 
@@ -265,6 +252,7 @@ export class PawnUnit extends BaseCubit {
         this.movement.push({ type: MOVEMENT_TYPES.Forward, distance: 1 });
         this.movement.push({ type: MOVEMENT_TYPES.Forward, distance: 2 });
         this.movement.push({ type: MOVEMENT_TYPES.Fork, distance: 1 });
+        this.slots = 4;
     }
 
     onMoved = (g, ctx) => {
@@ -336,12 +324,14 @@ export class DrawNegOneCubit extends BaseCubit {
         this.types.push(CLASSIFICATIONS.Unknown);
     }
 
+    /*
     static isActive(g, ctx) {
-        let cubits = getCubitsFromGameState(g);
+        let cubits = getCubits(g);
         let player = ctx.currentPlayer;
 
         return cubits.filter(c => c.key === CUBITS.DrawNegOne && c.controller === player && c.at(LOCATIONS.Player)).length > 0;
     }
+    */
 }
 
 export class DrawPlusOneCubit extends BaseCubit {
@@ -351,12 +341,14 @@ export class DrawPlusOneCubit extends BaseCubit {
         this.types.push(CLASSIFICATIONS.Unknown);
     }
 
+    /*
     static isActive(g, ctx) {
-        let cubits = getCubitsFromGameState(g);
+        let cubits = getCubits(g);
         let player = ctx.currentPlayer;
 
         return cubits.filter(c => c.key === CUBITS.DrawPlusOne && c.controller === player && c.at(LOCATIONS.Player)).length > 0;
     }
+    */
 }
 
 export class DoubleActionCubit extends BaseCubit {
@@ -367,7 +359,7 @@ export class DoubleActionCubit extends BaseCubit {
     }
 
     static isActive(g, ctx) {
-        let cubits = getCubitsFromGameState(g);
+        let cubits = getCubits(g);
         let player = ctx.currentPlayer;
 
         return cubits.filter(c => c.key === CUBITS.DoubleAction && c.controller === player && c.at(LOCATIONS.Player)).length > 0;
@@ -379,11 +371,13 @@ export class KnowledgeCubit extends BaseCubit {
         super(CUBITS.Knowledge, "Knowledge", "Kn", "");
     }
   
+    /*
     static isActive(g, ctx) {
-        let cubits = getCubitsFromGameState(g);
+        let cubits = getCubits(g);
         let player = ctx.currentPlayer;
         return cubits.filter(c => c.key === CUBITS.Knowledge && c.controller === player && c.at(LOCATIONS.Player)).length > 0;
     }
+    */
 }
 
 export class CondemnCubit extends BaseCubit {
@@ -398,27 +392,26 @@ export class KingOfHillCubit extends BaseCubit {
     }
 
     onPlayed(g, ctx)  {
-        let die = ctx.random.D4();
-        let options = {
-            '1': {where: LOCATIONS.Field, x: 3, y: 3},
-            '2': {where: LOCATIONS.Field, x: 3, y: 4},
-            '3': {where: LOCATIONS.Field, x: 4, y: 3},
-            '4': {where: LOCATIONS.Field, x: 4, y: 4},
-        };
-        let location = options[die];
+        let options = [
+            new CubitLocation(LOCATIONS.Field, this.ownership, 3, 3),
+            new CubitLocation(LOCATIONS.Field, this.ownership, 3, 4),
+            new CubitLocation(LOCATIONS.Field, this.ownership, 4, 3),
+            new CubitLocation(LOCATIONS.Field, this.ownership, 4, 4),
+        ];
+        let index = ctx.random.D4() - 1;
+        let location = options[index];
 
-        this.ownership = ctx.currentPlayer;
-        this.controller = null;
         this.locations.push(location);
     }
 
+    /*
     static isActive(g, ctx) {
-        let cubits = getCubitsFromGameState(g);
+        let cubits = getCubits(g);
         let player = ctx.currentPlayer;
 
-        let flags = cubits.filter(c => c.key === CUBITS.KingOfHill && c.at(LOCATIONS.Arena));
-        flags.forEach(function(flag) {
-            let result = cubits.filter(c => c.key === CUBITS.KingUnit && c.ownership === player && c.hasOverlap(flag.locations)).length > 0;
+        let cubits = cubits.filter(c => c.key === CUBITS.KingOfHill && c.at(LOCATIONS.Arena));
+        cubits.forEach(function(cubit) {
+            let result = cubits.filter(c => c.key === CUBITS.KingUnit && c.controller === player && c.interecpts(cubit, true)).length > 0;
             if(result ===  true) {
                 return true;
             }
@@ -426,13 +419,18 @@ export class KingOfHillCubit extends BaseCubit {
 
         return false;
     }
+    */
 }
 
-export function getCubitsFromGameState(g) {
+export function getCubits(g) {
     return g.cubits;
 }
 
-export function getCubitsDatabase() {
+export function getCubit(g, id) {
+    return g.cubits.find(c => c.id === id);
+}
+
+export function getDatabase() {
     let collection = [];
 
     collection.push(new OrthogonalCubit());
@@ -465,7 +463,7 @@ export function getStartingCubits(ctx) {
     ];
 
     players.forEach(function(p) {
-        let cubits = ctx.random.Shuffle(getCubitsDatabase());
+        let cubits = getDatabase();
         cubits.forEach(function(cubit) {
             cubit.ownership = p;
             cubit.locations.push(new CubitLocation(LOCATIONS.Bag))
@@ -479,72 +477,64 @@ export function getStartingCubits(ctx) {
             cubit.index = 
             cubit.color = "#FF5733";
             cubit.ownership = _.player;
-            cubit.controller = _.player;
-            cubit.locations.push(new CubitLocation(LOCATIONS.Field, _.offset, 0));
-            cubit.locations.push(new CubitLocation(LOCATIONS.Units, 0, 0));
+            cubit.locations.push(new CubitLocation(LOCATIONS.Field, _.player, _.offset, 0));
+            cubit.locations.push(new CubitLocation(LOCATIONS.Units, _.player, 0, 0));
             collection.push(cubit);
         }
         {
             let cubit = new KnightUnit();
             cubit.color = "#F9FF33";
             cubit.ownership = _.player;
-            cubit.controller = _.player;
-            cubit.locations.push(new CubitLocation( LOCATIONS.Field, _.offset, 1 ));
-            cubit.locations.push(new CubitLocation(LOCATIONS.Units, 0, 1 ));
+            cubit.locations.push(new CubitLocation( LOCATIONS.Field, _.player, _.offset, 1 ));
+            cubit.locations.push(new CubitLocation(LOCATIONS.Units, _.player, 0, 1 ));
             collection.push(cubit);
         }
         {
             let cubit = new BishopUnit();
             cubit.color = "#008000";
             cubit.ownership = _.player;
-            cubit.controller = _.player;
-            cubit.locations.push(new CubitLocation(LOCATIONS.Field, _.offset, 2 ));
-            cubit.locations.push(new CubitLocation(LOCATIONS.Units, 0, 2 ));
+            cubit.locations.push(new CubitLocation(LOCATIONS.Field, _.player, _.offset, 2 ));
+            cubit.locations.push(new CubitLocation(LOCATIONS.Units, _.player,0, 2 ));
             collection.push(cubit);
         }
         {
             let cubit = new QueenUnit();
             cubit.color = "#33FFA8";
             cubit.ownership = _.player;
-            cubit.controller = _.player;
-            cubit.locations.push(new CubitLocation(LOCATIONS.Field, _.offset, 3 ));
-            cubit.locations.push(new CubitLocation(LOCATIONS.Units, 0, 3 ));
+            cubit.locations.push(new CubitLocation(LOCATIONS.Field, _.player, _.offset, 3 ));
+            cubit.locations.push(new CubitLocation(LOCATIONS.Units, _.player,0, 3 ));
             collection.push(cubit);
         }
         {
             let cubit = new KingUnit();
             cubit.color = "#33F6FF";
             cubit.ownership = _.player;
-            cubit.controller = _.player;
-            cubit.locations.push(new CubitLocation(LOCATIONS.Field, _.offset, 4 ));
-            cubit.locations.push(new CubitLocation(LOCATIONS.Units, 0, 4 ));
+            cubit.locations.push(new CubitLocation(LOCATIONS.Field, _.player, _.offset, 4 ));
+            cubit.locations.push(new CubitLocation(LOCATIONS.Units, _.player,0, 4 ));
             collection.push(cubit);
         }
         {
             let cubit = new BishopUnit();
             cubit.color = "#3346FF";
             cubit.ownership =  _.player;
-            cubit.controller = _.player;
-            cubit.locations.push(new CubitLocation(LOCATIONS.Field, _.offset, 5 ));
-            cubit.locations.push(new CubitLocation(LOCATIONS.Units, 0, 5 ));
+            cubit.locations.push(new CubitLocation(LOCATIONS.Field, _.player, _.offset, 5 ));
+            cubit.locations.push(new CubitLocation(LOCATIONS.Units, _.player, 0, 5 ));
             collection.push(cubit);
         }
         {
             let cubit = new KnightUnit();
             cubit.color = "#800080";
             cubit.ownership = _.player;
-            cubit.controller = _.player;
-            cubit.locations.push(new CubitLocation(LOCATIONS.Field, _.offset, 6 ));
-            cubit.locations.push(new CubitLocation(LOCATIONS.Units, 0, 6 ));
+            cubit.locations.push(new CubitLocation(LOCATIONS.Field,  _.player, _.offset, 6 ));
+            cubit.locations.push(new CubitLocation(LOCATIONS.Units,  _.player, 0, 6 ));
             collection.push(cubit);
         }
         {
             let cubit = new RookUnit();
             cubit.color = "#FF0000";
             cubit.ownership =  _.player;
-            cubit.controller = _.player;
-            cubit.locations.push(new CubitLocation(LOCATIONS.Field, _.offset, 7 ));
-            cubit.locations.push(new CubitLocation(LOCATIONS.Units, 0, 7 ));
+            cubit.locations.push(new CubitLocation(LOCATIONS.Field, _.player, _.offset, 7 ));
+            cubit.locations.push(new CubitLocation(LOCATIONS.Units, _.player, 0, 7 ));
             collection.push(cubit);
         }
     });
@@ -553,98 +543,67 @@ export function getStartingCubits(ctx) {
             let cubit = new PawnUnit();
             cubit.color = "#FF5733";
             cubit.ownership =  _.player;
-            cubit.controller = _.player;
-            cubit.locations.push(new CubitLocation(LOCATIONS.Field, _.offset, 0 ));
-            cubit.locations.push(new CubitLocation(LOCATIONS.Units, 0, 8 ));
+            cubit.locations.push(new CubitLocation(LOCATIONS.Field, _.player, _.offset, 0 ));
+            cubit.locations.push(new CubitLocation(LOCATIONS.Units, _.player, 0, 8 ));
             collection.push(cubit);
         }
         {
             let cubit = new PawnUnit();
             cubit.color = "#F9FF33";
             cubit.ownership = _.player;
-            cubit.controller = _.player;
-            cubit.locations.push(new CubitLocation(LOCATIONS.Field, _.offset, 1 ));
-            cubit.locations.push(new CubitLocation(LOCATIONS.Units, 0, 9 ));
+            cubit.locations.push(new CubitLocation(LOCATIONS.Field, _.player, _.offset, 1 ));
+            cubit.locations.push(new CubitLocation(LOCATIONS.Units, _.player, 0, 9 ));
             collection.push(cubit);
         }
         {
             let cubit = new PawnUnit();
             cubit.color = "#008000";
             cubit.ownership = _.player;
-            cubit.controller = _.player;
-            cubit.locations.push(new CubitLocation(LOCATIONS.Field, _.offset, 2 ));
-            cubit.locations.push(new CubitLocation(LOCATIONS.Units, 0, 10 ));
+            cubit.locations.push(new CubitLocation(LOCATIONS.Field, _.player, _.offset, 2 ));
+            cubit.locations.push(new CubitLocation(LOCATIONS.Units, _.player, 0, 10 ));
             collection.push(cubit);
         }
         {
             let cubit = new PawnUnit();
             cubit.color = "#33FFA8";
             cubit.ownership = _.player;
-            cubit.controller = _.player;
-            cubit.locations.push(new CubitLocation(LOCATIONS.Field, _.offset, 3 ));
-            cubit.locations.push(new CubitLocation(LOCATIONS.Units, 0, 11 ));
+            cubit.locations.push(new CubitLocation(LOCATIONS.Field, _.player, _.offset, 3 ));
+            cubit.locations.push(new CubitLocation(LOCATIONS.Units, _.player, 0, 11 ));
             collection.push(cubit);
         }
         {
             let cubit = new PawnUnit();
             cubit.color = "#33F6FF";
             cubit.ownership = _.player;
-            cubit.controller = _.player;
-            cubit.locations.push(new CubitLocation(LOCATIONS.Field, _.offset, 4 ));
-            cubit.locations.push(new CubitLocation(LOCATIONS.Units, 0, 12 ));
+            cubit.locations.push(new CubitLocation(LOCATIONS.Field, _.player, _.offset, 4 ));
+            cubit.locations.push(new CubitLocation(LOCATIONS.Units, _.player, 0, 12 ));
             collection.push(cubit);
         }
         {
             let cubit = new PawnUnit();
             cubit.color = "#3346FF";
             cubit.ownership = _.player;
-            cubit.controller = _.player;
-            cubit.locations.push(new CubitLocation(LOCATIONS.Field, _.offset, 5 ));
-            cubit.locations.push(new CubitLocation(LOCATIONS.Units, 0, 13 ));
+            cubit.locations.push(new CubitLocation(LOCATIONS.Field, _.player, _.offset, 5 ));
+            cubit.locations.push(new CubitLocation(LOCATIONS.Units, _.player, 0, 13 ));
             collection.push(cubit);
         }
         {
             let cubit = new PawnUnit();
             cubit.color = "#800080";
             cubit.ownership = _.player;
-            cubit.controller = _.player;
-            cubit.locations.push(new CubitLocation(LOCATIONS.Field, _.offset, 6 ));
-            cubit.locations.push(new CubitLocation(LOCATIONS.Units, 0, 14 ));
+            cubit.locations.push(new CubitLocation(LOCATIONS.Field, _.player, _.offset, 6 ));
+            cubit.locations.push(new CubitLocation(LOCATIONS.Units, _.player, 0, 14 ));
             collection.push(cubit);
         }
         {
             let cubit = new PawnUnit();
             cubit.color = "#FF0000";
             cubit.ownership = _.player;
-            cubit.controller = _.player;
-            cubit.locations.push(new CubitLocation(LOCATIONS.Field, _.offset, 7 ));
-            cubit.locations.push(new CubitLocation(LOCATIONS.Units, 0, 15 ));
+            cubit.locations.push(new CubitLocation(LOCATIONS.Field, _.player, _.offset, 7 ));
+            cubit.locations.push(new CubitLocation(LOCATIONS.Units, _.player, 0, 15 ));
             collection.push(cubit);
         }
     });
     
-    return collection;
-}
-
-export function getTargetsForPhase(cubits, phase, player = null) {
-    let collection = [];
-
-    // Play Cubits
-    if(phase === "Action") {
-        for (let i = 0; i < 5; i++) {
-            collection.push({ type: TARGETS.Self, player: player, location: new CubitLocation(LOCATIONS.Hand, i, 0) });
-        }
-    }
-
-    // Move Unit
-    if(phase === "Movement") {
-        let units = cubits.filter(c => c.is(LOCATIONS.Field) && c.isType(CLASSIFICATIONS.Unit));
-        units.forEach(unit => {
-            units.locations.forEach(location => {
-                collection.push({ type: TARGETS.Self, player: player, location: location });
-            });
-        });
-    }
-
     return collection;
 }

@@ -1,5 +1,5 @@
 import { Game } from 'boardgame.io/core';
-import { getStartingCubits, getCubitsFromGameState, CubitLocation, TARGETS, LOCATIONS } from './cubits';
+import { getStartingCubits, getCubit, CubitLocation, TARGETS, LOCATIONS } from './cubits';
 
 let clone = require('clone');
 
@@ -7,31 +7,18 @@ const GameLogic = Game({
     name: 'Lusus',
     setup: (ctx) => {
         let cubits = getStartingCubits(ctx);
-        let targets = [
-            {
-                type: TARGETS.Self,
-                location: new CubitLocation(LOCATIONS.board, 0, 0)
-            }
-        ];
-
         return {
-            targets: targets,
+            selection: null,
+            targets: [],
+            objectives: 0,
             cubits: cubits
         };
     },
     moves: {
-        selectCubit: (G, ctx, where, x, y, player) => {
+        selectCubit: (G, ctx, id) => {
             const g = clone(G);
-            let cubits = getCubitsFromGameState(g);
-            for (let i = 0; i < cubits.length; i++) {
-                const cubit = cubits[i];
-                if(cubit.isAt(where, x, y, player)) {
-                    cubit.onSelected(g, ctx);
-                } else {
-                    cubit.selected = false;
-                }
-            }
-            
+            let cubit = getCubit(g, id);
+            cubit.onSelected(g, ctx);
             return g;
         },
         playCubit: (G, ctx) => {
