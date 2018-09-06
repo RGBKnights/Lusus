@@ -17,8 +17,6 @@ const GameLogic = Game({
     },
     moves: {
         focus: (G, ctx, id) => {
-            console.log("ctx", ctx);
-
             const g = clone(G);
 
             let cubit = getCubit(g, id);

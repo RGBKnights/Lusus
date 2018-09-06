@@ -538,6 +538,25 @@ export class KingUnit extends UnitCubit {
         g.targets = this.getTargets(g, ctx);
     }
 
+    onActivated(g, ctx) {
+        // Stuff...
+
+        let target = g.objectives[0];
+        if(target.type === TARGET.Empty) {
+            // Move
+            let location = this.locations.find(l => l.at(LOCATIONS.Field, this.ownership));
+            location.x = target.x;
+            location.y = target.y;
+        } else if(target.type === TARGET.Enemy) {
+            // Capture
+        } else if(target.type === TARGET.Ally) {
+            // Swap
+        }
+
+        this.onMoved(g, ctx);
+        super.onActivated(g, ctx);
+    }
+
     onMoved = (g, ctx) => {
         super.onMoved(g, ctx);
 
