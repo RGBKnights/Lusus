@@ -86,19 +86,33 @@ export const CUBITS = {
 };
 
 export class TargetLocation {
-    constructor(type, where, player, x, y, cubit = null) {
+    constructor(type, where, player, x, y) {
+        this.id = uuidv4();
         this.type = type;
         this.where = where;
         this.player = player;
         this.x = x;
         this.y = y;
     }
+
+    same(type, where, player, x, y) {
+        return this.type === type && this.where === where && this.player === player && this.x === x && this.y === y;
+    }
+
+    at(where, player = null, x = null, y = null) {
+        let equalWhere = (this.where === where);
+        let equalPlayer = (player == null || this.player === player);
+        let equalX = (x == null || this.x === x);
+        let equalY = (y == null || this.y === y);
+        let result = equalWhere && equalPlayer && equalX && equalY;
+        return result;
+    }
 }
 
 export class CubitLocation {
 
     constructor(where = null, player = null, x = null, y = null, hidden = null) {
-        this.key = uuidv4();
+        this.id = uuidv4();
         this.where = where == null ? LOCATIONS.Unknown : where;
         this.player = player;
         this.x = x;
@@ -107,34 +121,16 @@ export class CubitLocation {
     }
 
     at(where, player = null, x = null, y = null) {
-        return (this.where === LOCATIONS.Unknown || this.where === where) &&
-            (player == null || this.player === player) &&
-            (x == null || this.x === x) &&
-            (y == null || this.y === y);
+        let equalWhere = (this.where === where);
+        let equalPlayer = (player == null || this.player === player);
+        let equalX = (x == null || this.x === x);
+        let equalY = (y == null || this.y === y);
+        let result = equalWhere && equalPlayer && equalX && equalY;
+        return result;
     }
 
-    same(loc, where = null, player = null, x = null, y = null) {
-        let disableWhere = where === false;
-        let disablePlayer = player === false;
-        let disableX = x === false;
-        let disableY = y === false;
-
-        let overrideWhere = where != null && this.where === where;
-        let overridePlayer = player != null && this.player === player;
-        let overrideX = x != null && this.x === x;
-        let overrideY = y != null && this.y === y;
-
-        let equalWhere = this.where === loc.where;
-        let equalPlayer = this.player === loc.player;
-        let equalX = this.x === loc.x;
-        let equalY = this.y === loc.y;
-
-        let isWhere = (disableWhere || overrideWhere || equalWhere);
-        let isPlayer = (disablePlayer || overridePlayer || equalPlayer);
-        let isX = (disableX || overrideX || equalX);
-        let isY = (disableY|| overrideY || equalY);
-
-        return isWhere && isPlayer && isX && isY;
+    same(where, player, x, y) {
+        return this.where === where && this.player === player && this.x === x && this.y === y;
     }
 }
 
@@ -174,17 +170,6 @@ export class BaseCubit {
         return this.locations.filter(l => l.at(where, player, x, y)).length > 0;
     }
 
-    interecpts(locations, where = null, player = null, x = null, y = null) {
-        for (let i = 0; i < locations.length; i++) {
-            const loc = locations[i];
-            let results = this.locations.filter(l => l.same(loc, where, player, x, y)).length > 0;
-            if(results === true) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     onMoved(g, ctx) {
         this.moves++;
 
@@ -199,60 +184,71 @@ export class BaseCubit {
 
     onFocus(g, ctx) {
         g.selection = this.id;
-        g.objectives = 0;
         g.targets = [];
+        g.objectives = [];
+        g.goal = 0;
     }
 
     onBlur(g, ctx) {
-        g.selection = null;
-        g.objectives = 0;
+        g.selection = 0;
         g.targets = [];
+        g.objectives = [];
+        g.goal = 0;
     }
 
     onActivated(g, ctx) {
-        // Overrides...
+        g.selection = 0;
+        g.targets = [];
+        g.objectives = [];
+        g.goal = 0;
     }
 
+    /* onActivated() should handle this, kind of...
     onPlayed(g, ctx)  {
         // Overrides...
     }
-
-    onRemoved(g, ctx)  {
-        // Overrides...
-    }
+    */
 
     getTargets(g, ctx) {
         return [];
     }
 
-    hasChild(cubits, type) {
+    hasChild(cubits, key) {
         return false;
     }
 }
 
 export class UnitCubit extends BaseCubit {
 
-    hasChild(cubits, type) {
-        let results = cubits.filter(c => c.key === type && c.interecpts(this.locations, LOCATIONS.Units, null, false, null)).length > 0;
-        return results;
+    getChildern(cubits, key = null) {
+        let source = this.locations.find(l => l.where === LOCATIONS.Units && l.player === this.ownership);
+        if(!source) {
+            return [];
+        }
+
+        let collection = cubits.filter(c => (c.id !== this.id) && (key == null || c.key === key) && c.at(source.where, source.player, null, source.y));
+        return collection;
     }
 
-    getChildern(cubits, type = null) {
-        // TODO: interecpts DOSE NOT work! change it work correctly based on a supplied Where... and overrides for player / x / y
-        return cubits.filter(c => c.id !== this.id && (type == null || c.key === type) && c.interecpts(this.locations, LOCATIONS.Units, null, false, null));
+    hasChild(cubits, key = null) {
+        let collection = this.getChildern(cubits, key);
+        return collection.length > 0;
     }
 
-    getChildernMovment(cubits) {
-        let movment = [];
-        let kids = this.getChildern(cubits);
-        for (let i = 0; i < kids.length; i++) {
-            const cubit = kids[i];
-            for (let z = 0; z < cubit.movement.length; z++) {
-                const movmment = cubit.movement[z];
-                movment.push(movmment);
+    getMovement(cubits, includeChildern = true) {
+        let collection = [].concat(this.movement);
+        if(includeChildern) {
+            let kids = this.getChildern(cubits);
+            for (let i = 0; i < kids.length; i++) {
+                const cubit = kids[i];
+                for (let z = 0; z < cubit.movement.length; z++) {
+                    const movmment = cubit.movement[z];
+                    collection.push(movmment);
+                }
             }
         }
-        return movment;
+        
+        return collection;
     }
 
     vaildTarget(cubits, x, y) {
@@ -285,11 +281,10 @@ export class UnitCubit extends BaseCubit {
         let forward = this.ownership === '0' ? +1 : -1; // On the X
 
         let cubits = getCubits(g);
-        let subMovements = this.getChildernMovment(cubits);
-        let movements = [].concat(this.movement).concat(subMovements);
+        let movements = this.getMovement(cubits);
 
         let targets = [];
-        for (let i = 0; i < movements; i++) {
+        for (let i = 0; i < movements.length; i++) {
             const movement = movements[i];
             switch (movement.type) {
                 case MOVEMENT_TYPES.Orthogonal:
@@ -441,7 +436,7 @@ export class UnitCubit extends BaseCubit {
                 {
                     let steps,x;
 
-                    for (x = location.x + forward, steps = 0; x < 8 && steps < movement.distance; x++, steps++) {
+                    for (x = location.x + forward, steps = 0; x < 8 && steps < movement.distance; x += forward, steps++) {
                         let type = this.vaildTarget(cubits, x, location.y);
                         if(type === TARGET.Empty) {
                             targets.push(new TargetLocation(type, LOCATIONS.Field, null, x, location.y));
@@ -454,7 +449,7 @@ export class UnitCubit extends BaseCubit {
                 {
                     let steps,x;
 
-                    for (x = location.x - forward, steps = 0; x < 8 && steps < movement.distance; x++, steps++) {
+                    for (x = location.x - forward, steps = 0; x < 8 && steps < movement.distance; x -= forward, steps++) {
                         let type = this.vaildTarget(cubits, x, location.y);
                         if(type === TARGET.Empty) {
                             targets.push(new TargetLocation(type, LOCATIONS.Field, null, x, location.y));
@@ -608,7 +603,7 @@ export class KnightUnit extends UnitCubit {
         super(CUBITS.UnitKnight, "Knight", "Knight", "");
 
         this.types.push(CLASSIFICATIONS.Unit);
-        this.movement.push({ type: MOVEMENT_TYPES.Jump, step: [2,1] });
+        this.movement.push({ type: MOVEMENT_TYPES.Jump, steps: [2,1] });
         this.slots = 4;
     }
 
@@ -634,8 +629,6 @@ export class PawnUnit extends UnitCubit {
     onFocus(g, ctx) {
         super.onFocus(g, ctx);
 
-        debugger;
-        
         g.objectives = 1;
         g.targets = this.getTargets(g, ctx);
     }
@@ -888,7 +881,6 @@ export function getStartingCubits(ctx) {
 
     for (let i = 0; i < support.length; i++) {
         const _ = support[i];
-
         {
             let cubit = new PawnUnit();
             cubit.color = "#FF5733";

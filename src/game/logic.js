@@ -10,25 +10,42 @@ const GameLogic = Game({
         return {
             selection: null,
             targets: [],
-            objectives: 0,
+            objectives: [],
+            goal: 0,
             cubits: cubits
         };
     },
     moves: {
         focus: (G, ctx, id) => {
+            console.log("ctx", ctx);
+
             const g = clone(G);
+
             let cubit = getCubit(g, id);
-            cubit.onFocus(g, ctx);
+            if(g.selection === id) {
+                cubit.onBlur(g, ctx);
+            } else {
+                cubit.onFocus(g, ctx);
+            }
+
             return g;
         },
-        blur: (G, ctx) => {
+        target: (G, ctx, id) => {
             const g = clone(G);
-            let cubit = getCubit(g, g.selection);
-            cubit.onBlur(g, ctx);
-            return g;
-        },
-        target: (G, ctx) => {
-            const g = clone(G);
+        
+            let objective = g.objectives.find(t => t.id === id);
+            if(objective) {
+                g.objectives = g.objectives.filter(t => t.id !== id);
+            } else {
+                let target = g.targets.find(t => t.id === id);
+                g.objectives.push(target);
+            }
+            
+            if(g.objectives.length === g.goal) {
+                let cubit = getCubit(g, g.selection);
+                cubit.onActivated(g, ctx);
+            }
+
             return g;
         }
     },
