@@ -37,14 +37,14 @@ export class CubitText extends React.Component {
         return (
           <g transform="scale(0.015,0.015) translate(35,35)">
             <title>{this.props.name}</title>
-            <text style={{strokeWidth:0, fill: teamColor}} textAnchor="middle" dominantBaseline="central">{this.props.name}</text>
+            <text style={{strokeWidth:0, fill: teamColor}} textAnchor="middle" dominantBaseline="central">{this.props.value}</text>
           </g>
         );
       } else {
         return (
           <g transform="scale(0.015,0.015) translate(35,35)">
             <title>{this.props.name}</title>
-            <text style={{strokeWidth:0, fill: teamColor}} textAnchor="middle" dominantBaseline="central">{this.props.name}</text>
+            <text style={{strokeWidth:0, fill: teamColor}} textAnchor="middle" dominantBaseline="central">{this.props.value}</text>
             <g transform="translate(-20,10)">
               <rect width="40" height="3" style={{fill: rankColor}} />
             </g>
