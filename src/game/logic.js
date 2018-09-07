@@ -1,12 +1,13 @@
 import { Game } from 'boardgame.io/core';
-import { getStartingState } from './cubits';
+import { GameState } from './cubits';
 
 let clone = require('clone');
+let game = new GameState();
 
 const GameLogic = Game({
     name: 'Lusus',
     setup: (ctx) => {
-        let data = getStartingState(ctx);
+        let data = game.getStartingState(ctx);
         return data;
     },
     moves: {
