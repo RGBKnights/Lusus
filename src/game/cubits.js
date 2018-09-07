@@ -138,7 +138,6 @@ export class KingUnit extends BaseUnit {
         super(CUBITS.UnitKing, "King", "Kg", "");
 
         this.ownership = player;
-        this.controller = player;
         this.color = color;
         this.types.push(CLASSIFICATIONS.Unit);
         this.types.push(CLASSIFICATIONS.Royal);
@@ -187,21 +186,24 @@ export class FieldLocation {
         this.id = uuidv4();
         this.key = CUBIT_LOCATIONS.Field;
         this.controller = null;
-        this.field = {};
-        for (let x = 0; x < 8; x++) {
-            for (let y = 0; y < 8; y++) {
-                this.field[`${x},${y}`] = [];
-            }
-        }
+        this.field = [
+            [[],[],[],[],[],[],[],[]], // 1
+            [[],[],[],[],[],[],[],[]], // 2
+            [[],[],[],[],[],[],[],[]], // 3
+            [[],[],[],[],[],[],[],[]], // 4
+            [[],[],[],[],[],[],[],[]], // 5
+            [[],[],[],[],[],[],[],[]], // 6
+            [[],[],[],[],[],[],[],[]], // 7
+            [[],[],[],[],[],[],[],[]], // 8
+        ];
     }
 
     at(x, y) {
-        return this.field[`${x},${y}`];
+        return this.field[x][y];
     }
 
-    placeUnit(x,y,p,cubit) {
-        cubit.controller = p;
-        this.field[`${x},${y}`].push(cubit);
+    place(x,y,obj) {
+        this.field[x][y].push(obj);
     }
 }
 
@@ -244,39 +246,34 @@ export function getStartingState(ctx) {
         locations: []
     };
 
-    // Field  
-    let players = ["0", "1"];
-    let main = [
-        {player: "0", offset: 0},
-        {player: "1", offset: 7},
-    ];
-    let support = [
-        {player: "0", offset: 1},
-        {player: "1", offset: 6},
+    // Field
+    let options = [
+        { player: "0", royal: 0, support: 1 },
+        { player: "1", royal: 7, support: 6 }
     ];
 
     let field = new FieldLocation();
-    for (let i = 0; i < main.length; i++) {
-        const item = main[i];
-        field.placeUnit(_.offset, 0, item.player, new RookUnit("#FF5733", item.player));
-        field.placeUnit(_.offset, 1, item.player, new KnightUnit("#F9FF33", item.player));
-        field.placeUnit(_.offset, 2, item.player, new BishopUnit("#008000", item.player));
-        field.placeUnit(_.offset, 3, item.player, new QueenUnit("#33FFA8", item.player));
-        field.placeUnit(_.offset, 4, item.player, new KingUnit("#33F6FF", item.player));
-        field.placeUnit(_.offset, 5, item.player, new BishopUnit("#3346FF", item.player));
-        field.placeUnit(_.offset, 6, item.player, new KnightUnit("#800080", item.player));
-        field.placeUnit(_.offset, 7, item.player, new RookUnit("#FF0000", item.player));
+    for (let i = 0; i < options.length; i++) {
+        const option = options[i];
+        field.place(option.royal, 0, new RookUnit("#FF5733", option.player));
+        field.place(option.royal, 1, new KnightUnit("#F9FF33", option.player));
+        field.place(option.royal, 2, new BishopUnit("#008000", option.player));
+        field.place(option.royal, 3, new QueenUnit("#33FFA8", option.player));
+        field.place(option.royal, 4, new KingUnit("#33F6FF", option.player));
+        field.place(option.royal, 5, new BishopUnit("#3346FF", option.player));
+        field.place(option.royal, 6, new KnightUnit("#800080", option.player));
+        field.place(option.royal, 7, new RookUnit("#FF0000", option.player));
     }
-    for (let i = 0; i < support.length; i++) {
-        const item = support[i];
-        field.placeUnit(_.offset, 0, item.player, new PawnUnit("#FF5733", item.player));
-        field.placeUnit(_.offset, 1, item.player, new PawnUnit("#F9FF33", item.player));
-        field.placeUnit(_.offset, 2, item.player, new PawnUnit("#008000", item.player));
-        field.placeUnit(_.offset, 3, item.player, new PawnUnit("#33FFA8", item.player));
-        field.placeUnit(_.offset, 4, item.player, new PawnUnit("#33F6FF", item.player));
-        field.placeUnit(_.offset, 5, item.player, new PawnUnit("#3346FF", item.player));
-        field.placeUnit(_.offset, 6, item.player, new PawnUnit("#800080", item.player));
-        field.placeUnit(_.offset, 7, item.player, new PawnUnit("#FF0000", item.player));
+    for (let i = 0; i < options.length; i++) {
+        const option = options[i];
+        field.place(option.support, 0, new PawnUnit("#FF5733", option.player));
+        field.place(option.support, 1, new PawnUnit("#F9FF33", option.player));
+        field.place(option.support, 2, new PawnUnit("#008000", option.player));
+        field.place(option.support, 3, new PawnUnit("#33FFA8", option.player));
+        field.place(option.support, 4, new PawnUnit("#33F6FF", option.player));
+        field.place(option.support, 5, new PawnUnit("#3346FF", option.player));
+        field.place(option.support, 6, new PawnUnit("#800080", option.player));
+        field.place(option.support, 7, new PawnUnit("#FF0000", option.player));
     }
     data.locations.push(field);
 
@@ -284,8 +281,8 @@ export function getStartingState(ctx) {
     data.locations.push(new ArenaLocation());
 
     // Player, Hand, Exile, & Afterlife
-    for (let i = 0; i < players.length; i++) {
-        const p = players[i];
+    for (let i = 0; i < options.length; i++) {
+        const p = options[i].player;
 
         let cubits = getStartingCubits(ctx, p);
         let hand = cubits[p].split(0, 3);
