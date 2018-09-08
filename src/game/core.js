@@ -1,18 +1,20 @@
 import { Game } from 'boardgame.io/core';
-import { GameState } from './logic';
+import { GameLogic } from './logic';
 
-let clone = require('clone');
+var clone = require('clone');
+
+let logic = new GameLogic();
 
 const GameCore = Game({
     name: 'Lusus',
     setup: (ctx) => {
-        let data = new GameState(ctx);
+        let data = logic.initialize(ctx);
+        logic.setup(data, ctx);
         return data;
     },
     moves: {
         moveUnit: (G, ctx) => {
             const g = clone(G);
-            g.moveUnit(null, null);
             return g;
         }
     },

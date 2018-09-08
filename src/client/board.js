@@ -36,8 +36,7 @@ class GameBoard extends React.Component {
     super(params);
 
     this.state = {
-      selection: null,
-      targets: []
+      selection: null
     };
 
     // this.connected = (this.props.isMultiplayer && this.props.isConnected);

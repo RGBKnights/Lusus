@@ -1,0 +1,11 @@
+.debug-ui {
+    opacity: 1;
+    z-index: 999;
+  }
+  .debug-ui .pane {
+    padding-bottom: 120px;
+  }
+  
+  .debug-ui .player.current {
+    background-color: #007bff;
+  }
