@@ -1,12 +1,12 @@
 import React from 'react';
 import { Client } from 'boardgame.io/react';
 import GameBoard from './board';
-import GameLogic from '../game/logic';
+import GameCore from '../game/core';
 
 const ClientApp = Client({
-  game: GameLogic,
+  game: GameCore,
   board: GameBoard,
-  debug: false,
+  debug: true,
   multiplayer: false, // { server: 'localhost:8000' }
 });
 

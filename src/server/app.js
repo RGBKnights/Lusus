@@ -1,7 +1,7 @@
 import { Server } from 'boardgame.io/server';
-import GameLogic from '../game/logic';
+import GameCore from '../game/core';
 
-const server = Server({ games: [GameLogic] });
+const server = Server({ games: [GameCore] });
 
 const port = 8000;
 console.log(`App running on http://localhost:${port}/`)

@@ -17,7 +17,7 @@ import {
 
 // Logic
 import { 
-} from '../game/cubits';
+} from '../game/logic';
 
 
 class GameBoard extends React.Component {
