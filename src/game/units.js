@@ -6,11 +6,11 @@ import {
  } from './common';
 
 export class Unit  extends Entity {
-    constructor(type, name) {
-        super(type, name);
+    constructor(type, name, ownership, color) {
+        super(type, name, ownership);
     
         // file (row) color
-        this.color = null;
+        this.color = color;
 
         // cubits and number of slots
         this.cubits = [];
@@ -19,8 +19,8 @@ export class Unit  extends Entity {
 }
 
 export class KingUnit extends Unit {
-    constructor() {
-        super(UNIT_TYPES.King, "King");
+    constructor(ownership, color) {
+        super(UNIT_TYPES.King, "King", ownership, color);
 
         this.classification.push(CLASSIFICATIONS.Unit);
         this.movement.push({ type: MOVEMENT_TYPES.Orthogonal, distance: 1, });
@@ -31,8 +31,8 @@ export class KingUnit extends Unit {
 }
 
 export class QueenUnit extends Unit {
-    constructor() {
-        super(UNIT_TYPES.Queen, "Queen");
+    constructor(ownership, color) {
+        super(UNIT_TYPES.Queen, "Queen", ownership, color);
 
         this.classification.push(CLASSIFICATIONS.Unit);
         this.movement.push({ type: MOVEMENT_TYPES.Orthogonal, distance: 8, });
@@ -42,8 +42,8 @@ export class QueenUnit extends Unit {
 }
 
 export class BishopUnit extends Unit {
-    constructor() {
-        super(UNIT_TYPES.Bishop, "Bishop");
+    constructor(ownership, color) {
+        super(UNIT_TYPES.Bishop, "Bishop", ownership, color);
 
         this.classification.push(CLASSIFICATIONS.Unit);
         this.movement.push({ type: MOVEMENT_TYPES.Diagonal, distance: 8, });
@@ -52,8 +52,8 @@ export class BishopUnit extends Unit {
 }
 
 export class RookUnit extends Unit {
-    constructor() {
-        super(UNIT_TYPES.Rook, "Rook");
+    constructor(ownership, color) {
+        super(UNIT_TYPES.Rook, "Rook", ownership, color);
 
         this.classification.push(CLASSIFICATIONS.Unit);
         this.movement.push({ type: MOVEMENT_TYPES.Orthogonal, distance: 8, });
@@ -62,8 +62,8 @@ export class RookUnit extends Unit {
 }
 
 export class KnightUnit extends Unit {
-    constructor() {
-        super(UNIT_TYPES.Knight, "Knight");
+    constructor(ownership, color) {
+        super(UNIT_TYPES.Knight, "Knight", ownership, color);
 
         this.classification.push(CLASSIFICATIONS.Unit);
         this.movement.push({ type: MOVEMENT_TYPES.Jump, steps: [2,1] });
@@ -72,8 +72,8 @@ export class KnightUnit extends Unit {
 }
 
 export class PawnUnit extends Unit {
-    constructor() {
-        super(UNIT_TYPES.Pawn, "Pawn");
+    constructor(ownership, color) {
+        super(UNIT_TYPES.Pawn, "Pawn", ownership, color);
 
         this.classification.push(CLASSIFICATIONS.Unit);
         this.movement.push({ type: MOVEMENT_TYPES.Forward, distance: 1 });

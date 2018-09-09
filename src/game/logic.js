@@ -22,43 +22,24 @@ export class GameLogic {
         this.locations = {
             arena: new ArenaLocation(),
             field: new FieldLocation(),
-            bags: {
-                "0": new BagLocation("0"),
-                "1": new BagLocation("1"),
-            },
-            hands: {
-                "0": new HandLocation("0"),
-                "1": new HandLocation("1"),
-            },
-            avatars: {
-                "0": new AvatarLocation("0"),
-                "1": new AvatarLocation("1"),
-            },
-            exiles: {
-                "0": new ExileLocation("0"),
-                "1": new ExileLocation("1")
-            },
-            afterlifes:
-            {
-                "0": new AfterlifeLocation("0"),
-                "1": new AfterlifeLocation("1")
-            },
-            units: {
-                "0": new UnitsLocation("0"),
-                "1": new UnitsLocation("1")
-            }
+            bags: new BagLocation(),
+            hands: new HandLocation(),
+            avatars: new AvatarLocation(),
+            exiles: new ExileLocation(),
+            afterlifes: new AfterlifeLocation(),
+            units: new UnitsLocation(),
         };
     }
 
     setup(g, ctx) {
-        this.locations.arena.setup(g, ctx);
-        this.locations.field.setup(g, ctx);
+        this.locations.arena.setup(g, ctx, null);
+        this.locations.field.setup(g, ctx, null);
 
         for (let i = 0; i < 2; i++) {
             const p = i.toString();
-            this.locations.bags[p].setup(g, ctx);
-            this.locations.hands[p].setup(g, ctx);
-            this.locations.avatars[p].setup(g, ctx);
+            this.locations.bags.setup(g, ctx, p);
+            this.locations.hands.setup(g, ctx, p);
+            this.locations.avatars.setup(g, ctx, p);
         }
     }
 
@@ -72,14 +53,14 @@ export class GameLogic {
                     hand: [],
                     avatar: [],
                     exile: [],
-                    afterlife: []
+                    afterlife: [],
                 },
                 "1": {
                     bag: [],
                     hand: [],
                     avatar: [],
                     exile: [],
-                    afterlife: []
+                    afterlife: [],
                 }
             }
         };

@@ -56,16 +56,25 @@ export const DURATION_TYPES = {
     Move: 2,
 };
 
+export const DIMENSIONS = {
+    Unknown: 0,
+    Single: 1,
+    Small: 2,
+    Medium: 3,
+    Large: 4,
+};
+
 export class Entity {
-    constructor(type, name) {
+    constructor(type, name, ownership) {
         // unique identifier
         this.id = uuidv4();
         // own owns the cubit
-        this.ownership = null;
+        this.ownership = ownership;
         // type of the cubit
         this.type = type;
         // the name of the type
         this.name = name;
+        this.alias = name.slice(0, 6);
         // english words for the Help (convert to transltions keys later)
         this.description = "";
         // for filtering
