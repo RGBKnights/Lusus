@@ -1,4 +1,9 @@
 
+body {
+  background-color: #202020;
+  color: #ffffff;
+}
+
 .debug-ui {
   opacity: 1;
   z-index: 999;

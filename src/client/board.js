@@ -44,7 +44,7 @@ class Board extends React.Component {
     super(params);
 
     // UI
-    this.style = { strokeWidth: 0.05, stroke: '#fff' };
+    this.style = { strokeWidth: 0.05, stroke: '#000000' };
     this.teams = {'0': 'w', '1': 'b'};
     this.backgroundColor = '#959595';
     this.whiteColor = '#817F7F';
