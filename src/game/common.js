@@ -34,7 +34,6 @@ export const CLASSIFICATIONS = {
     Royal: 2,
     Cubit: 3,
     Movement: 4,
-    Trap: 5,
 };
 
 export const MOVEMENT_TYPES = {
@@ -61,8 +60,36 @@ export const DIMENSIONS = {
     Single: 1,
     Small: 2,
     Medium: 3,
-    Large: 4,
+    Large: 4
 };
+
+export const LOCATIONS = {
+    Unknown: 0,
+    Field: 1,
+    Units: 2,
+    Afterlife: 3,
+    Bag: 4,
+    Exile: 5,
+    Arena: 6,
+    Avatar: 7,
+    Hand: 8,
+};
+
+export const TARGETING = {
+    Unknown: 0,
+    Any: 1,
+    Self: 2,
+    Opponent: 3,
+};
+
+export class Target {
+    constructor(where, whom, what = null, filter = null) {
+        this.where = where;
+        this.whom = whom;
+        this.what = what;
+        this.filter = filter;
+    }
+}
 
 export class Entity {
     constructor(type, name, ownership) {
@@ -79,13 +106,15 @@ export class Entity {
         this.description = "";
         // for filtering
         this.classification = [];
-
+        // can this cubit be activated or consumed
+        this.activatable = false;       
         // track moves and turns
         this.moves = 0;
         this.turns = 0;
-
         // adictional movement options
         this.movement = [];
+        // targets options
+        this.targets = []; // { where: LOCATIONS.Avatar, whom: TARGETING.Self, what: UNIT_TYPES.Pawn, classify:  CLASSIFICATIONS.Unit }
     }
 
     static isType(entity, type) {

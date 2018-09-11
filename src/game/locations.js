@@ -5,6 +5,8 @@ import {
     // MOVEMENT_TYPES,
     // DURATION_TYPES,
     DIMENSIONS,
+    LOCATIONS,
+    TARGETING,
     Entity
 } from './common';
 
@@ -146,11 +148,15 @@ export class BaseLocation {
             return collection[index];
         }
     }
+
+    getTargets(g, ctx, controller, x, y, entity) {
+        return [];
+    }
 }
 
 export class FieldLocation extends BaseLocation { 
     constructor() {
-        super(0, "Field", 8, false, false);
+        super(LOCATIONS.Field, "Field", 8, false, false);
 
         this.dimensions = DIMENSIONS.Large;
     }
@@ -194,12 +200,16 @@ export class FieldLocation extends BaseLocation {
             g.field[this.getIndex(option.common, 7)] = new PawnUnit(option.player, "#FF0000");
         }
     }
+
+    getTargets(g, ctx, controller, x, y, entity) {
+        return [];
+    }
 }
 
 export class UnitsLocation extends BaseLocation {
 
     constructor() {
-        super(0, "Units", 5, false, false);
+        super(LOCATIONS.Units, "Units", 5, false, false);
 
         this.dimensions = DIMENSIONS.Large;
     }
@@ -316,7 +326,7 @@ export class UnitsLocation extends BaseLocation {
 
 export class AfterlifeLocation extends BaseLocation { 
     constructor() {
-        super(0, "Afterlife", 5, true, true);
+        super(LOCATIONS.Afterlife, "Afterlife", 5, true, true);
 
         this.dimensions = DIMENSIONS.Medium;
     }
@@ -429,7 +439,7 @@ export class AfterlifeLocation extends BaseLocation {
 
 export class BagLocation extends BaseLocation { 
     constructor() {
-        super(0, "Bag", 5, true, true);
+        super(LOCATIONS.Bag, "Bag", 5, true, true);
 
         this.dimensions = DIMENSIONS.Medium;
     }
@@ -467,7 +477,7 @@ export class BagLocation extends BaseLocation {
 
 export class ExileLocation extends BaseLocation {
     constructor() {
-        super(0, "Exile", 5, true, true);
+        super(LOCATIONS.Exile, "Exile", 5, true, true);
 
         this.dimensions = DIMENSIONS.Medium;
     }
@@ -486,7 +496,7 @@ export class ExileLocation extends BaseLocation {
 
 export class ArenaLocation extends BaseLocation {
     constructor() {
-        super(0, "Arena", 1, false, false);
+        super(LOCATIONS.Arena, "Arena", 1, false, false);
 
         this.dimensions = DIMENSIONS.Small;
     }
@@ -506,7 +516,7 @@ export class ArenaLocation extends BaseLocation {
 
 export class AvatarLocation extends BaseLocation {
     constructor() {
-        super(0, "Player", 5, false, false);
+        super(LOCATIONS.Avatar, "Player", 5, false, false);
 
         this.dimensions = DIMENSIONS.Single;
     }
@@ -529,7 +539,7 @@ export class AvatarLocation extends BaseLocation {
 
 export class HandLocation extends BaseLocation { 
     constructor() {
-        super(0, "Hand", 5, false, true);
+        super(LOCATIONS.Hand, "Hand", 5, false, true);
 
         this.dimensions = DIMENSIONS.Single;
     }
@@ -556,9 +566,35 @@ export class HandLocation extends BaseLocation {
             g.players[controller].hand[x] = null;
         }
 
-        for (let i = 0; i < 3; i++) {
+        let draws = g.players[controller].draws;
+        for (let i = 0; i < draws; i++) {
             let cubit = g.players[controller].bag.pop();
             g.players[controller].hand[i] = cubit;
         }
+    }
+
+    getTargets(g, ctx, controller, x, y, entity) {
+        let targets = [];
+        for (let i = 0; i < entity.targets.length; i++) {
+            const target = entity.targets[i];
+            let data = {
+                loc: target.where,
+                cntr: target.whom === TARGETING.Self ? null : target.whom === TARGETING.Opponent ? null : null,
+                // pos: ({x,y}),
+                color: null,
+            };
+            targets.push(data);
+        }
+
+        // TOOD: Target.whom [TARGETING]
+        // - TARGETING: May need PlayerID/ctx.currentPlayer to compare to controller for Self/Opponent
+
+        // TODO: Target.what [UNIT_TYPES/CUBIT_TYPES]
+        // -
+
+        // TODO: Target.filter [CLASSIFICATIONS]
+        // -
+
+        return targets;
     }
 }

@@ -31,40 +31,39 @@ export class GameLogic {
         };
     }
 
-    setup(g, ctx) {
+    initialize(g, ctx) {
+        g.field = [];
+        g.arena = [];
+
         this.locations.arena.setup(g, ctx, null);
         this.locations.field.setup(g, ctx, null);
 
+        g.players = {};
+
         for (let i = 0; i < 2; i++) {
             const p = i.toString();
+
+            g.players[p] = {
+                draws: 3, 
+                actions: {
+                    total: 1,
+                    count: 1,
+                },
+                movement: {
+                    total: 1,
+                    count: 1,
+                },
+                bag: [],
+                hand: [],
+                avatar: [],
+                exile: [],
+                afterlife: [],
+            };
+            
             this.locations.bags.setup(g, ctx, p);
             this.locations.hands.setup(g, ctx, p);
             this.locations.avatars.setup(g, ctx, p);
         }
     }
-
-    initialize(ctx) {
-        return {
-            field: [],
-            arena: [],
-            players: {
-                "0": {
-                    bag: [],
-                    hand: [],
-                    avatar: [],
-                    exile: [],
-                    afterlife: [],
-                },
-                "1": {
-                    bag: [],
-                    hand: [],
-                    avatar: [],
-                    exile: [],
-                    afterlife: [],
-                }
-            }
-        };
-    }
-
     
 }
