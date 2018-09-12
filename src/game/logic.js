@@ -7,36 +7,17 @@ import {
 } from './common';
 
 import {
-    FieldLocation,
-    UnitsLocation,
-    AfterlifeLocation,
-    BagLocation,
-    ExileLocation,
-    ArenaLocation,
-    AvatarLocation,
-    HandLocation
+    getLocations
 } from './locations';
 
 export class GameLogic {
-    constructor() {
-        this.locations = {
-            arena: new ArenaLocation(),
-            field: new FieldLocation(),
-            bags: new BagLocation(),
-            hands: new HandLocation(),
-            avatars: new AvatarLocation(),
-            exiles: new ExileLocation(),
-            afterlifes: new AfterlifeLocation(),
-            units: new UnitsLocation(),
-        };
-    }
-
     initialize(g, ctx) {
+        let locations = getLocations();
         g.field = [];
         g.arena = [];
 
-        this.locations.arena.setup(g, ctx, null);
-        this.locations.field.setup(g, ctx, null);
+        locations.arena.setup(g, ctx, null);
+        locations.field.setup(g, ctx, null);
 
         g.players = {};
 
@@ -60,9 +41,9 @@ export class GameLogic {
                 afterlife: [],
             };
             
-            this.locations.bags.setup(g, ctx, p);
-            this.locations.hands.setup(g, ctx, p);
-            this.locations.avatars.setup(g, ctx, p);
+            locations.bags.setup(g, ctx, p);
+            locations.hands.setup(g, ctx, p);
+            locations.avatars.setup(g, ctx, p);
         }
     }
     

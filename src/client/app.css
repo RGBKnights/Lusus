@@ -14,3 +14,7 @@ body {
 .debug-ui .player.current {
   background-color: #007bff;
 }
+
+g > text {
+  cursor: pointer;
+}

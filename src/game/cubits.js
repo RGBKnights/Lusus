@@ -7,7 +7,8 @@ import {
     LOCATIONS,
     TARGETING,
     Target,
-    Entity
+    Entity,
+    // UNIT_TYPES
 } from './common';
 
 export class Cubit extends Entity {
@@ -27,8 +28,7 @@ export class OrthogonalCubit extends Cubit {
 
         this.classification.push(CLASSIFICATIONS.Movement);
         this.movement.push({ type: MOVEMENT_TYPES.Orthogonal, distance: 8, });
-        this.targets.push(new Target(LOCATIONS.Field, TARGETING.Self, CLASSIFICATIONS.Unit));
-        this.targets.push(new Target(LOCATIONS.Units, TARGETING.Self, CLASSIFICATIONS.Unit));
+        this.targets.push(new Target(LOCATIONS.Units, TARGETING.Self));
     }
 }
 
@@ -38,8 +38,7 @@ export class DiagonalCubit extends Cubit {
 
         this.classification.push(CLASSIFICATIONS.Movement);
         this.movement.push({ type: MOVEMENT_TYPES.Diagonal, distance: 8, });
-        this.targets.push(new Target(LOCATIONS.Field, TARGETING.Self, CLASSIFICATIONS.Unit));
-        this.targets.push(new Target(LOCATIONS.Units, TARGETING.Self, CLASSIFICATIONS.Unit));
+        this.targets.push(new Target(LOCATIONS.Units, TARGETING.Self));
     }
 }
 
@@ -50,8 +49,7 @@ export class CardinalCubit extends Cubit {
         this.classification.push(CLASSIFICATIONS.Movement);
         this.movement.push({ type: MOVEMENT_TYPES.Diagonal, distance: 8, });
         this.movement.push({ type: MOVEMENT_TYPES.Orthogonal, distance: 8, });
-        this.targets.push(new Target(LOCATIONS.Field, TARGETING.Self, CLASSIFICATIONS.Unit));
-        this.targets.push(new Target(LOCATIONS.Units, TARGETING.Self, CLASSIFICATIONS.Unit));
+        this.targets.push(new Target(LOCATIONS.Units, TARGETING.Self));
     }
 }
 
@@ -61,8 +59,7 @@ export class JumpCubit extends Cubit {
 
         this.classification.push(CLASSIFICATIONS.Movement);
         this.movement.push({ type: MOVEMENT_TYPES.Jump, steps: [2,1] });
-        this.targets.push(new Target(LOCATIONS.Field, TARGETING.Self, CLASSIFICATIONS.Unit));
-        this.targets.push(new Target(LOCATIONS.Units, TARGETING.Self, CLASSIFICATIONS.Unit));
+        this.targets.push(new Target(LOCATIONS.Units, TARGETING.Self));
     }
 }
 
@@ -72,8 +69,7 @@ export class SideStepCubit extends Cubit {
 
         this.classification.push(CLASSIFICATIONS.Movement);
         this.movement.push({ type: MOVEMENT_TYPES.Sidestep, distance: 1 });
-        this.targets.push(new Target(LOCATIONS.Field, TARGETING.Self, CLASSIFICATIONS.Unit));
-        this.targets.push(new Target(LOCATIONS.Units, TARGETING.Self, CLASSIFICATIONS.Unit));
+        this.targets.push(new Target(LOCATIONS.Units, TARGETING.Self));
     }
 }
 
@@ -83,8 +79,7 @@ export class SwapCubit extends Cubit {
 
         this.classification.push(CLASSIFICATIONS.Movement);
         this.movement.push({ type: MOVEMENT_TYPES.Swap, distance: 1, });
-        this.targets.push(new Target(LOCATIONS.Field, TARGETING.Self, CLASSIFICATIONS.Unit));
-        this.targets.push(new Target(LOCATIONS.Units, TARGETING.Self, CLASSIFICATIONS.Unit));
+        this.targets.push(new Target(LOCATIONS.Units, TARGETING.Self));
     }
 }
 

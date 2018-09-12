@@ -15,18 +15,18 @@ import {
   Token, Grid
 } from 'boardgame.io/ui';
 
-
 // Logic
 import {
   DIMENSIONS,
   // LOCATIONS,
   // CLASSIFICATIONS,
+  COLORS,
   // Entity
 } from '../game/common';
 
 import {
-  GameLogic
-} from '../game/logic';
+  getLocations
+} from '../game/locations';
 
 class Board extends React.Component {
   static propTypes = {
@@ -40,7 +40,7 @@ class Board extends React.Component {
     isConnected: PropTypes.bool,
     controller: PropTypes.string,
     location: PropTypes.any.isRequired,
-    onClick:  PropTypes.any.isRequired,
+    table: PropTypes.any.isRequired,
   };
 
   constructor(params) {
@@ -49,9 +49,6 @@ class Board extends React.Component {
     // UI
     this.style = { strokeWidth: 0.05, stroke: '#000000' };
     this.teams = {'0': 'w', '1': 'b'};
-    this.backgroundColor = '#959595';
-    this.whiteColor = '#817F7F';
-    this.backColor = '#ABAAAA';
   }
 
   onClick = ({x, y}) => {
@@ -62,7 +59,7 @@ class Board extends React.Component {
       return;
     }
 
-    this.props.onClick({l:this.props.location, c: this.props.controller, x:x, y:y});
+    this.props.table.onClick({l:this.props.location, c: this.props.controller, x:x, y:y});
   }
   
   render() {
@@ -86,7 +83,7 @@ class Board extends React.Component {
       let size = this.props.location.getSize(this.props.G, this.props.ctx, this.props.controller);
       for (let x = 0; x < size.width; x++) {
         for (let y = 0; y < size.height; y++) {
-          background[`${x},${y}`] = ((x + y) % 2 === 0) ? this.whiteColor : this.backColor;
+          background[`${x},${y}`] = ((x + y) % 2 === 0) ? COLORS.CheckboardWhite : COLORS.CheckboardBlack 
 
           let entity = this.props.location.getItem(this.props.G, this.props.ctx, this.props.controller, x, y);
           if(entity) {
@@ -94,6 +91,24 @@ class Board extends React.Component {
             let cubit = <CubitText name={entity.name} value={entity.alias} team={team} color={entity.color} />;
             let token = <Token key={entity.id} x={x} y={y}>{cubit}</Token>;
             tokens.push(token);
+          }
+
+          if(this.props.table.state.source && entity && this.props.table.state.source.e.id === entity.id) {
+            background[`${x},${y}`] = COLORS.Selection;
+          }
+
+          if(this.props.table.state.targets) {
+            for (let i = 0; i < this.props.table.state.targets.length; i++) {
+              const target = this.props.table.state.targets[i];
+
+              if(
+                target.l === this.props.location.type && 
+                (this.props.controller == null || target.c === this.props.controller) 
+                && target.x === x && target.y === y
+              ){
+                background[`${x},${y}`] = target.color;
+              }
+            }
           }
         }
       }
@@ -147,12 +162,12 @@ class GameTable extends React.Component {
 
     this.state = {
       source: null, // ID of Cubit
-      targets: [],
+      targets: null,
     };
   }
   
   onClick = ({ l, c, x, y }) => {
-    alert(`Player(${c}):${l.name}@(${x},${y})`);
+    // alert(`Player(${c}):${l.name}@(${x},${y})`);
 
     let e = l.getItem(this.props.G, this.props.ctx, c, x, y);
 
@@ -162,21 +177,20 @@ class GameTable extends React.Component {
       if(confirm("Activate Cubit?")) {
         // this.props.moves.Activate(this.state.source.e.id, l.type, c, x, y);
       } else {
-        this.setState({ source: null });
+        this.setState({ source: null, targets: null});
       }
     } else if(this.state.source == null && e) {
       // Set Source & Targets
-      this.setState({ source: { c: c, x: x, y: y, e: e } });
-      // Set Targets
-      let targets = l.getTargets(this.props.G, this.props.ctx, c, x, y, e);
-      this.setState({ targets: targets });
+      let origin = {x, y};
+      let targets = l.getTargets(this.props.G, this.props.ctx, this.props.playerID, c, origin, e);
+      this.setState({ source: { c: c, x: x, y: y, e: e }, targets: targets });
     } else if(e && e.id === this.state.source.e.id) {
       // Clear Source
-      this.setState({ source: null });
+      this.setState({ source: null, targets: null  });
     } else if (e && this.isVaildTarget()) {
-      // ... 
+      
     } else {
-
+      // ...
     }
   }
 
@@ -185,38 +199,38 @@ class GameTable extends React.Component {
   }
 
   extends(c, l) {
-    return {...this.props, controller: c, location: l, onClick: this.onClick };
+    return {...this.props, controller: c, location: l, table: this };
   }
 
   render() {
-    let logic = new GameLogic();
+    let locations = getLocations();
 
-    let field = React.createElement(Board, this.extends(null, logic.locations.field)); // {...this.props, controller: null, location: logic.locations.field, onClick: this.onClick });
-    let arena = React.createElement(Board, this.extends(null, logic.locations.arena)); // {...this.props, controller: null, location: logic.locations.arena, onClick: this.onClick });
+    let field = React.createElement(Board, this.extends(null, locations.field)); 
+    let arena = React.createElement(Board, this.extends(null, locations.arena)); 
 
     let units = {
-      "0": React.createElement(Board, this.extends('0', logic.locations.units)), // {...this.props, controller: '0', location: logic.locations.units, onClick: this.onClick }),
-      "1": React.createElement(Board, this.extends('1', logic.locations.units)), // {...this.props, controller: '1', location: logic.locations.units, onClick: this.onClick }),
+      "0": React.createElement(Board, this.extends('0', locations.units)), 
+      "1": React.createElement(Board, this.extends('1', locations.units)), 
     };
     let hands = {
-      "0": React.createElement(Board, this.extends('0', logic.locations.hands)), // {...this.props, controller: '0', location: logic.locations.hands, onClick: this.onClick }),
-      "1": React.createElement(Board, this.extends('1', logic.locations.hands)), // {...this.props, controller: '1', location: logic.locations.hands, onClick: this.onClick }),
+      "0": React.createElement(Board, this.extends('0', locations.hands)), 
+      "1": React.createElement(Board, this.extends('1', locations.hands)), 
     };
     let avatars = {
-      "0": React.createElement(Board, this.extends('0', logic.locations.avatars)), // {...this.props, controller: '0', location: logic.locations.avatars, onClick: this.onClick }),
-      "1": React.createElement(Board, this.extends('1', logic.locations.avatars)), // {...this.props, controller: '1', location: logic.locations.avatars, onClick: this.onClick }),
+      "0": React.createElement(Board, this.extends('0', locations.avatars)),
+      "1": React.createElement(Board, this.extends('1', locations.avatars)), 
     };
     let bags = {
-      "0": React.createElement(Board, this.extends('0', logic.locations.bags)), // {...this.props, controller: '0', location: logic.locations.bags, onClick: this.onClick }),
-      "1": React.createElement(Board, this.extends('1', logic.locations.bags)), // {...this.props, controller: '1', location: logic.locations.bags, onClick: this.onClick }),
+      "0": React.createElement(Board, this.extends('0', locations.bags)),
+      "1": React.createElement(Board, this.extends('1', locations.bags)), 
     };
     let exiles = {
-      "0": React.createElement(Board, this.extends('0', logic.locations.exiles)), // {...this.props, controller: '0', location: logic.locations.exiles, onClick: this.onClick }),
-      "1": React.createElement(Board, this.extends('1', logic.locations.exiles)), // {...this.props, controller: '1', location: logic.locations.exiles, onClick: this.onClick }),
+      "0": React.createElement(Board, this.extends('0', locations.exiles)), 
+      "1": React.createElement(Board, this.extends('1', locations.exiles)), 
     };
     let afterlifes = {
-      "0": React.createElement(Board, this.extends('0', logic.locations.afterlifes)), // {...this.props, controller: '0', location: logic.locations.afterlifes, onClick: this.onClick }),
-      "1": React.createElement(Board, this.extends('1', logic.locations.afterlifes)), // {...this.props, controller: '1', location: logic.locations.afterlifes, onClick: this.onClick }),
+      "0": React.createElement(Board, this.extends('0', locations.afterlifes)), 
+      "1": React.createElement(Board, this.extends('1', locations.afterlifes)), 
     };
 
     let player = Number(this.props.playerID) + 1;

@@ -75,11 +75,32 @@ export const LOCATIONS = {
     Hand: 8,
 };
 
+
 export const TARGETING = {
     Unknown: 0,
     Any: 1,
     Self: 2,
     Opponent: 3,
+};
+
+export const MOVEMENT_TARGETS = {
+    Unknown: 0,
+    Invalid: 1,
+    Passive: 2,
+    Capature: 3,
+    Swap: 4, // why is this diferent...? Capture could have its own Action...
+}
+
+//TODO: Move to Board.js when usecase changes...
+export const COLORS = {
+    Unknown: null,
+    Background: '#959595',
+    CheckboardWhite: '#817F7F',
+    CheckboardBlack: '#ABAAAA',
+    Selection: '#4E9334',
+    Play: '#BE8E3F',
+    MovementPassive: '#BE8E3F',
+    MovementCapture: '#B63C4B',
 };
 
 export class Target {

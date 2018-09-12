@@ -2,12 +2,14 @@ import {
     // UNIT_TYPES,
     // CUBIT_TYPES,
     CLASSIFICATIONS,
-    // MOVEMENT_TYPES,
+    MOVEMENT_TYPES,
     // DURATION_TYPES,
     DIMENSIONS,
     LOCATIONS,
     TARGETING,
-    Entity
+    COLORS,
+    Entity,
+    CUBIT_TYPES
 } from './common';
 
 import { 
@@ -46,6 +48,18 @@ export class BaseLocation {
 
     getStride() {
         return this.stride;
+    }
+
+    inCircumference(g, ctx, controller, x, y) {
+        let size = this.getSize(g, ctx, controller);
+        if(x < 0)
+            return false;
+        else if(x < 0) 
+            return false;
+        else if (x > size.width)
+            return false;
+        else if (y > size.height)
+            return false;
     }
 
     getSize(g, ctx, controller = null) {
@@ -149,7 +163,7 @@ export class BaseLocation {
         }
     }
 
-    getTargets(g, ctx, controller, x, y, entity) {
+    getTargets(g, ctx, player, controller, origin, entity) {
         return [];
     }
 }
@@ -201,8 +215,278 @@ export class FieldLocation extends BaseLocation {
         }
     }
 
-    getTargets(g, ctx, controller, x, y, entity) {
-        return [];
+    getTargets(g, ctx, player, controller, origin, entity) {
+        if(player !== entity.ownership) {
+            return [];
+        }
+
+        if(Entity.hasClassification(entity, CLASSIFICATIONS.Cubit)) {
+            return [];
+        }
+
+        let forward = player === '0' ? +1 : -1; // On the X axis
+        // let opponentId = player === '0' ? '1' : '0';
+
+        let movements = [].concat(entity.movement);
+        for (let i = 0; i < entity.cubits.length; i++) {
+            const cubit = entity.cubits[i];
+            movements = movements.concat(cubit.movement);
+        }
+
+        let size = this.getSize(g, ctx, controller);
+        let targets = [];
+        for (let i = 0; i < movements.length; i++) {
+            const movement = movements[i];
+            switch (movement.type) {
+                case MOVEMENT_TYPES.Orthogonal:
+                {
+                    let steps,x,y;
+                    for (x = origin.x - 1, steps = 0; x >= 0 && steps < movement.distance; x--, steps++) {              
+                        let item = this.getItem(g, ctx, controller, x, origin.y);
+                        if(item) {
+                            break;
+                        }
+
+                        let data = { l: LOCATIONS.Field, c: null, x: x, y: origin.y, color: COLORS.MovementPassive };
+                        targets.push(data);
+                    }
+
+                    for (x = origin.x + 1, steps = 0; x < size.width && steps < movement.distance; x++, steps++) {
+                        let item = this.getItem(g, ctx, controller, x, origin.y);
+                        if(item) {
+                            break;
+                        }
+
+                        let data = { l: LOCATIONS.Field, c: null, x: x, y: origin.y, color: COLORS.MovementPassive };
+                        targets.push(data);
+                    }
+                    
+                    for (y = origin.y - 1, steps = 0; y >= 0 && steps < movement.distance; y--, steps++) {
+                        let item = this.getItem(g, ctx, controller, origin.x, y);
+                        if(item) {
+                            break;
+                        }
+
+                        let data = { l: LOCATIONS.Field, c: null, x: origin.x, y: y, color: COLORS.MovementPassive };
+                        targets.push(data);
+                    }
+
+                    for (y = origin.y + 1, steps = 0; y < size.height && steps < movement.distance; y++, steps++) {
+                        let item = this.getItem(g, ctx, controller, origin.x, y);
+                        if(item) {
+                            break;
+                        }
+
+                        let data = { l: LOCATIONS.Field, c: null, x: origin.x, y: y, color: COLORS.MovementPassive };
+                        targets.push(data);
+                    }
+
+                    break;
+                }
+                case MOVEMENT_TYPES.Diagonal:
+                {
+                    let steps,x,y;
+
+                    for (x = origin.x + 1, y = origin.y + 1, steps = 0; x < size.width && y < size.height && steps < movement.distance; x++, y++, steps++) {
+                        let item = this.getItem(g, ctx, controller, x, y);
+                        if(item) {
+                            break;
+                        }
+
+                        let data = { l: LOCATIONS.Field, c: null, x: x, y: y, color: COLORS.MovementPassive };
+                        targets.push(data);
+                    }
+
+                    for (x = origin.x - 1, y = origin.y - 1, steps = 0; x >= 0 && y >= 0 && steps < movement.distance; x--, y--, steps++) {
+                        let item = this.getItem(g, ctx, controller, x, y);
+                        if(item) {
+                            break;
+                        }
+
+                        let data = { l: LOCATIONS.Field, c: null, x: x, y: y, color: COLORS.MovementPassive };
+                        targets.push(data);
+                    }
+
+                    for (x = origin.x - 1, y = origin.y +1, steps = 0; x >= 0 && y < size.height && steps < movement.distance; x--, y++, steps++) {
+                        let item = this.getItem(g, ctx, controller, x, y);
+                        if(item) {
+                            break;
+                        }
+
+                        let data = { l: LOCATIONS.Field, c: null, x: x, y: y, color: COLORS.MovementPassive };
+                        targets.push(data);
+                    }
+
+                    for (x = origin.x + 1, y = origin.y - 1, steps = 0; x < size.width && y >= 0 && steps < movement.distance; x++, y--, steps++) {
+                        let item = this.getItem(g, ctx, controller, x, y);
+                        if(item) {
+                            break;
+                        }
+
+                        let data = { l: LOCATIONS.Field, c: null, x: x, y: y, color: COLORS.MovementPassive };
+                        targets.push(data);
+                    }
+
+                    break;
+                }
+                case MOVEMENT_TYPES.Jump:
+                {
+                    let moves = [];
+                    moves.push({ x: origin.x + movement.steps[0], y: origin.y + movement.steps[1] });
+                    moves.push({ x: origin.x + movement.steps[0], y: origin.y - movement.steps[1] });
+                    moves.push({ x: origin.x - movement.steps[0], y: origin.y + movement.steps[1] });
+                    moves.push({ x: origin.x - movement.steps[0], y: origin.y - movement.steps[1] });
+                    moves.push({ x: origin.x + movement.steps[1], y: origin.y + movement.steps[0] });
+                    moves.push({ x: origin.x - movement.steps[1], y: origin.y + movement.steps[0] });
+                    moves.push({ x: origin.x + movement.steps[1], y: origin.y - movement.steps[0] });
+                    moves.push({ x: origin.x - movement.steps[1], y: origin.y - movement.steps[0] });
+
+                    for (let i = 0; i < moves.length; i++) {
+                        const move = moves[i];
+
+                        if(this.inCircumference(g, ctx, controller, move.x, move.y) === false) {
+                            break;
+                        }
+
+                        let item = this.getItem(g, ctx, null, move.x, move.y);
+                        if(item) {
+                            break;
+                        }
+
+                        let data = { l: LOCATIONS.Field, c: null, x: move.x, y: move.y, color: COLORS.MovementPassive };
+                        targets.push(data);
+                    }
+
+                    break;
+                }
+                case MOVEMENT_TYPES.Fork:
+                {
+                    let moves = [];
+                    moves.push({ x: origin.x + forward, y: origin.y - 1 });
+                    moves.push({ x: origin.x + forward, y: origin.y + 1 });
+
+                    for (let i = 0; i < moves.length; i++) {
+                        const move = moves[i];
+                        let item = this.getItem(g, ctx, null, move.x, move.y);
+                        if(item) {
+                            let data = { l: LOCATIONS.Field, c: null, x: move.x, y: move.y, color: COLORS.MovementCapture };
+                            targets.push(data);
+                        }
+                    }
+
+                    break;
+                }
+                case MOVEMENT_TYPES.Forward:
+                {
+                    let steps,x;
+                    for (x = origin.x + forward, steps = 0; x < size.width && steps < movement.distance; x += forward, steps++) {                 
+                        let item = this.getItem(g, ctx, null, x, origin.y);
+                        if(item) {
+                           break;
+                        }
+
+                        let data = { l: LOCATIONS.Field, c: null, x: x, y: origin.y, color: COLORS.MovementPassive };
+                        targets.push(data);
+                    }
+
+                    break;
+                }
+                case MOVEMENT_TYPES.Backwards:
+                {
+                    let steps,x;
+
+                    for (x = origin.x - forward, steps = 0; x < size.width && steps < movement.distance; x -= forward, steps++) {
+                        let item = this.getItem(g, ctx, null, x, origin.y);
+                        if(item) {
+                           break;
+                        }
+
+                        let data = { l: LOCATIONS.Field, c: null, x: x, y: origin.y, color: COLORS.MovementPassive };
+                        targets.push(data);
+                    }
+
+                    break;
+                }
+                case MOVEMENT_TYPES.Sidestep:
+                {
+                    let moves = [];
+                    moves.push({ x: origin.x, y: origin.y - 1 });
+                    moves.push({ x: origin.x, y: origin.y + 1 });
+
+                    for (let i = 0; i < moves.length; i++) {
+                        const move = moves[i];
+
+                        if(this.inCircumference(g, ctx, null, move.x, move.y) === false) {
+                            break;
+                        }
+
+                        let item = this.getItem(g, ctx, null, move.x, move.y);
+                        if(item) {
+                            break;
+                        }
+
+                        let data = { l: LOCATIONS.Field, c: null, x: move.x, y: move.y, color: COLORS.MovementPassive };
+                        targets.push(data);
+                    }
+
+                    break;
+                }
+                
+                case MOVEMENT_TYPES.Swap:
+                {
+                    let moves = [];
+                    moves.push({ x: origin.x + 1, y: origin.y });
+                    moves.push({ x: origin.x - 1, y: origin.y });
+                    moves.push({ x: origin.x, y: origin.y + 1 });
+                    moves.push({ x: origin.x, y: origin.y - 1 });
+                    moves.push({ x: origin.x + 1, y: origin.y + 1 });
+                    moves.push({ x: origin.x - 1, y: origin.y + 1 });
+                    moves.push({ x: origin.x + 1, y: origin.y - 1 });
+                    moves.push({ x: origin.x - 1, y: origin.y - 1 });
+
+                    for (let i = 0; i < moves.length; i++) {
+                        const move = moves[i];
+
+                        if(this.inCircumference(g, ctx, null, move.x, move.y) === false) {
+                            break;
+                        }
+
+                        let item = this.getItem(g, ctx, null, move.x, move.y);
+                        if(item) {
+                            let data = { l: LOCATIONS.Field, c: null, x: move.x, y: move.y, color: COLORS.MovementPassive };
+                            targets.push(data);
+                        }
+                    }
+
+                    break;
+                }
+                case MOVEMENT_TYPES.Castle:
+                {
+                    // TODO: Finish Implementation...
+                    // 1. Find path to rooks
+                    // 2. If clear then put target as the Rook
+
+                    break;
+                }
+                default:
+                {
+                    break;
+                }
+            }
+        }
+
+        //TODO: Filter at end OR during...?
+        for (let i = 0; i < entity.cubits.length; i++) {
+            const cubit = entity.cubits[i];
+            if(cubit.type === CUBIT_TYPES.Enrage) {
+                // targets = targets.filter(t => t.type === ?);
+            }
+            if(cubit.type === CUBIT_TYPES.Passify) {
+                // targets = targets.filter(t => t.type === ?);
+            }
+        }
+
+        return targets;
     }
 }
 
@@ -573,28 +857,131 @@ export class HandLocation extends BaseLocation {
         }
     }
 
-    getTargets(g, ctx, controller, x, y, entity) {
+    getTargets(g, ctx, player, controller, origin, entity) {
+        let opponent = player === '0' ? '1' : "0";
+ 
         let targets = [];
         for (let i = 0; i < entity.targets.length; i++) {
             const target = entity.targets[i];
-            let data = {
-                loc: target.where,
-                cntr: target.whom === TARGETING.Self ? null : target.whom === TARGETING.Opponent ? null : null,
-                // pos: ({x,y}),
-                color: null,
-            };
-            targets.push(data);
+
+            // WHOM
+            let whom = null;
+            if(target.whom === TARGETING.Self) {
+                whom = player;
+            } else if(target.whom === TARGETING.Opponent) {
+                whom = opponent;
+            } else if(target.whom === TARGETING.Any) {
+                whom = null;
+            } else {
+                // invalid target
+                continue;
+            }
+
+            if(target.where === LOCATIONS.Arena) {
+                let data = { l: target.where, c: null, x: 0, y: 0, color: COLORS.Play };
+                targets.push(data);
+                continue;
+            } else if(target.where === LOCATIONS.Avatar) {
+                let location = findLocation(target.where);
+                let size = location.getSize(g, ctx);
+                for (let x = 0; x < size.width; x++) {
+                    for (let y = 0; y < size.height; y++) {
+                        let cubit = location.getItem(g, ctx, whom, x, y);
+                        if(!cubit) {
+                            let data = { l: target.where, c: whom, x: x, y: y, color: COLORS.Play };
+                            targets.push(data);
+                        }
+                    }
+                }
+            } else if(target.where === LOCATIONS.Units) {
+                let location = findLocation(target.where);
+                let size = location.getSize(g, ctx, whom);
+
+                for (let y = 0; y < size.height; y++) {
+                    let unit = location.getItem(g, ctx, whom, 0, y);
+                    if(!unit) {
+                        continue;
+                    }
+
+                    if(target.what && (target.what !== unit.type)) {
+                        continue;
+                    }
+                    if(target.filter && (Entity.hasClassification(unit, target.filter) === false)) {
+                        continue;
+                    }
+
+                    for (let x = 1; x < size.width; x++) {
+                        let cubit = location.getItem(g, ctx, whom, x, y);
+                        if(cubit) {
+                            if(target.what && target.what === cubit.type) {
+                                let data = { l: target.where, c: whom, x: x, y: y, color: COLORS.Play };
+                                targets.push(data);
+                            }
+
+                            if(target.filter && Entity.hasClassification(cubit, target.filter)) {
+                                let data = { l: target.where, c: whom, x: x, y: y, color: COLORS.Play };
+                                targets.push(data);
+                            }
+                        } else {
+                            let data = { l: target.where, c: whom, x: x, y: y, color: COLORS.Play };
+                            targets.push(data);
+                        }
+                    }
+                }
+            } else if(target.where === LOCATIONS.Field) {
+                let location = findLocation(target.where);
+                let size = location.getSize(g, ctx);
+                for (let x = 0; x < size.width; x++) {
+                    for (let y = 0; y < size.height; y++) {
+                        let item = location.getItem(g, ctx, null, x, y);
+                        if(!item) {
+                            let data = { l: target.where, c: whom, x: x, y: y, color: COLORS.Play };
+                            targets.push(data);
+                        }
+                    }
+                }
+            } else {
+                // invalid target
+                continue;
+            }
+            
         }
 
-        // TOOD: Target.whom [TARGETING]
-        // - TARGETING: May need PlayerID/ctx.currentPlayer to compare to controller for Self/Opponent
-
-        // TODO: Target.what [UNIT_TYPES/CUBIT_TYPES]
-        // -
-
-        // TODO: Target.filter [CLASSIFICATIONS]
-        // -
-
         return targets;
+    }
+}
+
+export function getLocations() {
+    let locations = {
+        arena: new ArenaLocation(),
+        field: new FieldLocation(),
+        bags: new BagLocation(),
+        hands: new HandLocation(),
+        avatars: new AvatarLocation(),
+        exiles: new ExileLocation(),
+        afterlifes: new AfterlifeLocation(),
+        units: new UnitsLocation(),
+    };
+    return locations;
+}
+
+export function findLocation(type) {
+    let locations = getLocations();
+    if(type === locations.arena.type) {
+        return locations.arena;
+    } else if(type === locations.field.type) {
+        return locations.field;
+    } else if(type === locations.bags.type) {
+        return locations.bags;
+    } else if(type === locations.hands.type) {
+        return locations.hands;
+    } else if(type === locations.avatars.type) {
+        return locations.avatars;
+    } else if(type === locations.exiles.type) {
+        return locations.exiles;
+    } else if(type === locations.afterlifes.type) {
+        return locations.afterlifes;
+    } else if(type === locations.units.type) {
+        return locations.units;
     }
 }
