@@ -3,12 +3,13 @@ import {
     CUBIT_TYPES,
     CLASSIFICATIONS,
     MOVEMENT_TYPES,
+    MOVEMENT_CONSTRAINTS,
     DURATION_TYPES,
     LOCATIONS,
     TARGETING,
+    Movement,
     Target,
     Entity,
-    // UNIT_TYPES
 } from './common';
 
 export class Cubit extends Entity {
@@ -27,7 +28,7 @@ export class OrthogonalCubit extends Cubit {
         super(CUBIT_TYPES.MovementOrthogonal, "Orthogonal", ownership);
 
         this.classification.push(CLASSIFICATIONS.Movement);
-        this.movement.push({ type: MOVEMENT_TYPES.Orthogonal, distance: 8, });
+        this.movement.push(new Movement(MOVEMENT_TYPES.Orthogonal, MOVEMENT_CONSTRAINTS.Either, 8));
         this.targets.push(new Target(LOCATIONS.Units, TARGETING.Self));
     }
 }
@@ -37,7 +38,7 @@ export class DiagonalCubit extends Cubit {
         super(CUBIT_TYPES.MovementDiagonal, "Diagonal", ownership);
 
         this.classification.push(CLASSIFICATIONS.Movement);
-        this.movement.push({ type: MOVEMENT_TYPES.Diagonal, distance: 8, });
+        this.movement.push(new Movement(MOVEMENT_TYPES.Diagonal, MOVEMENT_CONSTRAINTS.Either, 8));
         this.targets.push(new Target(LOCATIONS.Units, TARGETING.Self));
     }
 }
@@ -47,8 +48,8 @@ export class CardinalCubit extends Cubit {
         super(CUBIT_TYPES.MovementCardinal, "Cardinal", ownership);
 
         this.classification.push(CLASSIFICATIONS.Movement);
-        this.movement.push({ type: MOVEMENT_TYPES.Diagonal, distance: 8, });
-        this.movement.push({ type: MOVEMENT_TYPES.Orthogonal, distance: 8, });
+        this.movement.push(new Movement(MOVEMENT_TYPES.Diagonal, MOVEMENT_CONSTRAINTS.Either, 8));
+        this.movement.push(new Movement(MOVEMENT_TYPES.Orthogonal, MOVEMENT_CONSTRAINTS.Either, 8));
         this.targets.push(new Target(LOCATIONS.Units, TARGETING.Self));
     }
 }
@@ -58,7 +59,7 @@ export class JumpCubit extends Cubit {
         super(CUBIT_TYPES.MovementJump, "Jump", ownership);
 
         this.classification.push(CLASSIFICATIONS.Movement);
-        this.movement.push({ type: MOVEMENT_TYPES.Jump, steps: [2,1] });
+        this.movement.push(new Movement(MOVEMENT_TYPES.Jump, MOVEMENT_CONSTRAINTS.Either, null, [2,1]));
         this.targets.push(new Target(LOCATIONS.Units, TARGETING.Self));
     }
 }
@@ -68,7 +69,7 @@ export class SideStepCubit extends Cubit {
         super(CUBIT_TYPES.MovementSideStep, "Side Step", ownership);
 
         this.classification.push(CLASSIFICATIONS.Movement);
-        this.movement.push({ type: MOVEMENT_TYPES.Sidestep, distance: 1 });
+        this.movement.push(new Movement(MOVEMENT_TYPES.Sidestep, MOVEMENT_CONSTRAINTS.Either, 1));
         this.targets.push(new Target(LOCATIONS.Units, TARGETING.Self));
     }
 }
@@ -78,7 +79,7 @@ export class SwapCubit extends Cubit {
         super(CUBIT_TYPES.MovementSwap, "Swap", ownership);
 
         this.classification.push(CLASSIFICATIONS.Movement);
-        this.movement.push({ type: MOVEMENT_TYPES.Swap, distance: 1, });
+        this.movement.push(new Movement(MOVEMENT_TYPES.Swap, MOVEMENT_CONSTRAINTS.Passive, 1));
         this.targets.push(new Target(LOCATIONS.Units, TARGETING.Self));
     }
 }
@@ -127,6 +128,9 @@ export class CondemnCubit extends Cubit {
 export class KingOfHillCubit extends Cubit {
     constructor(ownership) {
         super(CUBIT_TYPES.KingOfHill, "KingOfHill", ownership);
+
+        this.obstruction = false;
+
         this.targets.push(new Target(LOCATIONS.Arena, TARGETING.Any));
     }
 }

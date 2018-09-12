@@ -1,15 +1,15 @@
 import { 
+    GAME_PHASES,
     // UNIT_TYPES,
-    // CUBIT_TYPES,
+    CUBIT_TYPES,
     CLASSIFICATIONS,
     MOVEMENT_TYPES,
+    MOVEMENT_CONSTRAINTS,
     // DURATION_TYPES,
     DIMENSIONS,
     LOCATIONS,
     TARGETING,
-    COLORS,
-    Entity,
-    CUBIT_TYPES
+    Entity
 } from './common';
 
 import { 
@@ -131,19 +131,7 @@ export class BaseLocation {
         return true;
     }
 
-    removeItem(g, ctx, controller = null, id) {
-        let collection = this.getCollection(g, ctx, controller);
-        let i = collection.findIndex(c => c.id === id);
-        if(i === -1) {
-            return null;
-        } else {
-            let x = i % this.getStride();
-            let y = i / this.getStride();
-            return this.removeAt(x, y);
-        }
-    }
-
-    removeAt(g, ctx, controller = null, x = null, y = null) {
+    removeItem(g, ctx, controller = null, x = null, y = null) {
         let collection = this.getCollection(g, ctx, controller);
         if(collection.length === 0) {
             return null;
@@ -159,7 +147,9 @@ export class BaseLocation {
             return value;
         } else {
             let index = x + this.getStride() * y;
-            return collection[index];
+            let value = collection[index];
+            collection[index] = null;
+            return value;
         }
     }
 
@@ -189,7 +179,7 @@ export class FieldLocation extends BaseLocation {
         }
 
         let options = [
-            { player: "0", royal: 0, common: 1 },
+            { player: "0", royal: 0, common: 2 },
             { player: "1", royal: 7, common: 6 }
         ];
 
@@ -216,12 +206,20 @@ export class FieldLocation extends BaseLocation {
     }
 
     getTargets(g, ctx, player, controller, origin, entity) {
+        let targets = [];
+
+        /*
+        if(ctx.phase !== GAME_PHASES.Move) {
+            return targets;
+        }
+        */
+       
         if(player !== entity.ownership) {
-            return [];
+            return targets;
         }
 
         if(Entity.hasClassification(entity, CLASSIFICATIONS.Cubit)) {
-            return [];
+            return targets;
         }
 
         let forward = player === '0' ? +1 : -1; // On the X axis
@@ -234,51 +232,78 @@ export class FieldLocation extends BaseLocation {
         }
 
         let size = this.getSize(g, ctx, controller);
-        let targets = [];
         for (let i = 0; i < movements.length; i++) {
             const movement = movements[i];
+
+            let isPassive = movement.constraints === MOVEMENT_CONSTRAINTS.Either ||  movement.constraints === MOVEMENT_CONSTRAINTS.Passive;
+            let isAgressive = movement.constraints === MOVEMENT_CONSTRAINTS.Either ||  movement.constraints === MOVEMENT_CONSTRAINTS.Agressive;
+
             switch (movement.type) {
                 case MOVEMENT_TYPES.Orthogonal:
                 {
                     let steps,x,y;
                     for (x = origin.x - 1, steps = 0; x >= 0 && steps < movement.distance; x--, steps++) {              
                         let item = this.getItem(g, ctx, controller, x, origin.y);
-                        if(item) {
+                        if(item && item.obstruction) {
+                            if(isAgressive && item.ownership !== player) {
+                                let data = { l: LOCATIONS.Field, c: null, x: x, y: origin.y, t: MOVEMENT_CONSTRAINTS.Agressive };
+                                targets.push(data);
+                            }
                             break;
                         }
 
-                        let data = { l: LOCATIONS.Field, c: null, x: x, y: origin.y, color: COLORS.MovementPassive };
-                        targets.push(data);
+                        if(isPassive) {
+                            let data = { l: LOCATIONS.Field, c: null, x: x, y: origin.y, t: MOVEMENT_CONSTRAINTS.Passive };
+                            targets.push(data);
+                        }
                     }
 
                     for (x = origin.x + 1, steps = 0; x < size.width && steps < movement.distance; x++, steps++) {
                         let item = this.getItem(g, ctx, controller, x, origin.y);
-                        if(item) {
+                        if(item && item.obstruction) {
+                            if(isAgressive && item.ownership !== player) {
+                                let data = { l: LOCATIONS.Field, c: null, x: x, y: origin.y, t: MOVEMENT_CONSTRAINTS.Agressive };
+                                targets.push(data);
+                            }
                             break;
                         }
 
-                        let data = { l: LOCATIONS.Field, c: null, x: x, y: origin.y, color: COLORS.MovementPassive };
-                        targets.push(data);
+                        if(isPassive) {
+                            let data = { l: LOCATIONS.Field, c: null, x: x, y: origin.y, t: MOVEMENT_CONSTRAINTS.Passive };
+                            targets.push(data);
+                        }
                     }
                     
                     for (y = origin.y - 1, steps = 0; y >= 0 && steps < movement.distance; y--, steps++) {
                         let item = this.getItem(g, ctx, controller, origin.x, y);
-                        if(item) {
+                        if(item && item.obstruction) {
+                            if(isAgressive && item.ownership !== player) {
+                                let data = { l: LOCATIONS.Field, c: null, x: origin.x, y: y, t: MOVEMENT_CONSTRAINTS.Agressive };
+                                targets.push(data);
+                            }
                             break;
                         }
 
-                        let data = { l: LOCATIONS.Field, c: null, x: origin.x, y: y, color: COLORS.MovementPassive };
-                        targets.push(data);
+                        if(isPassive) {
+                            let data = { l: LOCATIONS.Field, c: null, x: origin.x, y: y, t: MOVEMENT_CONSTRAINTS.Passive };
+                            targets.push(data);
+                        }
                     }
 
                     for (y = origin.y + 1, steps = 0; y < size.height && steps < movement.distance; y++, steps++) {
                         let item = this.getItem(g, ctx, controller, origin.x, y);
-                        if(item) {
+                        if(item && item.obstruction) {
+                            if(isAgressive && item.ownership !== player) {
+                                let data = { l: LOCATIONS.Field, c: null, x: origin.x, y: y, t: MOVEMENT_CONSTRAINTS.Agressive };
+                                targets.push(data);
+                            }
                             break;
                         }
 
-                        let data = { l: LOCATIONS.Field, c: null, x: origin.x, y: y, color: COLORS.MovementPassive };
-                        targets.push(data);
+                        if(isPassive) {
+                            let data = { l: LOCATIONS.Field, c: null, x: origin.x, y: y, t: MOVEMENT_CONSTRAINTS.Passive };
+                            targets.push(data);
+                        }
                     }
 
                     break;
@@ -289,42 +314,66 @@ export class FieldLocation extends BaseLocation {
 
                     for (x = origin.x + 1, y = origin.y + 1, steps = 0; x < size.width && y < size.height && steps < movement.distance; x++, y++, steps++) {
                         let item = this.getItem(g, ctx, controller, x, y);
-                        if(item) {
+                        if(item && item.obstruction) {
+                            if(isAgressive && item.ownership !== player) {
+                                let data = { l: LOCATIONS.Field, c: null, x: x, y: y, t: MOVEMENT_CONSTRAINTS.Agressive };
+                                targets.push(data);
+                            }
                             break;
                         }
 
-                        let data = { l: LOCATIONS.Field, c: null, x: x, y: y, color: COLORS.MovementPassive };
-                        targets.push(data);
+                        if(isPassive) {
+                            let data = { l: LOCATIONS.Field, c: null, x: x, y: y, t: MOVEMENT_CONSTRAINTS.Passive };
+                            targets.push(data);
+                        }
                     }
 
                     for (x = origin.x - 1, y = origin.y - 1, steps = 0; x >= 0 && y >= 0 && steps < movement.distance; x--, y--, steps++) {
                         let item = this.getItem(g, ctx, controller, x, y);
-                        if(item) {
+                        if(item && item.obstruction) {
+                            if(isAgressive && item.ownership !== player) {
+                                let data = { l: LOCATIONS.Field, c: null, x: x, y: y, t: MOVEMENT_CONSTRAINTS.Agressive };
+                                targets.push(data);
+                            }
                             break;
                         }
 
-                        let data = { l: LOCATIONS.Field, c: null, x: x, y: y, color: COLORS.MovementPassive };
-                        targets.push(data);
+                        if(isPassive) {
+                            let data = { l: LOCATIONS.Field, c: null, x: x, y: y, t: MOVEMENT_CONSTRAINTS.Passive };
+                            targets.push(data);
+                        }
                     }
 
                     for (x = origin.x - 1, y = origin.y +1, steps = 0; x >= 0 && y < size.height && steps < movement.distance; x--, y++, steps++) {
                         let item = this.getItem(g, ctx, controller, x, y);
-                        if(item) {
+                        if(item && item.obstruction) {
+                            if(isAgressive && item.ownership !== player) {
+                                let data = { l: LOCATIONS.Field, c: null, x: x, y: y, t: MOVEMENT_CONSTRAINTS.Agressive };
+                                targets.push(data);
+                            }
                             break;
                         }
 
-                        let data = { l: LOCATIONS.Field, c: null, x: x, y: y, color: COLORS.MovementPassive };
-                        targets.push(data);
+                        if(isPassive) {
+                            let data = { l: LOCATIONS.Field, c: null, x: x, y: y, t: MOVEMENT_CONSTRAINTS.Passive };
+                            targets.push(data);
+                        }
                     }
 
                     for (x = origin.x + 1, y = origin.y - 1, steps = 0; x < size.width && y >= 0 && steps < movement.distance; x++, y--, steps++) {
                         let item = this.getItem(g, ctx, controller, x, y);
-                        if(item) {
+                        if(item && item.obstruction) {
+                            if(isAgressive && item.ownership !== player) {
+                                let data = { l: LOCATIONS.Field, c: null, x: x, y: y, t: MOVEMENT_CONSTRAINTS.Agressive };
+                                targets.push(data);
+                            }
                             break;
                         }
 
-                        let data = { l: LOCATIONS.Field, c: null, x: x, y: y, color: COLORS.MovementPassive };
-                        targets.push(data);
+                        if(isPassive) {
+                            let data = { l: LOCATIONS.Field, c: null, x: x, y: y, t: MOVEMENT_CONSTRAINTS.Passive };
+                            targets.push(data);
+                        }
                     }
 
                     break;
@@ -349,11 +398,17 @@ export class FieldLocation extends BaseLocation {
                         }
 
                         let item = this.getItem(g, ctx, null, move.x, move.y);
-                        if(item) {
+                        if(item && item.ownership === player) {
                             break;
                         }
 
-                        let data = { l: LOCATIONS.Field, c: null, x: move.x, y: move.y, color: COLORS.MovementPassive };
+                        if(item && item.ownership !== player && isAgressive) {
+                            let data = { l: LOCATIONS.Field, c: null, x: move.x, y: move.y, t: MOVEMENT_CONSTRAINTS.Agressive };
+                            targets.push(data);
+                            break;
+                        }
+
+                        let data = { l: LOCATIONS.Field, c: null, x: move.x, y: move.y, t: MOVEMENT_CONSTRAINTS.Passive };
                         targets.push(data);
                     }
 
@@ -368,8 +423,8 @@ export class FieldLocation extends BaseLocation {
                     for (let i = 0; i < moves.length; i++) {
                         const move = moves[i];
                         let item = this.getItem(g, ctx, null, move.x, move.y);
-                        if(item) {
-                            let data = { l: LOCATIONS.Field, c: null, x: move.x, y: move.y, color: COLORS.MovementCapture };
+                        if(item && item.ownership !== player && isAgressive) {
+                            let data = { l: LOCATIONS.Field, c: null, x: move.x, y: move.y, t: MOVEMENT_CONSTRAINTS.Agressive };
                             targets.push(data);
                         }
                     }
@@ -381,12 +436,18 @@ export class FieldLocation extends BaseLocation {
                     let steps,x;
                     for (x = origin.x + forward, steps = 0; x < size.width && steps < movement.distance; x += forward, steps++) {                 
                         let item = this.getItem(g, ctx, null, x, origin.y);
-                        if(item) {
-                           break;
+                        if(item && item.obstruction) {
+                            if(isAgressive) {
+                                let data = { l: LOCATIONS.Field, c: null, x: x, y: origin.y, t: MOVEMENT_CONSTRAINTS.Agressive };
+                                targets.push(data);
+                            }
+                            break;
                         }
 
-                        let data = { l: LOCATIONS.Field, c: null, x: x, y: origin.y, color: COLORS.MovementPassive };
-                        targets.push(data);
+                        if(isPassive) {
+                            let data = { l: LOCATIONS.Field, c: null, x: x, y: origin.y };
+                            targets.push(data);
+                        }
                     }
 
                     break;
@@ -397,12 +458,18 @@ export class FieldLocation extends BaseLocation {
 
                     for (x = origin.x - forward, steps = 0; x < size.width && steps < movement.distance; x -= forward, steps++) {
                         let item = this.getItem(g, ctx, null, x, origin.y);
-                        if(item) {
+                        if(item && item.obstruction) {
+                            if(isAgressive) {
+                                let data = { l: LOCATIONS.Field, c: null, x: x, y: origin.y, t: MOVEMENT_CONSTRAINTS.Agressive };
+                                targets.push(data);
+                            }
                            break;
                         }
 
-                        let data = { l: LOCATIONS.Field, c: null, x: x, y: origin.y, color: COLORS.MovementPassive };
-                        targets.push(data);
+                        if(isPassive) {
+                            let data = { l: LOCATIONS.Field, c: null, x: x, y: origin.y, t: MOVEMENT_CONSTRAINTS.Passive };
+                            targets.push(data);
+                        }
                     }
 
                     break;
@@ -421,12 +488,14 @@ export class FieldLocation extends BaseLocation {
                         }
 
                         let item = this.getItem(g, ctx, null, move.x, move.y);
-                        if(item) {
+                        if(item && item.obstruction) {
                             break;
                         }
 
-                        let data = { l: LOCATIONS.Field, c: null, x: move.x, y: move.y, color: COLORS.MovementPassive };
-                        targets.push(data);
+                        if(isPassive) {
+                            let data = { l: LOCATIONS.Field, c: null, x: move.x, y: move.y };
+                            targets.push(data);
+                        }
                     }
 
                     break;
@@ -453,7 +522,7 @@ export class FieldLocation extends BaseLocation {
 
                         let item = this.getItem(g, ctx, null, move.x, move.y);
                         if(item) {
-                            let data = { l: LOCATIONS.Field, c: null, x: move.x, y: move.y, color: COLORS.MovementPassive };
+                            let data = { l: LOCATIONS.Field, c: null, x: move.x, y: move.y, t: MOVEMENT_CONSTRAINTS.Passive };
                             targets.push(data);
                         }
                     }
@@ -475,14 +544,13 @@ export class FieldLocation extends BaseLocation {
             }
         }
 
-        //TODO: Filter at end OR during...?
         for (let i = 0; i < entity.cubits.length; i++) {
             const cubit = entity.cubits[i];
             if(cubit.type === CUBIT_TYPES.Enrage) {
-                // targets = targets.filter(t => t.type === ?);
+                targets = targets.filter(t => t.type === MOVEMENT_CONSTRAINTS.Agressive);
             }
             if(cubit.type === CUBIT_TYPES.Passify) {
-                // targets = targets.filter(t => t.type === ?);
+                targets = targets.filter(t => t.type === MOVEMENT_CONSTRAINTS.Passive);
             }
         }
 
@@ -566,21 +634,12 @@ export class UnitsLocation extends BaseLocation {
             return false;
         }
 
-        unit.cubits[x] = obj;
+        unit.cubits[x-1] = obj;
 
         return true;
     }
 
-    removeItem(g, ctx, controller = null, id) {
-        let pos = this.getPositon(g, ctx, controller, id);
-        if(pos) {
-            return this.removeAt(g, ctx, pos.x, pos.y);
-        } else {
-            return null;
-        }
-    }
-
-    removeAt(g, ctx, controller = null, x = null, y = null) {
+    removeItem(g, ctx, controller = null, x = null, y = null) {
         if(x == null || y == null) {
             return null;
         }
@@ -684,16 +743,7 @@ export class AfterlifeLocation extends BaseLocation {
         return true;
     }
 
-    removeItem(g, ctx, controller = null, id) {
-        let pos = this.getPositon(g, ctx, controller, id);
-        if(pos) {
-            return this.removeAt(g, ctx, pos.x, pos.y);
-        } else {
-            return null;
-        }
-    }
-
-    removeAt(g, ctx, controller = null, x = null, y = null) {
+    removeItem(g, ctx, controller = null, x = null, y = null) {
         if(x == null || y == null) {
             return null;
         }
@@ -858,9 +908,14 @@ export class HandLocation extends BaseLocation {
     }
 
     getTargets(g, ctx, player, controller, origin, entity) {
-        let opponent = player === '0' ? '1' : "0";
- 
         let targets = [];
+
+        if(ctx.phase !== GAME_PHASES.Action) {
+            return targets;
+        }
+
+        let opponent = player === '0' ? '1' : "0";
+
         for (let i = 0; i < entity.targets.length; i++) {
             const target = entity.targets[i];
 
@@ -878,7 +933,7 @@ export class HandLocation extends BaseLocation {
             }
 
             if(target.where === LOCATIONS.Arena) {
-                let data = { l: target.where, c: null, x: 0, y: 0, color: COLORS.Play };
+                let data = { l: target.where, c: null, x: 0, y: 0 };
                 targets.push(data);
                 continue;
             } else if(target.where === LOCATIONS.Avatar) {
@@ -888,7 +943,7 @@ export class HandLocation extends BaseLocation {
                     for (let y = 0; y < size.height; y++) {
                         let cubit = location.getItem(g, ctx, whom, x, y);
                         if(!cubit) {
-                            let data = { l: target.where, c: whom, x: x, y: y, color: COLORS.Play };
+                            let data = { l: target.where, c: whom, x: x, y: y };
                             targets.push(data);
                         }
                     }
@@ -914,16 +969,16 @@ export class HandLocation extends BaseLocation {
                         let cubit = location.getItem(g, ctx, whom, x, y);
                         if(cubit) {
                             if(target.what && target.what === cubit.type) {
-                                let data = { l: target.where, c: whom, x: x, y: y, color: COLORS.Play };
+                                let data = { l: target.where, c: whom, x: x, y: y };
                                 targets.push(data);
                             }
 
                             if(target.filter && Entity.hasClassification(cubit, target.filter)) {
-                                let data = { l: target.where, c: whom, x: x, y: y, color: COLORS.Play };
+                                let data = { l: target.where, c: whom, x: x, y: y };
                                 targets.push(data);
                             }
                         } else {
-                            let data = { l: target.where, c: whom, x: x, y: y, color: COLORS.Play };
+                            let data = { l: target.where, c: whom, x: x, y: y };
                             targets.push(data);
                         }
                     }
@@ -935,7 +990,7 @@ export class HandLocation extends BaseLocation {
                     for (let y = 0; y < size.height; y++) {
                         let item = location.getItem(g, ctx, null, x, y);
                         if(!item) {
-                            let data = { l: target.where, c: whom, x: x, y: y, color: COLORS.Play };
+                            let data = { l: target.where, c: whom, x: x, y: y };
                             targets.push(data);
                         }
                     }

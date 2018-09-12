@@ -28,6 +28,13 @@ export const CUBIT_TYPES = {
     Passify: '93eeb236-e43a-4b72-9f1f-5fb3687474fe',
 };
 
+export const GAME_PHASES = {
+    Unknown: '',
+    Action: 'Action',
+    Move: 'Move',
+    Draw: 'Draw',
+}
+
 export const CLASSIFICATIONS = {
     Unknown: 0,
     Unit: 1,
@@ -47,6 +54,13 @@ export const MOVEMENT_TYPES = {
     Swap: 7,        // [New]
     Backwards: 8,   // [NEW]
     Sidestep: 9,    // [NEW]
+};
+
+export const MOVEMENT_CONSTRAINTS = {
+    Unknown: 0,
+    Either: 1,
+    Passive: 2,
+    Agressive: 3,
 };
 
 export const DURATION_TYPES = {
@@ -75,21 +89,12 @@ export const LOCATIONS = {
     Hand: 8,
 };
 
-
 export const TARGETING = {
     Unknown: 0,
     Any: 1,
     Self: 2,
     Opponent: 3,
 };
-
-export const MOVEMENT_TARGETS = {
-    Unknown: 0,
-    Invalid: 1,
-    Passive: 2,
-    Capature: 3,
-    Swap: 4, // why is this diferent...? Capture could have its own Action...
-}
 
 //TODO: Move to Board.js when usecase changes...
 export const COLORS = {
@@ -98,10 +103,18 @@ export const COLORS = {
     CheckboardWhite: '#817F7F',
     CheckboardBlack: '#ABAAAA',
     Selection: '#4E9334',
-    Play: '#BE8E3F',
-    MovementPassive: '#BE8E3F',
-    MovementCapture: '#B63C4B',
+    Passive: '#BE8E3F',
+    Agressive: '#B63C4B',
 };
+
+export class Movement {
+    constructor(type, constraint, distance = null, steps = null) {
+        this.type = type;
+        this.constraints = constraint;
+        this.distance = distance == null ? 1 : distance;
+        this.steps = steps == null ? [] : steps;
+    }
+}
 
 export class Target {
     constructor(where, whom, what = null, filter = null) {
@@ -134,6 +147,7 @@ export class Entity {
         this.turns = 0;
         // adictional movement options
         this.movement = [];
+        this.obstruction = true;
         // targets options
         this.targets = []; // { where: LOCATIONS.Avatar, whom: TARGETING.Self, what: UNIT_TYPES.Pawn, classify:  CLASSIFICATIONS.Unit }
     }

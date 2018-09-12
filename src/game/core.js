@@ -1,4 +1,6 @@
 import { Game } from 'boardgame.io/core';
+import { GAME_PHASES } from './common';
+import { findLocation } from './locations';
 import { GameLogic } from './logic';
 
 var clone = require('clone');
@@ -43,10 +45,40 @@ const GameCore = Game({
         return data;
     },
     moves: {
+        activateCubit: (G, ctx) => {
+            const g = clone(G);
+            return g;
+        },
+        playCubit: (G, ctx, source, destination) => {
+            // Clone
+            const g = clone(G);
+            
+            // Get Source &  Destination Location
+            let sl = findLocation(source.where);
+            let dl = findLocation(destination.where);
+
+            // Get Cubit at Source
+            let cubit = sl.removeItem(g, ctx, source.controller, source.x, source.y);
+            if(!cubit) {
+                return; // invalid Source
+            }
+
+            // Set Cubit at Destination
+            if(!dl.setItem(g, ctx, destination.controller, cubit, destination.x, destination.y)) {
+                return; // invalid Destination
+            }
+
+            // Cubit logic
+            if(!logic.onPlay(g, ctx, source, destination, cubit)) {
+                return; // invalid Action
+            }
+
+            // Return game state
+            return g;
+
+        },
         moveUnit: (G, ctx) => {
             const g = clone(G);
-            // - Actions.count++
-            // - EndIf => Actions.total == Actions.count
             return g;
         }
     },
@@ -155,13 +187,13 @@ const GameCore = Game({
             },
             */
             {
-                name: 'Action',
+                name: GAME_PHASES.Action,
             },
             {
-                name: 'Move',
+                name: GAME_PHASES.Move,
             },
             {
-                name: 'Draw',
+                name: GAME_PHASES.Draw,
             },
         ],
         optimisticUpdate: (G, ctx, move) => false,

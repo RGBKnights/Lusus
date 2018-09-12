@@ -20,7 +20,9 @@ import {
   DIMENSIONS,
   // LOCATIONS,
   // CLASSIFICATIONS,
+  MOVEMENT_CONSTRAINTS,
   COLORS,
+  LOCATIONS,
   // Entity
 } from '../game/common';
 
@@ -103,10 +105,15 @@ class Board extends React.Component {
 
               if(
                 target.l === this.props.location.type && 
-                (this.props.controller == null || target.c === this.props.controller) 
-                && target.x === x && target.y === y
+                (this.props.controller == null || target.c === this.props.controller) &&
+                target.x === x && 
+                target.y === y
               ){
-                background[`${x},${y}`] = target.color;
+                if(target.t === MOVEMENT_CONSTRAINTS.Agressive) {
+                  background[`${x},${y}`] = COLORS.Agressive;
+                } else if(target.t === MOVEMENT_CONSTRAINTS.Passive) {
+                  background[`${x},${y}`] = COLORS.Passive;
+                }
               }
             }
           }
@@ -175,7 +182,8 @@ class GameTable extends React.Component {
       // Activation / Consumable
       /* eslint no-restricted-globals: 0 */
       if(confirm("Activate Cubit?")) {
-        // this.props.moves.Activate(this.state.source.e.id, l.type, c, x, y);
+        alert("Finish: activateCubit()");
+        // this.props.moves.activateCubit(this.state.source.e.id, l.type, c, x, y);
       } else {
         this.setState({ source: null, targets: null});
       }
@@ -183,18 +191,37 @@ class GameTable extends React.Component {
       // Set Source & Targets
       let origin = {x, y};
       let targets = l.getTargets(this.props.G, this.props.ctx, this.props.playerID, c, origin, e);
-      this.setState({ source: { c: c, x: x, y: y, e: e }, targets: targets });
+      this.setState({ source: { l: l.type, c: c, x: x, y: y, e: e, id: e.id }, targets: targets });
     } else if(e && e.id === this.state.source.e.id) {
       // Clear Source
       this.setState({ source: null, targets: null  });
-    } else if (e && this.isVaildTarget()) {
-      
+    } else if (this.isVaildTarget( l, c, x, y )) {
+      if(this.state.source.l === LOCATIONS.Hand) {
+        let source = { where: this.state.source.l, controller: this.state.source.c, x: this.state.source.x, y: this.state.source.y, id: this.state.source.id };
+        let destination = { where: l.type, controller: c, x: x, y: y  };
+        this.props.moves.playCubit(source, destination);
+        this.setState({ source: null, targets: null});
+      } else if(this.state.source.l === LOCATIONS.Field) {
+        alert("Finish: moveUnit()");
+        // this.props.moves.moveUnit
+      }
     } else {
       // ...
     }
   }
 
-  isVaildTarget() {
+  isVaildTarget(l, c, x, y) {
+    if(this.state.targets === null) {
+      return false;
+    }
+    
+    for (let i = 0; i < this.state.targets.length; i++) {
+      const target = this.state.targets[i];
+      if(target.l === l.type && target.c === c && target.x === x && target.y === y) {
+        return true;
+      }
+    }
+
     return false;
   }
 

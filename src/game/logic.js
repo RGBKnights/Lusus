@@ -1,12 +1,11 @@
-import {
-    // UNIT_TYPES,
-    // CUBIT_TYPES,
-    // CLASSIFICATIONS,
-    // MOVEMENT_TYPES,
-    // DURATION_TYPES,
-} from './common';
+import { CUBIT_TYPES, LOCATIONS } from './common';
 
 import {
+    // KingOfHillCubit
+} from './cubits';
+
+import {
+    findLocation,
     getLocations
 } from './locations';
 
@@ -45,6 +44,31 @@ export class GameLogic {
             locations.hands.setup(g, ctx, p);
             locations.avatars.setup(g, ctx, p);
         }
+    }
+
+    onPlay(g, ctx, source, destination, cubit) {
+        switch (cubit.type) {
+            case CUBIT_TYPES.KingOfHill:
+            {
+                let options = [
+                    { x:3, y:3 },
+                    { x:3, y:4 },
+                    { x:4, y:3 },
+                    { x:4, y:4 }
+                ];
+                let index = ctx.random.D4() - 1;
+                let pos = options[index];
+
+                let location = findLocation(LOCATIONS.Field);
+                location.setItem(g, ctx, null, cubit, pos.x, pos.y);
+
+                break;
+            }
+            default:
+                break;
+        }
+
+        return true;
     }
     
 }
