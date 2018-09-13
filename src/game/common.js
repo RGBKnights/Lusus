@@ -10,6 +10,7 @@ export const UNIT_TYPES = {
     Pawn: 'b1f51714-f52e-415b-b77e-bfbad95d378a'
 };
 
+// https://docs.google.com/spreadsheets/d/1zCMueghs-PBdr3HhSXKGGcOPpCqyDbhRKm_A3itCUCg/edit#gid=0
 export const CUBIT_TYPES = {
     Unknown: '',
     MovementOrthogonal: '4ca1291d-5298-ea4a-8b6b-6ffbfdeefda1',
@@ -27,6 +28,68 @@ export const CUBIT_TYPES = {
     Enrage: '765857db-7109-4b3a-b12f-2657ac4cc3cd',
     Passify: '93eeb236-e43a-4b72-9f1f-5fb3687474fe',
 };
+
+/*
+Ancient Revival
+Back to Basics
+Blink Dodge
+Breathing Room
+Brittle Edge
+Colour Blind
+Confused
+Cost of power
+Crevase
+Crumbeling Wall
+Dark Magic
+Draw -2 [unit version]
+Draw +2 [unit version]
+Encumber
+Evasive
+Fire Trail
+Forgotten Past
+Heirloom
+Hit & Run
+Hole Arena
+Ice Arena
+Immunity
+Jump
+Keep it simple
+Leap
+Looter
+Mad Dash
+March
+Mind Control
+Mulligan
+Nab
+Necromancy
+Ninja
+Nuralga the Demon
+Pocket Unit
+Poisoned
+Poof
+Portal
+Reckless Victory
+Rock Arena
+Regroup
+Resourceful
+Revert
+Rock Throw
+Roped Up
+Sacrifice
+Scout
+Shielded
+Slicked
+Soul Transfer
+Specialist X
+Sticky Feet
+Suicide Bomber
+Taunt
+Teleport
+Theif
+Thunder Dome
+Timebomb
+Wall Trail
+*/
 
 export const GAME_PHASES = {
     Unknown: '',
@@ -71,10 +134,11 @@ export const DURATION_TYPES = {
 
 export const DIMENSIONS = {
     Unknown: 0,
-    Single: 1,
-    Small: 2,
-    Medium: 3,
-    Large: 4
+    Tiny: 1,
+    Single: 2,
+    Small: 3,
+    Medium: 4,
+    Large: 5
 };
 
 export const LOCATIONS = {

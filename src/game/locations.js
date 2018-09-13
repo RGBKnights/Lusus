@@ -34,7 +34,9 @@ import {
     DoubleActionCubit,
     KnowledgeCubit,
     CondemnCubit,
-    KingOfHillCubit
+    KingOfHillCubit,
+    EnrageCubit,
+    PassifyCubit
 } from './cubits';
 
 export class BaseLocation { 
@@ -154,6 +156,48 @@ export class BaseLocation {
         }
     }
 
+    findByClassify(g, ctx, controller = null, classify) {
+        let collection = this.getCollection(g, ctx, controller);
+        for (let i = 0; i < collection.length; i++) {
+            const item = collection[i];
+            if(item == null) {
+                continue;
+            }
+            if(item.classification.includes(classify)) {
+                return item;
+            }
+        }
+        return null;
+    }
+
+    findByType(g, ctx, controller = null, type) {
+        let collection = this.getCollection(g, ctx, controller);
+        for (let i = 0; i < collection.length; i++) {
+            const item = collection[i];
+            if(item == null) {
+                continue;
+            }
+            if(item.type === type) {
+                return item;
+            }
+        }
+        return null;
+    }
+
+    findById(g, ctx, controller = null, id) {
+        let collection = this.getCollection(g, ctx, controller);
+        for (let i = 0; i < collection.length; i++) {
+            const item = collection[i];
+            if(item == null) {
+                continue;
+            }
+            if(item.id === id) {
+                return item;
+            }
+        }
+        return null;
+    }
+
     getTargets(g, ctx, player, controller, origin, entity) {
         return [];
     }
@@ -168,7 +212,11 @@ export class BoardLocation extends BaseLocation {
     }
 
     getCollection(g, ctx, controller = null) {
-        return g.board;
+        if(controller == null) {
+            return g.board;
+        } else {
+            return g.board.filter(i => i.ownership === controller);
+        }
     }
 
     setup(g, ctx, controller = null) {
@@ -181,7 +229,7 @@ export class BoardLocation extends BaseLocation {
         }
 
         let options = [
-            { player: "0", royal: 0, common: 2 },
+            { player: "0", royal: 0, common: 1 },
             { player: "1", royal: 7, common: 6 }
         ];
 
@@ -447,7 +495,7 @@ export class BoardLocation extends BaseLocation {
                         }
 
                         if(isPassive) {
-                            let data = { l: LOCATIONS.Board, c: null, x: x, y: origin.y };
+                            let data = { l: LOCATIONS.Board, c: null, x: x, y: origin.y, t: TARGET_TYPES.Passive  };
                             targets.push(data);
                         }
                     }
@@ -486,12 +534,12 @@ export class BoardLocation extends BaseLocation {
                         const move = moves[i];
 
                         if(this.inCircumference(g, ctx, null, move.x, move.y) === false) {
-                            break;
+                            continue;
                         }
 
                         let item = this.getItem(g, ctx, null, move.x, move.y);
                         if(item && item.obstruction) {
-                            break;
+                            continue;
                         }
 
                         if(isPassive) {
@@ -519,7 +567,7 @@ export class BoardLocation extends BaseLocation {
                         const move = moves[i];
 
                         if(this.inCircumference(g, ctx, null, move.x, move.y) === false) {
-                            break;
+                            continue;
                         }
 
                         let item = this.getItem(g, ctx, null, move.x, move.y);
@@ -545,24 +593,25 @@ export class BoardLocation extends BaseLocation {
                 }
             }
         }
-
+        
         for (let i = 0; i < entity.cubits.length; i++) {
             const cubit = entity.cubits[i];
             if(cubit.type === CUBIT_TYPES.Enrage) {
-                targets = targets.filter(t => t.type === TARGET_TYPES.Agressive);
+                targets = targets.filter(_ => _.t === TARGET_TYPES.Agressive);
             }
             if(cubit.type === CUBIT_TYPES.Passify) {
-                targets = targets.filter(t => t.type === TARGET_TYPES.Passive);
+                targets = targets.filter(_ => _.t === TARGET_TYPES.Passive);
             }
         }
 
-        return targets;
+        let unique = targets.filter((value, index, self) => { return self.indexOf(value) === index; });
+        return unique;
     }
 }
 
 export class FieldLocation extends BaseLocation { 
     constructor() {
-        super(LOCATIONS.Board, "Field", 8, false, false);
+        super(LOCATIONS.Field, "Field", 8, false, false);
 
         this.dimensions = DIMENSIONS.Large;
     }
@@ -693,7 +742,7 @@ export class UnitsLocation extends BaseLocation {
 
 export class AfterlifeLocation extends BaseLocation { 
     constructor() {
-        super(LOCATIONS.Afterlife, "Afterlife", 5, true, true);
+        super(LOCATIONS.Afterlife, "Afterlife", 5, false, false);
 
         this.dimensions = DIMENSIONS.Medium;
     }
@@ -748,21 +797,22 @@ export class AfterlifeLocation extends BaseLocation {
     }
 
     setItem(g, ctx, controller = null, obj, x = null, y = null) {
-        if(x == null || y == null) {
-            return false;
+        if(x == null && y == null) {
+            let collection = this.getCollection(g, ctx, controller);
+            collection.push(obj);
+        } else {
+            let units = this.getCollection(g, ctx, controller);
+            let unit = units[y];
+            if(!unit) {
+                return false;
+            }
+    
+            if(unit.cubits.length === unit.slots) {
+                return false;
+            }
+    
+            unit.cubits[x] = obj;
         }
-
-        let units = this.getCollection(g, ctx, controller);
-        let unit = units[y];
-        if(!unit) {
-            return false;
-        }
-
-        if(unit.cubits.length === unit.slots) {
-            return false;
-        }
-
-        unit.cubits[x] = obj;
 
         return true;
     }
@@ -826,7 +876,9 @@ export class BagLocation extends BaseLocation {
             new DoubleActionCubit(controller),
             new KnowledgeCubit(controller),
             new CondemnCubit(controller),
-            new KingOfHillCubit(controller)
+            new KingOfHillCubit(controller),
+            new EnrageCubit(controller),
+            new PassifyCubit(controller),
         ];
 
         g.players[controller].bag = ctx.random.Shuffle(g.players[controller].bag);
@@ -856,7 +908,7 @@ export class ArenaLocation extends BaseLocation {
     constructor() {
         super(LOCATIONS.Arena, "Arena", 1, false, false);
 
-        this.dimensions = DIMENSIONS.Small;
+        this.dimensions = DIMENSIONS.Tiny;
     }
 
     getCollection(g, ctx, controller = null) {
@@ -905,7 +957,12 @@ export class HandLocation extends BaseLocation {
     isHidden(g, ctx, controller, player) {
         let isHidden = super.isHidden(g, ctx, controller, player);
 
-        //TODO: If 'opponent' has [Knowledge] then override 'isHidden' = false
+        let location = findLocation(LOCATIONS.Avatar);
+        let opponent = controller === '0' ? '1' : '0';
+        let cubit = location.findByType(g, ctx, opponent, CUBIT_TYPES.Knowledge);
+        if(cubit) {
+            isHidden = false;
+        }
 
         return isHidden;
     }
@@ -951,6 +1008,7 @@ export class HandLocation extends BaseLocation {
                 whom = opponent;
             } else if(target.whom === TARGETING.Any) {
                 whom = null;
+                //TODO: NOT RIGHT WILL FAIL IN MOST CASES...
             } else {
                 // invalid target
                 continue;
@@ -961,6 +1019,7 @@ export class HandLocation extends BaseLocation {
                 targets.push(data);
                 continue;
             } else if(target.where === LOCATIONS.Avatar) {
+                debugger;
                 let location = findLocation(target.where);
                 let size = location.getSize(g, ctx);
                 for (let x = 0; x < size.width; x++) {
@@ -979,6 +1038,10 @@ export class HandLocation extends BaseLocation {
                 for (let y = 0; y < size.height; y++) {
                     let unit = location.getItem(g, ctx, whom, 0, y);
                     if(!unit) {
+                        continue;
+                    }
+
+                    if(unit.isCondemned) {
                         continue;
                     }
 
@@ -1026,7 +1089,8 @@ export class HandLocation extends BaseLocation {
             
         }
 
-        return targets;
+        let unique = targets.filter((value, index, self) => { return self.indexOf(value) === index; });
+        return unique;
     }
 }
 

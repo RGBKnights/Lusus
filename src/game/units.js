@@ -17,6 +17,9 @@ export class Unit  extends Entity {
         // cubits and number of slots
         this.cubits = [];
         this.slots = 3;
+
+        // Can this unit handle any more cubits
+        this.isCondemned = false;
     }
 }
 

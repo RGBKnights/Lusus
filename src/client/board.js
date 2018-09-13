@@ -136,10 +136,12 @@ class Board extends React.Component {
       }
 
       let height = null;
-      if(this.props.location.dimensions === DIMENSIONS.Single) {
-        height = 90;
+      if(this.props.location.dimensions === DIMENSIONS.Tiny) {
+        height = 50;
+      } else if(this.props.location.dimensions === DIMENSIONS.Single) {
+        height = 70;
       } else if(this.props.location.dimensions === DIMENSIONS.Small) {
-        height = 125;
+        height = 150;
       } else if(this.props.location.dimensions === DIMENSIONS.Medium) {
         height = 300;
       } else if(this.props.location.dimensions === DIMENSIONS.Large) {
@@ -164,6 +166,39 @@ class Board extends React.Component {
         </div>
       )
     }
+  }
+}
+
+class PlayerSummary extends React.Component {
+  static propTypes = {
+    G: PropTypes.any.isRequired,
+    ctx: PropTypes.any.isRequired,
+    moves: PropTypes.any.isRequired,
+    events: PropTypes.any.isRequired,
+    playerID: PropTypes.string,
+    isActive: PropTypes.bool,
+    isMultiplayer: PropTypes.bool,
+    isConnected: PropTypes.bool,
+    controller: PropTypes.string,
+    table: PropTypes.any.isRequired,
+  };
+  
+  render() {
+    let draws = this.props.G.players[this.props.controller].draws;
+    let actions = this.props.G.players[this.props.controller].actions.total;
+
+    let badgeDraws = <span className="badge badge-secondary float-right">{draws}</span>;
+    let badgeActions = <span className="badge badge-secondary float-right">{actions}</span>;
+
+    let summary = [];
+    summary.push(<div key={0} style={{margin: 3}}><h5>Draws {badgeDraws}</h5></div>);
+    summary.push(<div key={1} style={{margin: 3}}><h5>Actions {badgeActions}</h5></div>);
+
+    return (
+      <div>
+        {summary}
+      </div>
+    )
   }
 }
 
@@ -211,15 +246,12 @@ class GameTable extends React.Component {
       // Clear Source
       this.setState({ source: null, targets: null  });
     } else if (this.isVaildTarget( l, c, x, y )) {
+      let target = this.pickTarget( l, c, x, y );
       if(this.state.source.l === LOCATIONS.Hand) {
-        let source = { where: this.state.source.l, controller: this.state.source.c, x: this.state.source.x, y: this.state.source.y, id: this.state.source.id };
-        let destination = { where: l.type, controller: c, x: x, y: y  };
-        this.props.moves.playCubit(source, destination);
+        this.props.moves.playCubit(this.state.source, target);
         this.setState({ source: null, targets: null});
-      } else if(this.state.source.l === LOCATIONS.Board) {
-        let source = { where: this.state.source.l, controller: this.state.source.c, x: this.state.source.x, y: this.state.source.y, id: this.state.source.id };
-        let destination = { where: l.type, controller: c, x: x, y: y  };
-        this.props.moves.moveUnit(source, destination);
+      } else if(this.state.source.l === LOCATIONS.Board && l.type === LOCATIONS.Board) {
+        this.props.moves.moveUnit(this.state.source, target);
         this.setState({ source: null, targets: null});
       }
     } else {
@@ -242,6 +274,25 @@ class GameTable extends React.Component {
     return false;
   }
 
+  pickTarget(l, c, x, y) {
+    let targets = [];
+    
+    for (let i = 0; i < this.state.targets.length; i++) {
+      const target = this.state.targets[i];
+      if(target.l === l.type && target.c === c && target.x === x && target.y === y) {
+        targets.push(target);
+      }
+    }
+
+    //TODO: replace with a dialog to pick the correct option
+
+    if(targets.length > 0) {
+      return targets[0];
+    } else{
+      return targets[0];
+    }
+  }
+
   extends(c, l) {
     return {...this.props, controller: c, location: l, table: this };
   }
@@ -249,10 +300,14 @@ class GameTable extends React.Component {
   render() {
     let locations = getLocations();
 
-    //TODO: need to get [board/field] into field 
-    let field = React.createElement(Board, this.extends(null, locations.board)); 
+    let board = React.createElement(Board, this.extends(null, locations.board)); 
+    let field = React.createElement(Board, this.extends(null, locations.field));
     let arena = React.createElement(Board, this.extends(null, locations.arena)); 
 
+    let summaries = {
+      "0": React.createElement(PlayerSummary, {...this.props, controller: '0', table: this }),
+      "1": React.createElement(PlayerSummary, {...this.props, controller: '1', table: this }),
+    }
     let units = {
       "0": React.createElement(Board, this.extends('0', locations.units)), 
       "1": React.createElement(Board, this.extends('1', locations.units)), 
@@ -296,34 +351,35 @@ class GameTable extends React.Component {
           </Col>
         </Row>
         <Row>
-          <Col xs="2">
+          <Col>
+            { summaries['0'] }
             { bags['0'] }          
             { hands['0'] }
             { avatars['0'] }
             { exiles['0'] }
             { afterlifes['0'] }
           </Col>
-          <Col xs="2">
+          <Col>
             { units['0'] }
           </Col>
-          <Col xs="4">
+          <Col>
             <Row>
               <Col>
-                <div style={{width: '15%'}}>
-                  { arena }
-                </div>         
+                { arena }       
               </Col>
             </Row>
             <Row>
               <Col>
+                { board }
                 { field }
               </Col>
             </Row>
           </Col>
-          <Col xs="2">
+          <Col>
             { units['1'] }
           </Col>
-          <Col xs="2">
+          <Col>
+          { summaries['0'] }
           { bags['1'] }          
           { hands['1'] }
           { avatars['1'] }

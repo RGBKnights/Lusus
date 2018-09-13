@@ -1,5 +1,9 @@
 import { Game } from 'boardgame.io/core';
-import { GAME_PHASES } from './common';
+import { 
+    GAME_PHASES,
+    LOCATIONS,
+    TARGET_TYPES
+} from './common';
 import { findLocation } from './locations';
 import { GameLogic } from './logic';
 
@@ -54,22 +58,19 @@ const GameCore = Game({
             const g = clone(G);
             
             // Get Source &  Destination Location
-            let sl = findLocation(source.where);
-            let dl = findLocation(destination.where);
+            let sl = findLocation(source.l);
+            let dl = findLocation(destination.l);
 
             // Get Cubit at Source
-            let cubit = sl.removeItem(g, ctx, source.controller, source.x, source.y);
-            if(!cubit) {
-                return; // invalid Source
-            }
+            let cubit = sl.removeItem(g, ctx, source.c, source.x, source.y);
 
             // Set Cubit at Destination
-            if(!dl.setItem(g, ctx, destination.controller, cubit, destination.x, destination.y)) {
+            if( dl.setItem(g, ctx, destination.c, cubit, destination.x, destination.y) === false) {
                 return; // invalid Destination
             }
 
             // Cubit logic
-            if(!logic.onPlay(g, ctx, source, destination, cubit)) {
+            if(logic.onPlay(g, ctx, source, destination, cubit) === false) {
                 return; // invalid Action
             }
 
@@ -81,16 +82,63 @@ const GameCore = Game({
             // Clone
             const g = clone(G);
 
-            // Get Source &  Destination Location
-            let sl = findLocation(source.where);
-            let dl = findLocation(destination.where);
+            // Get Location
+            let board = findLocation(LOCATIONS.Board);
+            let afterlife = findLocation(LOCATIONS.Afterlife);
 
-            //TODO: finish this.. off to make sure field can support [] of items at a give {x,y}
+            // Remove unit at location
+            let sourceUnit = board.removeItem(g, ctx, null, source.x, source.y);
 
             // Get Cubit at Source
-            let cubit = sl.removeItem(g, ctx, source.controller, source.x, source.y);
-            if(!cubit) {
-                return; // invalid Source
+            let destinationUnit = board.removeItem(g, ctx, null, destination.x, destination.y);
+            if(destinationUnit) {
+                if(destination.t === TARGET_TYPES.Agressive) {
+                    // Capture Oponent
+                    if(board.setItem(g, ctx, null, sourceUnit, destination.x, destination.y) === false) {
+                        return; // invalid Destination
+                    }
+
+                    if(logic.onMove(g, ctx, source, destination, sourceUnit) === false) {
+                        return; // invalid Action
+                    }
+
+                     // Move destination to afterlife
+                     if(afterlife.setItem(g, ctx, destinationUnit.ownership, destinationUnit) === false) {
+                        return; // invalid Destination
+                    }
+
+                    if(logic.onCapture(g, ctx, source, destination, sourceUnit, destinationUnit) === false) {
+                        return; // invalid Action
+                    }
+
+                } else if(destination.t === TARGET_TYPES.Passive) {
+                    // Swap
+                    if(board.setItem(g, ctx, null, sourceUnit, destination.x, destination.y) === false) {
+                        return; // invalid Destination
+                    }
+
+                    if(logic.onMove(g, ctx, source, destination, sourceUnit) === false) {
+                        return; // invalid Action
+                    }
+
+                    if(board.setItem(g, ctx, null, destinationUnit, source.x, source.y) === false) {
+                        return; // invalid Destination
+                    }
+
+                    if(logic.onMove(g, ctx, source, source, destinationUnit) === false) {
+                        return; // invalid Action
+                    }
+                }
+            } else {
+                // Move Unit to target
+                if(board.setItem(g, ctx, null, sourceUnit, destination.x, destination.y) === false) {
+                    return; // invalid Destination
+                }
+
+                if(logic.onMove(g, ctx, source, destination, sourceUnit) === false) {
+                    return; // invalid Action
+                }
+    
             }
 
             return g;

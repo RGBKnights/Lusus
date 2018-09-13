@@ -1,9 +1,8 @@
 ## TODO
 
-1. Unit Movement
-
-2. Capturing Units
-- move unit to Afterlife
+1. Board
+- Get Field and Board Displayed in one Component
+- handle selection of field and board locations in single component (or dont and split it...)
 
 3. Phases 
 - Buttons to end "Play" phase
@@ -15,12 +14,12 @@
 [✓] MovementCardinal
 [✓] MovementJump
 [✓] MovementSideStep
-[x] MovementSwap
-[x] DrawNegOne
-[x] DrawPlusOne
-[x] DoubleAction
-[x] Knowledge
-[x] Condemn
-[x] KingOfHill
-[-] Enrage
-[-] Passify
+[✓] MovementSwap
+[✓] DrawNegOne
+[✓] DrawPlusOne
+[✓] DoubleAction
+[✓] Knowledge
+[✓] Condemn
+[✓] KingOfHill
+[✓] Enrage
+[✓] Passify

@@ -29,7 +29,7 @@ export class OrthogonalCubit extends Cubit {
 
         this.classification.push(CLASSIFICATIONS.Movement);
         this.movement.push(new Movement(MOVEMENT_TYPES.Orthogonal, MOVEMENT_CONSTRAINTS.Either, 8));
-        this.targets.push(new Target(LOCATIONS.Units, TARGETING.Self));
+        this.targets.push(new Target(LOCATIONS.Units, TARGETING.Opponent));
     }
 }
 
@@ -132,5 +132,25 @@ export class KingOfHillCubit extends Cubit {
         this.obstruction = false;
 
         this.targets.push(new Target(LOCATIONS.Arena, TARGETING.Any));
+    }
+}
+
+export class EnrageCubit extends Cubit {
+    constructor(ownership) {
+        super(CUBIT_TYPES.Enrage, "Enrage", ownership);
+
+        this.obstruction = false;
+
+        this.targets.push(new Target(LOCATIONS.Units, TARGETING.Self));
+    }
+}
+
+export class PassifyCubit extends Cubit {
+    constructor(ownership) {
+        super(CUBIT_TYPES.Passify, "Passify", ownership);
+
+        this.obstruction = false;
+
+        this.targets.push(new Target(LOCATIONS.Units, TARGETING.Self));
     }
 }
