@@ -77,8 +77,22 @@ const GameCore = Game({
             return g;
 
         },
-        moveUnit: (G, ctx) => {
+        moveUnit: (G, ctx, source, destination) => {
+            // Clone
             const g = clone(G);
+
+            // Get Source &  Destination Location
+            let sl = findLocation(source.where);
+            let dl = findLocation(destination.where);
+
+            //TODO: finish this.. off to make sure field can support [] of items at a give {x,y}
+
+            // Get Cubit at Source
+            let cubit = sl.removeItem(g, ctx, source.controller, source.x, source.y);
+            if(!cubit) {
+                return; // invalid Source
+            }
+
             return g;
         }
     },

@@ -79,14 +79,15 @@ export const DIMENSIONS = {
 
 export const LOCATIONS = {
     Unknown: 0,
-    Field: 1,
-    Units: 2,
-    Afterlife: 3,
-    Bag: 4,
-    Exile: 5,
-    Arena: 6,
-    Avatar: 7,
-    Hand: 8,
+    Board: 1,
+    Field: 2,
+    Units: 3,
+    Afterlife: 4,
+    Bag: 5,
+    Exile: 6,
+    Arena: 7,
+    Avatar: 8,
+    Hand: 9,
 };
 
 export const TARGETING = {
@@ -96,15 +97,11 @@ export const TARGETING = {
     Opponent: 3,
 };
 
-//TODO: Move to Board.js when usecase changes...
-export const COLORS = {
-    Unknown: null,
-    Background: '#959595',
-    CheckboardWhite: '#817F7F',
-    CheckboardBlack: '#ABAAAA',
-    Selection: '#4E9334',
-    Passive: '#BE8E3F',
-    Agressive: '#B63C4B',
+export const TARGET_TYPES = {
+    Unknown: 0,
+    Play: 1,
+    Passive: 2,
+    Agressive: 3,
 };
 
 export class Movement {
@@ -149,7 +146,7 @@ export class Entity {
         this.movement = [];
         this.obstruction = true;
         // targets options
-        this.targets = []; // { where: LOCATIONS.Avatar, whom: TARGETING.Self, what: UNIT_TYPES.Pawn, classify:  CLASSIFICATIONS.Unit }
+        this.targets = [];
     }
 
     static isType(entity, type) {

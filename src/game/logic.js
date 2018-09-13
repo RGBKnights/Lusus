@@ -12,10 +12,15 @@ import {
 export class GameLogic {
     initialize(g, ctx) {
         let locations = getLocations();
+        //g.units = [];
+        //g.cubits = [];
+
+        g.board = [];
         g.field = [];
         g.arena = [];
 
         locations.arena.setup(g, ctx, null);
+        locations.board.setup(g, ctx, null);
         locations.field.setup(g, ctx, null);
 
         g.players = {};
@@ -59,7 +64,7 @@ export class GameLogic {
                 let index = ctx.random.D4() - 1;
                 let pos = options[index];
 
-                let location = findLocation(LOCATIONS.Field);
+                let location = findLocation(LOCATIONS.field);
                 location.setItem(g, ctx, null, cubit, pos.x, pos.y);
 
                 break;

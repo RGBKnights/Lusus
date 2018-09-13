@@ -20,15 +20,26 @@ import {
   DIMENSIONS,
   // LOCATIONS,
   // CLASSIFICATIONS,
-  MOVEMENT_CONSTRAINTS,
-  COLORS,
+  // MOVEMENT_CONSTRAINTS,
   LOCATIONS,
+  TARGET_TYPES
   // Entity
 } from '../game/common';
 
 import {
   getLocations
 } from '../game/locations';
+
+const COLORS = {
+  Unknown: '#FF69B4',
+  Background: '#959595',
+  CheckboardWhite: '#817F7F',
+  CheckboardBlack: '#ABAAAA',
+  Selection: '#4E9334',
+  Passive: '#BE8E3F',
+  Agressive: '#B63C4B',
+  Play: '#BE8E3F',
+};
 
 class Board extends React.Component {
   static propTypes = {
@@ -109,10 +120,14 @@ class Board extends React.Component {
                 target.x === x && 
                 target.y === y
               ){
-                if(target.t === MOVEMENT_CONSTRAINTS.Agressive) {
+                if(target.t === TARGET_TYPES.Agressive) {
                   background[`${x},${y}`] = COLORS.Agressive;
-                } else if(target.t === MOVEMENT_CONSTRAINTS.Passive) {
+                } else if(target.t === TARGET_TYPES.Passive) {
                   background[`${x},${y}`] = COLORS.Passive;
+                } else if(target.t === TARGET_TYPES.Play) {
+                  background[`${x},${y}`] = COLORS.Play;
+                } else {
+                  background[`${x},${y}`] = COLORS.Unknown;
                 }
               }
             }
@@ -201,9 +216,11 @@ class GameTable extends React.Component {
         let destination = { where: l.type, controller: c, x: x, y: y  };
         this.props.moves.playCubit(source, destination);
         this.setState({ source: null, targets: null});
-      } else if(this.state.source.l === LOCATIONS.Field) {
-        alert("Finish: moveUnit()");
-        // this.props.moves.moveUnit
+      } else if(this.state.source.l === LOCATIONS.Board) {
+        let source = { where: this.state.source.l, controller: this.state.source.c, x: this.state.source.x, y: this.state.source.y, id: this.state.source.id };
+        let destination = { where: l.type, controller: c, x: x, y: y  };
+        this.props.moves.moveUnit(source, destination);
+        this.setState({ source: null, targets: null});
       }
     } else {
       // ...
@@ -232,7 +249,8 @@ class GameTable extends React.Component {
   render() {
     let locations = getLocations();
 
-    let field = React.createElement(Board, this.extends(null, locations.field)); 
+    //TODO: need to get [board/field] into field 
+    let field = React.createElement(Board, this.extends(null, locations.board)); 
     let arena = React.createElement(Board, this.extends(null, locations.arena)); 
 
     let units = {

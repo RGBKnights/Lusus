@@ -9,6 +9,7 @@ import {
     DIMENSIONS,
     LOCATIONS,
     TARGETING,
+    TARGET_TYPES,
     Entity
 } from './common';
 
@@ -158,15 +159,16 @@ export class BaseLocation {
     }
 }
 
-export class FieldLocation extends BaseLocation { 
+
+export class BoardLocation extends BaseLocation { 
     constructor() {
-        super(LOCATIONS.Field, "Field", 8, false, false);
+        super(LOCATIONS.Board, "Board", 8, false, false);
 
         this.dimensions = DIMENSIONS.Large;
     }
 
     getCollection(g, ctx, controller = null) {
-        return g.field;
+        return g.board;
     }
 
     setup(g, ctx, controller = null) {
@@ -174,7 +176,7 @@ export class FieldLocation extends BaseLocation {
         for (let x = 0; x < size.width; x++) {
             for (let y = 0; y < size.height; y++) {
                 let index = x + size.width * y;
-                g.field[index] = null;
+                g.board[index] = null;
             }
         }
 
@@ -185,23 +187,23 @@ export class FieldLocation extends BaseLocation {
 
         for (let i = 0; i < options.length; i++) {
             const option = options[i];
-            g.field[this.getIndex(option.royal, 0)] = new RookUnit(option.player, "#FF5733");
-            g.field[this.getIndex(option.royal, 1)] = new KnightUnit(option.player, "#F9FF33");
-            g.field[this.getIndex(option.royal, 2)] = new BishopUnit(option.player, "#008000");
-            g.field[this.getIndex(option.royal, 3)] = new QueenUnit(option.player, "#33FFA8");
-            g.field[this.getIndex(option.royal, 4)] = new KingUnit(option.player, "#33F6FF");
-            g.field[this.getIndex(option.royal, 5)] = new BishopUnit(option.player, "#3346FF");
-            g.field[this.getIndex(option.royal, 6)] = new KnightUnit(option.player, "#800080");
-            g.field[this.getIndex(option.royal, 7)] = new RookUnit(option.player, "#FF0000");
+            g.board[this.getIndex(option.royal, 0)] = new RookUnit(option.player, "#FF5733");
+            g.board[this.getIndex(option.royal, 1)] = new KnightUnit(option.player, "#F9FF33");
+            g.board[this.getIndex(option.royal, 2)] = new BishopUnit(option.player, "#008000");
+            g.board[this.getIndex(option.royal, 3)] = new QueenUnit(option.player, "#33FFA8");
+            g.board[this.getIndex(option.royal, 4)] = new KingUnit(option.player, "#33F6FF");
+            g.board[this.getIndex(option.royal, 5)] = new BishopUnit(option.player, "#3346FF");
+            g.board[this.getIndex(option.royal, 6)] = new KnightUnit(option.player, "#800080");
+            g.board[this.getIndex(option.royal, 7)] = new RookUnit(option.player, "#FF0000");
 
-            g.field[this.getIndex(option.common, 0)] = new PawnUnit(option.player, "#FF5733");
-            g.field[this.getIndex(option.common, 1)] = new PawnUnit(option.player, "#F9FF33");
-            g.field[this.getIndex(option.common, 2)] = new PawnUnit(option.player, "#008000");
-            g.field[this.getIndex(option.common, 3)] = new PawnUnit(option.player, "#33FFA8");
-            g.field[this.getIndex(option.common, 4)] = new PawnUnit(option.player, "#33F6FF");
-            g.field[this.getIndex(option.common, 5)] = new PawnUnit(option.player, "#3346FF");
-            g.field[this.getIndex(option.common, 6)] = new PawnUnit(option.player, "#800080");
-            g.field[this.getIndex(option.common, 7)] = new PawnUnit(option.player, "#FF0000");
+            g.board[this.getIndex(option.common, 0)] = new PawnUnit(option.player, "#FF5733");
+            g.board[this.getIndex(option.common, 1)] = new PawnUnit(option.player, "#F9FF33");
+            g.board[this.getIndex(option.common, 2)] = new PawnUnit(option.player, "#008000");
+            g.board[this.getIndex(option.common, 3)] = new PawnUnit(option.player, "#33FFA8");
+            g.board[this.getIndex(option.common, 4)] = new PawnUnit(option.player, "#33F6FF");
+            g.board[this.getIndex(option.common, 5)] = new PawnUnit(option.player, "#3346FF");
+            g.board[this.getIndex(option.common, 6)] = new PawnUnit(option.player, "#800080");
+            g.board[this.getIndex(option.common, 7)] = new PawnUnit(option.player, "#FF0000");
         }
     }
 
@@ -246,14 +248,14 @@ export class FieldLocation extends BaseLocation {
                         let item = this.getItem(g, ctx, controller, x, origin.y);
                         if(item && item.obstruction) {
                             if(isAgressive && item.ownership !== player) {
-                                let data = { l: LOCATIONS.Field, c: null, x: x, y: origin.y, t: MOVEMENT_CONSTRAINTS.Agressive };
+                                let data = { l: LOCATIONS.Board, c: null, x: x, y: origin.y, t: TARGET_TYPES.Agressive };
                                 targets.push(data);
                             }
                             break;
                         }
 
                         if(isPassive) {
-                            let data = { l: LOCATIONS.Field, c: null, x: x, y: origin.y, t: MOVEMENT_CONSTRAINTS.Passive };
+                            let data = { l: LOCATIONS.Board, c: null, x: x, y: origin.y, t: TARGET_TYPES.Passive };
                             targets.push(data);
                         }
                     }
@@ -262,14 +264,14 @@ export class FieldLocation extends BaseLocation {
                         let item = this.getItem(g, ctx, controller, x, origin.y);
                         if(item && item.obstruction) {
                             if(isAgressive && item.ownership !== player) {
-                                let data = { l: LOCATIONS.Field, c: null, x: x, y: origin.y, t: MOVEMENT_CONSTRAINTS.Agressive };
+                                let data = { l: LOCATIONS.Board, c: null, x: x, y: origin.y, t: TARGET_TYPES.Agressive };
                                 targets.push(data);
                             }
                             break;
                         }
 
                         if(isPassive) {
-                            let data = { l: LOCATIONS.Field, c: null, x: x, y: origin.y, t: MOVEMENT_CONSTRAINTS.Passive };
+                            let data = { l: LOCATIONS.Board, c: null, x: x, y: origin.y, t: TARGET_TYPES.Passive };
                             targets.push(data);
                         }
                     }
@@ -278,14 +280,14 @@ export class FieldLocation extends BaseLocation {
                         let item = this.getItem(g, ctx, controller, origin.x, y);
                         if(item && item.obstruction) {
                             if(isAgressive && item.ownership !== player) {
-                                let data = { l: LOCATIONS.Field, c: null, x: origin.x, y: y, t: MOVEMENT_CONSTRAINTS.Agressive };
+                                let data = { l: LOCATIONS.Board, c: null, x: origin.x, y: y, t: TARGET_TYPES.Agressive };
                                 targets.push(data);
                             }
                             break;
                         }
 
                         if(isPassive) {
-                            let data = { l: LOCATIONS.Field, c: null, x: origin.x, y: y, t: MOVEMENT_CONSTRAINTS.Passive };
+                            let data = { l: LOCATIONS.Board, c: null, x: origin.x, y: y, t: TARGET_TYPES.Passive };
                             targets.push(data);
                         }
                     }
@@ -294,14 +296,14 @@ export class FieldLocation extends BaseLocation {
                         let item = this.getItem(g, ctx, controller, origin.x, y);
                         if(item && item.obstruction) {
                             if(isAgressive && item.ownership !== player) {
-                                let data = { l: LOCATIONS.Field, c: null, x: origin.x, y: y, t: MOVEMENT_CONSTRAINTS.Agressive };
+                                let data = { l: LOCATIONS.Board, c: null, x: origin.x, y: y, t: TARGET_TYPES.Agressive };
                                 targets.push(data);
                             }
                             break;
                         }
 
                         if(isPassive) {
-                            let data = { l: LOCATIONS.Field, c: null, x: origin.x, y: y, t: MOVEMENT_CONSTRAINTS.Passive };
+                            let data = { l: LOCATIONS.Board, c: null, x: origin.x, y: y, t: TARGET_TYPES.Passive };
                             targets.push(data);
                         }
                     }
@@ -316,14 +318,14 @@ export class FieldLocation extends BaseLocation {
                         let item = this.getItem(g, ctx, controller, x, y);
                         if(item && item.obstruction) {
                             if(isAgressive && item.ownership !== player) {
-                                let data = { l: LOCATIONS.Field, c: null, x: x, y: y, t: MOVEMENT_CONSTRAINTS.Agressive };
+                                let data = { l: LOCATIONS.Board, c: null, x: x, y: y, t: TARGET_TYPES.Agressive };
                                 targets.push(data);
                             }
                             break;
                         }
 
                         if(isPassive) {
-                            let data = { l: LOCATIONS.Field, c: null, x: x, y: y, t: MOVEMENT_CONSTRAINTS.Passive };
+                            let data = { l: LOCATIONS.Board, c: null, x: x, y: y, t: TARGET_TYPES.Passive };
                             targets.push(data);
                         }
                     }
@@ -332,14 +334,14 @@ export class FieldLocation extends BaseLocation {
                         let item = this.getItem(g, ctx, controller, x, y);
                         if(item && item.obstruction) {
                             if(isAgressive && item.ownership !== player) {
-                                let data = { l: LOCATIONS.Field, c: null, x: x, y: y, t: MOVEMENT_CONSTRAINTS.Agressive };
+                                let data = { l: LOCATIONS.Board, c: null, x: x, y: y, t: TARGET_TYPES.Agressive };
                                 targets.push(data);
                             }
                             break;
                         }
 
                         if(isPassive) {
-                            let data = { l: LOCATIONS.Field, c: null, x: x, y: y, t: MOVEMENT_CONSTRAINTS.Passive };
+                            let data = { l: LOCATIONS.Board, c: null, x: x, y: y, t: TARGET_TYPES.Passive };
                             targets.push(data);
                         }
                     }
@@ -348,14 +350,14 @@ export class FieldLocation extends BaseLocation {
                         let item = this.getItem(g, ctx, controller, x, y);
                         if(item && item.obstruction) {
                             if(isAgressive && item.ownership !== player) {
-                                let data = { l: LOCATIONS.Field, c: null, x: x, y: y, t: MOVEMENT_CONSTRAINTS.Agressive };
+                                let data = { l: LOCATIONS.Board, c: null, x: x, y: y, t: TARGET_TYPES.Agressive };
                                 targets.push(data);
                             }
                             break;
                         }
 
                         if(isPassive) {
-                            let data = { l: LOCATIONS.Field, c: null, x: x, y: y, t: MOVEMENT_CONSTRAINTS.Passive };
+                            let data = { l: LOCATIONS.Board, c: null, x: x, y: y, t: TARGET_TYPES.Passive };
                             targets.push(data);
                         }
                     }
@@ -364,14 +366,14 @@ export class FieldLocation extends BaseLocation {
                         let item = this.getItem(g, ctx, controller, x, y);
                         if(item && item.obstruction) {
                             if(isAgressive && item.ownership !== player) {
-                                let data = { l: LOCATIONS.Field, c: null, x: x, y: y, t: MOVEMENT_CONSTRAINTS.Agressive };
+                                let data = { l: LOCATIONS.Board, c: null, x: x, y: y, t: TARGET_TYPES.Agressive };
                                 targets.push(data);
                             }
                             break;
                         }
 
                         if(isPassive) {
-                            let data = { l: LOCATIONS.Field, c: null, x: x, y: y, t: MOVEMENT_CONSTRAINTS.Passive };
+                            let data = { l: LOCATIONS.Board, c: null, x: x, y: y, t: TARGET_TYPES.Passive };
                             targets.push(data);
                         }
                     }
@@ -403,12 +405,12 @@ export class FieldLocation extends BaseLocation {
                         }
 
                         if(item && item.ownership !== player && isAgressive) {
-                            let data = { l: LOCATIONS.Field, c: null, x: move.x, y: move.y, t: MOVEMENT_CONSTRAINTS.Agressive };
+                            let data = { l: LOCATIONS.Board, c: null, x: move.x, y: move.y, t: TARGET_TYPES.Agressive };
                             targets.push(data);
                             break;
                         }
 
-                        let data = { l: LOCATIONS.Field, c: null, x: move.x, y: move.y, t: MOVEMENT_CONSTRAINTS.Passive };
+                        let data = { l: LOCATIONS.Board, c: null, x: move.x, y: move.y, t: TARGET_TYPES.Passive };
                         targets.push(data);
                     }
 
@@ -424,7 +426,7 @@ export class FieldLocation extends BaseLocation {
                         const move = moves[i];
                         let item = this.getItem(g, ctx, null, move.x, move.y);
                         if(item && item.ownership !== player && isAgressive) {
-                            let data = { l: LOCATIONS.Field, c: null, x: move.x, y: move.y, t: MOVEMENT_CONSTRAINTS.Agressive };
+                            let data = { l: LOCATIONS.Board, c: null, x: move.x, y: move.y, t: TARGET_TYPES.Agressive };
                             targets.push(data);
                         }
                     }
@@ -438,14 +440,14 @@ export class FieldLocation extends BaseLocation {
                         let item = this.getItem(g, ctx, null, x, origin.y);
                         if(item && item.obstruction) {
                             if(isAgressive) {
-                                let data = { l: LOCATIONS.Field, c: null, x: x, y: origin.y, t: MOVEMENT_CONSTRAINTS.Agressive };
+                                let data = { l: LOCATIONS.Board, c: null, x: x, y: origin.y, t: MOVEMENT_CONSTRAINTS.Agressive };
                                 targets.push(data);
                             }
                             break;
                         }
 
                         if(isPassive) {
-                            let data = { l: LOCATIONS.Field, c: null, x: x, y: origin.y };
+                            let data = { l: LOCATIONS.Board, c: null, x: x, y: origin.y };
                             targets.push(data);
                         }
                     }
@@ -460,14 +462,14 @@ export class FieldLocation extends BaseLocation {
                         let item = this.getItem(g, ctx, null, x, origin.y);
                         if(item && item.obstruction) {
                             if(isAgressive) {
-                                let data = { l: LOCATIONS.Field, c: null, x: x, y: origin.y, t: MOVEMENT_CONSTRAINTS.Agressive };
+                                let data = { l: LOCATIONS.Board, c: null, x: x, y: origin.y, t: TARGET_TYPES.Agressive };
                                 targets.push(data);
                             }
                            break;
                         }
 
                         if(isPassive) {
-                            let data = { l: LOCATIONS.Field, c: null, x: x, y: origin.y, t: MOVEMENT_CONSTRAINTS.Passive };
+                            let data = { l: LOCATIONS.Board, c: null, x: x, y: origin.y, t: TARGET_TYPES.Passive };
                             targets.push(data);
                         }
                     }
@@ -493,7 +495,7 @@ export class FieldLocation extends BaseLocation {
                         }
 
                         if(isPassive) {
-                            let data = { l: LOCATIONS.Field, c: null, x: move.x, y: move.y };
+                            let data = { l: LOCATIONS.Board, c: null, x: move.x, y: move.y };
                             targets.push(data);
                         }
                     }
@@ -522,7 +524,7 @@ export class FieldLocation extends BaseLocation {
 
                         let item = this.getItem(g, ctx, null, move.x, move.y);
                         if(item) {
-                            let data = { l: LOCATIONS.Field, c: null, x: move.x, y: move.y, t: MOVEMENT_CONSTRAINTS.Passive };
+                            let data = { l: LOCATIONS.Board, c: null, x: move.x, y: move.y, t: TARGET_TYPES.Passive };
                             targets.push(data);
                         }
                     }
@@ -547,14 +549,36 @@ export class FieldLocation extends BaseLocation {
         for (let i = 0; i < entity.cubits.length; i++) {
             const cubit = entity.cubits[i];
             if(cubit.type === CUBIT_TYPES.Enrage) {
-                targets = targets.filter(t => t.type === MOVEMENT_CONSTRAINTS.Agressive);
+                targets = targets.filter(t => t.type === TARGET_TYPES.Agressive);
             }
             if(cubit.type === CUBIT_TYPES.Passify) {
-                targets = targets.filter(t => t.type === MOVEMENT_CONSTRAINTS.Passive);
+                targets = targets.filter(t => t.type === TARGET_TYPES.Passive);
             }
         }
 
         return targets;
+    }
+}
+
+export class FieldLocation extends BaseLocation { 
+    constructor() {
+        super(LOCATIONS.Board, "Field", 8, false, false);
+
+        this.dimensions = DIMENSIONS.Large;
+    }
+
+    getCollection(g, ctx, controller = null) {
+        return g.field;
+    }
+
+    setup(g, ctx, controller = null) {
+        let size = this.getSize();
+        for (let x = 0; x < size.width; x++) {
+            for (let y = 0; y < size.height; y++) {
+                let index = x + size.width * y;
+                g.field[index] = null;
+            }
+        }
     }
 }
 
@@ -567,7 +591,7 @@ export class UnitsLocation extends BaseLocation {
     }
 
     getCollection(g, ctx, controller = null) {
-        let collection = g.field
+        let collection = g.board
             .filter(o => o != null)
             .filter(o => o.ownership === controller)
             .filter(o => Entity.hasClassification(o, CLASSIFICATIONS.Unit));
@@ -933,7 +957,7 @@ export class HandLocation extends BaseLocation {
             }
 
             if(target.where === LOCATIONS.Arena) {
-                let data = { l: target.where, c: null, x: 0, y: 0 };
+                let data = { l: target.where, c: null, x: 0, y: 0, t: TARGET_TYPES.Play };
                 targets.push(data);
                 continue;
             } else if(target.where === LOCATIONS.Avatar) {
@@ -943,7 +967,7 @@ export class HandLocation extends BaseLocation {
                     for (let y = 0; y < size.height; y++) {
                         let cubit = location.getItem(g, ctx, whom, x, y);
                         if(!cubit) {
-                            let data = { l: target.where, c: whom, x: x, y: y };
+                            let data = { l: target.where, c: whom, x: x, y: y, t: TARGET_TYPES.Play };
                             targets.push(data);
                         }
                     }
@@ -969,28 +993,28 @@ export class HandLocation extends BaseLocation {
                         let cubit = location.getItem(g, ctx, whom, x, y);
                         if(cubit) {
                             if(target.what && target.what === cubit.type) {
-                                let data = { l: target.where, c: whom, x: x, y: y };
+                                let data = { l: target.where, c: whom, x: x, y: y, t: TARGET_TYPES.Play };
                                 targets.push(data);
                             }
 
                             if(target.filter && Entity.hasClassification(cubit, target.filter)) {
-                                let data = { l: target.where, c: whom, x: x, y: y };
+                                let data = { l: target.where, c: whom, x: x, y: y, t: TARGET_TYPES.Play };
                                 targets.push(data);
                             }
                         } else {
-                            let data = { l: target.where, c: whom, x: x, y: y };
+                            let data = { l: target.where, c: whom, x: x, y: y, t: TARGET_TYPES.Play };
                             targets.push(data);
                         }
                     }
                 }
-            } else if(target.where === LOCATIONS.Field) {
+            } else if(target.where === LOCATIONS.Board) {
                 let location = findLocation(target.where);
                 let size = location.getSize(g, ctx);
                 for (let x = 0; x < size.width; x++) {
                     for (let y = 0; y < size.height; y++) {
                         let item = location.getItem(g, ctx, null, x, y);
                         if(!item) {
-                            let data = { l: target.where, c: whom, x: x, y: y };
+                            let data = { l: target.where, c: whom, x: x, y: y, t: TARGET_TYPES.Play };
                             targets.push(data);
                         }
                     }
@@ -1009,6 +1033,7 @@ export class HandLocation extends BaseLocation {
 export function getLocations() {
     let locations = {
         arena: new ArenaLocation(),
+        board: new BoardLocation(),
         field: new FieldLocation(),
         bags: new BagLocation(),
         hands: new HandLocation(),
@@ -1024,6 +1049,8 @@ export function findLocation(type) {
     let locations = getLocations();
     if(type === locations.arena.type) {
         return locations.arena;
+    } else if(type === locations.board.type) {
+        return locations.board;
     } else if(type === locations.field.type) {
         return locations.field;
     } else if(type === locations.bags.type) {
