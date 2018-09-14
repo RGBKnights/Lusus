@@ -543,14 +543,13 @@ export class BoardLocation extends BaseLocation {
                         }
 
                         if(isPassive) {
-                            let data = { l: LOCATIONS.Board, c: null, x: move.x, y: move.y };
+                            let data = { l: LOCATIONS.Board, c: null, x: move.x, y: move.y, t: TARGET_TYPES.Passive };
                             targets.push(data);
                         }
                     }
 
                     break;
                 }
-                
                 case MOVEMENT_TYPES.Swap:
                 {
                     let moves = [];

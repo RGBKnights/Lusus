@@ -18,6 +18,10 @@ import {
 export class GameLogic {
     initialize(g, ctx) {
         let locations = getLocations();
+
+        g.effects = {
+            basics: false,
+        };
         g.board = [];
         g.field = [];
         g.arena = [];
@@ -32,7 +36,6 @@ export class GameLogic {
             const p = i.toString();
 
             g.players[p] = {
-                draws: 3, 
                 actions: {
                     total: 1,
                     count: 1,
@@ -41,6 +44,7 @@ export class GameLogic {
                     total: 1,
                     count: 1,
                 },
+                draws: 3,
                 bag: [],
                 hand: [],
                 avatar: [],
@@ -52,6 +56,10 @@ export class GameLogic {
             locations.hands.setup(g, ctx, p);
             locations.avatars.setup(g, ctx, p);
         }
+    }
+
+    onDraw(g, ctx) {
+        return true;
     }
 
     onPlay(g, ctx, source, destination, cubit) {

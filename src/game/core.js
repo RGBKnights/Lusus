@@ -49,6 +49,13 @@ const GameCore = Game({
         return data;
     },
     moves: {
+        draw: (G, ctx) => {
+            const g = clone(G);
+            if(logic.onPlay(g, ctx) === false) {
+                return;
+            }
+            return g;
+        },
         activateCubit: (G, ctx) => {
             const g = clone(G);
             return g;
