@@ -15,16 +15,6 @@ const App = () => (
     <div>
       <ClientApp gameID="f5396086" playerID="0" />
     </div>
-    {/*
-    <br />
-    <div>
-      <ClientApp gameID="f5396086" playerID="1" />
-    </div>
-    <br />
-    <div>
-      <ClientApp gameID="f5396086" />
-    </div>
-    */}
   </div>
 );
 

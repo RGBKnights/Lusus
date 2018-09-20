@@ -245,19 +245,28 @@ export const MOVEMENT_CONSTRAINTS = {
     Agressive: 3,
 };
 
+export const UNIT_RANK = {
+  Unknown: 0,
+  Common: 1,
+  Royal: 2,
+};
+
+export const UNIT_FILE = {
+  Unknown: 0,
+  A: 1,
+  B: 2,
+  C: 3,
+  D: 4,
+  E: 5,
+  F: 6,
+  G: 7,
+  H: 8,
+};
+
 export const DURATION_TYPES = {
     Unknown: 0,
     Turn: 1,
     Move: 2,
-};
-
-export const DIMENSIONS = {
-    Unknown: 0,
-    Tiny: 1,
-    Single: 2,
-    Small: 3,
-    Medium: 4,
-    Large: 5
 };
 
 export const LOCATIONS = {
@@ -280,62 +289,11 @@ export const TARGETING = {
     Opponent: 3,
 };
 
-export const TARGET_TYPES = {
-    Unknown: 0,
-    Play: 1,
-    Passive: 2,
-    Agressive: 3,
-};
-
 export class Movement {
     constructor(type, constraint, distance = null, steps = null) {
         this.type = type;
         this.constraints = constraint;
         this.distance = distance == null ? 1 : distance;
         this.steps = steps == null ? [] : steps;
-    }
-}
-
-export class Target {
-    constructor(where, whom, what = null, filter = null) {
-        this.where = where;
-        this.whom = whom;
-        this.what = what;
-        this.filter = filter;
-    }
-}
-
-export class Entity {
-    constructor(type, name, ownership) {
-        // unique identifier
-        this.id = uuidv4();
-        // own owns the cubit
-        this.ownership = ownership;
-        // type of the cubit
-        this.type = type;
-        // the name of the type
-        this.name = name;
-        this.alias = name.slice(0, 6);
-        // english words for the Help (convert to transltions keys later)
-        this.description = "";
-        // for filtering
-        this.classification = [];
-        // can this cubit be activated or consumed
-        this.activatable = false;       
-        // track moves and turns
-        this.moves = 0;
-        this.turns = 0;
-        // adictional movement options
-        this.movement = [];
-        this.obstruction = true;
-        // targets options
-        this.targets = [];
-    }
-
-    static isType(entity, type) {
-        return entity.type === type;
-    }
-    static hasClassification(entity, classify) {
-        return entity.classification.includes(classify);
     }
 }
