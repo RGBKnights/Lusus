@@ -59,7 +59,7 @@ class GameTable extends React.Component {
   }
 
   getGridParams(width, height) {
-    let autoSizeSquare = (window.innerHeight - 120) / 8;
+    let autoSizeSquare = (window.innerHeight - 130) / 8;
     let sizeSquare = 60;
     let w = width * autoSizeSquare;
 
@@ -79,7 +79,7 @@ class GameTable extends React.Component {
     return params;
   }
   
-  render() {   
+  render() {
     let elementGrid = React.createElement(Grid, this.getGridParams(8,8), []);
     let elementRoyals = React.createElement(Grid, this.getGridParams(1,8), []);
     let elementCommons = React.createElement(Grid, this.getGridParams(1,8), []);
@@ -110,55 +110,81 @@ class GameTable extends React.Component {
         </div>
         <div className="horizontal-warper">
           <div className="horizontal-section-content">
-            <div className="text-center">Hand</div>
+            <div className="text-center">
+              <Button>Hand</Button>
+            </div>
             { elementHand }
           </div>
           <div className="horizontal-section-content">
-            <div className="text-center">Player</div>
+            <div className="text-center">
+              <Button>Player</Button>
+            </div>
             { elementAvatar }
           </div>
           <div className="horizontal-section-content">
-            <div className="text-center">Com</div>
+            <div className="text-center">
+              <Button>Commons</Button>
+            </div>
             { elementCommons }
           </div>
           <div className="horizontal-section-content">
-            <div className="text-center">Common Field</div>
+            <div className="text-center">
+              <Button>Common Field</Button>
+            </div>
             { elementCommonsField }
           </div>
           <div className="horizontal-section-content">
-            <div className="text-center">Royals</div>
+            <div className="text-center">
+              <Button>Royals</Button>
+            </div>
             { elementRoyals }
           </div>
           <div className="horizontal-section-content">
-            <div className="text-center">Royals Field</div>
+            <div className="text-center">
+              <Button>Royals Field</Button>
+            </div>
             { elementRoyalsField }
           </div>
           <div className="horizontal-section-content">
-            <div className="text-center">Board</div>
+            <div className="text-center">
+              <Button>Board</Button>
+            </div>
             { elementGrid }
           </div>
           <div className="horizontal-section-content">
-            <div className="text-center">Royals Field</div>
+            <div className="text-center">
+              <Button>Royals Field</Button>
+            </div>
             { elementRoyalsField }  
           </div>
           <div className="horizontal-section-content">
-            <div className="text-center">Royals</div>
+            <div className="text-center">
+              <Button>Royals</Button>
+            </div>
             { elementRoyals }   
           </div>
           <div className="horizontal-section-content">
-            <div className="text-center">Common Field</div>
+            <div className="text-center">
+              <Button>Commons Field</Button>
+            </div>
             { elementCommonsField }  
           </div>
           <div className="horizontal-section-content">
-            <div className="text-center">Com</div>
+            <div className="text-center">
+              <Button>Commons</Button>
+            </div>
             { elementCommons }
           </div>
           <div className="horizontal-section-content">
-            <div className="text-center">Player</div>
+            <div className="text-center">
+              <Button>Player</Button>
+            </div>
             { elementAvatar }
           </div>
           <div className="horizontal-section-content">
-            <div className="text-center">Hand</div>
+            <div className="text-center">
+              <Button>Hand</Button>
+            </div>
             { elementHand }
           </div>
         </div>
