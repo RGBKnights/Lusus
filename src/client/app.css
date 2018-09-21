@@ -18,3 +18,14 @@ body {
 g > text {
   cursor: pointer;
 }
+
+.horizontal-warper {
+  overflow: auto; 
+  white-space: nowrap;
+}
+
+.horizontal-section-content {
+  display: inline-block;
+  margin: 5px;
+  vertical-align: top;
+}

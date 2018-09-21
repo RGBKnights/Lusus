@@ -7,15 +7,16 @@ import {
 // Bootstrap
 import { 
   Container, Row, Col,
-  Navbar, NavbarBrand, Nav, NavItem, NavLink
+  Navbar, NavbarBrand, Nav, NavItem, NavLink, Button
 } from 'reactstrap';
 
 // UI
 import { 
-  // Token, Grid
+  //Token, 
+  Grid
 } from 'boardgame.io/ui';
 
-
+/*
 const COLORS = {
   Unknown: '#FF69B4',
   Background: '#959595',
@@ -26,7 +27,7 @@ const COLORS = {
   Agressive: '#B63C4B',
   Play: '#BE8E3F',
 };
-
+*/
 
 class GameTable extends React.Component {
   static propTypes = {
@@ -47,31 +48,121 @@ class GameTable extends React.Component {
       source: null
     };
   }
-  
 
-  render() {
-    
-    let player = Number(this.props.playerID) + 1;
-    let navPlayer = this.props.playerID ? <NavLink>Player {player}</NavLink> : <NavLink>Spectator</NavLink>;
+  getSpace() {
+    return " ";
+  }
+
+  getPlayerElement() {
+    let color = this.props.isMultiplayer && this.props.isConnected ? "primary" : "danger";
+    return this.props.playerID ? <Button color={color}>Player {Number(this.props.playerID) + 1}</Button> : <Button color={color}>Spectator</Button>;
+  }
+
+  getGridParams(width, height) {
+    let autoSizeSquare = (window.innerHeight - 120) / 8;
+    let sizeSquare = 60;
+    let w = width * autoSizeSquare;
+
+    let background = {};
+    for (let x = 0; x < width; x++) {
+      for (let y = 0; y < height; y++) {
+        background[`${x},${y}`] = ((x + y) % 2 === 0) ? '#817F7F' : '#ABAAAA' 
+      }
+    }
+
+    let params = {
+      rows: height,
+      cols: width,
+      colorMap: background,
+      style: { width: w, strokeWidth: 0.05, stroke: '#000000' },
+    };
+    return params;
+  }
+  
+  render() {   
+    let elementGrid = React.createElement(Grid, this.getGridParams(8,8), []);
+    let elementRoyals = React.createElement(Grid, this.getGridParams(1,8), []);
+    let elementCommons = React.createElement(Grid, this.getGridParams(1,8), []);
+    let elementRoyalsField = React.createElement(Grid, this.getGridParams(4,8), []);
+    let elementCommonsField = React.createElement(Grid, this.getGridParams(2,8), []);
+
+    let elementHand = React.createElement(Grid, this.getGridParams(1,5), []);
+    let elementAvatar = React.createElement(Grid, this.getGridParams(1,5), []);
 
     return (
-      <Container fluid>
-        <Row>
-          <Col>
-            <Navbar color="dark" dark expand="md">
+      <section >
+        <div style={{height: 60}}>
+          <Container fluid className="p-0">
+            <Navbar color="dark" dark expand="md" className="rounded-bottom">
               <NavbarBrand href="/">Lusus <small>Tactical Chess</small></NavbarBrand>
-              <Nav className="ml-auto rounded-bottom" navbar>
+              <Nav navbar>
                 <NavItem>
-                  { navPlayer }
+                  <NavLink>Test Left</NavLink>
+                </NavItem>
+              </Nav>
+              <Nav className="ml-auto" navbar>
+                <NavItem>
+                  <NavLink>Test Right</NavLink>
                 </NavItem>
               </Nav>
             </Navbar>
-          </Col>
-        </Row>
-        <Row>
-          { /* Put Game Here */}
-        </Row>
-      </Container>
+          </Container>
+        </div>
+        <div className="horizontal-warper">
+          <div className="horizontal-section-content">
+            <div className="text-center">Hand</div>
+            { elementHand }
+          </div>
+          <div className="horizontal-section-content">
+            <div className="text-center">Player</div>
+            { elementAvatar }
+          </div>
+          <div className="horizontal-section-content">
+            <div className="text-center">Com</div>
+            { elementCommons }
+          </div>
+          <div className="horizontal-section-content">
+            <div className="text-center">Common Field</div>
+            { elementCommonsField }
+          </div>
+          <div className="horizontal-section-content">
+            <div className="text-center">Royals</div>
+            { elementRoyals }
+          </div>
+          <div className="horizontal-section-content">
+            <div className="text-center">Royals Field</div>
+            { elementRoyalsField }
+          </div>
+          <div className="horizontal-section-content">
+            <div className="text-center">Board</div>
+            { elementGrid }
+          </div>
+          <div className="horizontal-section-content">
+            <div className="text-center">Royals Field</div>
+            { elementRoyalsField }  
+          </div>
+          <div className="horizontal-section-content">
+            <div className="text-center">Royals</div>
+            { elementRoyals }   
+          </div>
+          <div className="horizontal-section-content">
+            <div className="text-center">Common Field</div>
+            { elementCommonsField }  
+          </div>
+          <div className="horizontal-section-content">
+            <div className="text-center">Com</div>
+            { elementCommons }
+          </div>
+          <div className="horizontal-section-content">
+            <div className="text-center">Player</div>
+            { elementAvatar }
+          </div>
+          <div className="horizontal-section-content">
+            <div className="text-center">Hand</div>
+            { elementHand }
+          </div>
+        </div>
+      </section>
     );
   }
 }

@@ -7,6 +7,8 @@ import {
   UNIT_RANK,
 } from './common';
 
+const uuidv4 = require('uuid/v4');
+
 export class Unit {
   constructor(type, name, slots, ownership, rank, file) {
       // unique identifier

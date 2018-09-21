@@ -6,6 +6,8 @@ import {
   Movement,
 } from './common';
 
+const uuidv4 = require('uuid/v4');
+
 export class Cubit {
   constructor(type, name, ownership) {
       // unique identifier

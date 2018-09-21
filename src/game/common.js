@@ -1,5 +1,3 @@
-const uuidv4 = require('uuid/v4');
-
 export const UNIT_TYPES = {
     Unknown: '',
     King: '0f94f609-f9bf-4006-a5ff-aa2cd6070e43',
