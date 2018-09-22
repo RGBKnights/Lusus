@@ -17,6 +17,7 @@ export class GameLogic {
         g.bag = [];
         g.hand = [];
         g.avatar = [];
+        g.exile = [];
 
         g.effects = {
           basics: [false, false],

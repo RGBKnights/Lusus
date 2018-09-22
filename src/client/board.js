@@ -6,8 +6,11 @@ import {
 
 // Bootstrap
 import { 
-  Container, Row, Col,
-  Navbar, NavbarBrand, Nav, NavItem, NavLink, Button
+  Container, 
+  // Row, Col,
+  Navbar, NavbarBrand, Nav, NavItem, NavLink, 
+  Button,
+  Badge
 } from 'reactstrap';
 
 // UI
@@ -59,8 +62,8 @@ class GameTable extends React.Component {
   }
 
   getGridParams(width, height) {
-    let autoSizeSquare = (window.innerHeight - 130) / 8;
-    let sizeSquare = 60;
+    let autoSizeSquare = (window.innerHeight - 60) / 8;
+    // let sizeSquare = 20;
     let w = width * autoSizeSquare;
 
     let background = {};
@@ -81,28 +84,40 @@ class GameTable extends React.Component {
   
   render() {
     let elementGrid = React.createElement(Grid, this.getGridParams(8,8), []);
-    let elementRoyals = React.createElement(Grid, this.getGridParams(1,8), []);
-    let elementCommons = React.createElement(Grid, this.getGridParams(1,8), []);
-    let elementRoyalsField = React.createElement(Grid, this.getGridParams(4,8), []);
-    let elementCommonsField = React.createElement(Grid, this.getGridParams(2,8), []);
-
+    let elementRoyals = React.createElement(Grid, this.getGridParams(3,8), []);
+    let elementCommons = React.createElement(Grid, this.getGridParams(3,8), []);
     let elementHand = React.createElement(Grid, this.getGridParams(1,5), []);
     let elementAvatar = React.createElement(Grid, this.getGridParams(1,5), []);
 
     return (
-      <section >
-        <div style={{height: 60}}>
+      <section>
+        <div>
           <Container fluid className="p-0">
-            <Navbar color="dark" dark expand="md" className="rounded-bottom">
-              <NavbarBrand href="/">Lusus <small>Tactical Chess</small></NavbarBrand>
+            <Navbar color="dark" dark expand="md" className="rounded-bottom p-0">
+              <NavbarBrand className="p-0">
+                <img className="p-1"  height="32" src="/favicon.ico" alt="Logo"></img>
+                <strong className="p-1">Lusus</strong>
+                <small>Tactical Chess</small>
+                </NavbarBrand>
               <Nav navbar>
                 <NavItem>
-                  <NavLink>Test Left</NavLink>
+                  <NavLink className="p-1 bg-success text-white rounded">Player 1</NavLink>
                 </NavItem>
               </Nav>
-              <Nav className="ml-auto" navbar>
-                <NavItem>
-                  <NavLink>Test Right</NavLink>
+              <Nav className="p-1 ml-auto list-inline">
+                <NavItem className="list-inline-item">
+                  <NavLink className="p-1 bg-warning text-white rounded">Skip</NavLink>
+                </NavItem>
+                <NavItem className="list-inline-item">
+                  <NavLink className="p-1 bg-warning text-white rounded">Pass</NavLink>
+                </NavItem>
+              </Nav>
+              <Nav className="p-1 ml-auto list-inline">
+                <NavItem className="list-inline-item">
+                  <NavLink className=" p-1 bg-secondary text-white rounded">Afterlife</NavLink>
+                </NavItem>
+                <NavItem className="list-inline-item">
+                  <NavLink className="p-1 bg-secondary text-white rounded">Arena</NavLink>
                 </NavItem>
               </Nav>
             </Navbar>
@@ -110,82 +125,45 @@ class GameTable extends React.Component {
         </div>
         <div className="horizontal-warper">
           <div className="horizontal-section-content">
-            <div className="text-center">
-              <Button>Hand</Button>
+            <div className="p-1">
+              <Badge>Draws</Badge> <span className="float-right">3</span>
+              <br />
+              <Badge>Actions</Badge> <span className="float-right">1</span>
+              <br />
+              <Badge>Bag</Badge> <span className="float-right">30</span>
             </div>
-            { elementHand }
+            <div className="horizontal-warper">
+              <div className="horizontal-section-content">
+                <div className="text-center">
+                  <Badge>Hand</Badge>
+                </div>
+                { elementHand }
+              </div>
+              <div className="horizontal-section-content">
+                <div className="text-center">
+                  <Badge>Player</Badge>
+                </div>
+                { elementAvatar }
+              </div>
+            </div>
           </div>
           <div className="horizontal-section-content">
             <div className="text-center">
-              <Button>Player</Button>
-            </div>
-            { elementAvatar }
-          </div>
-          <div className="horizontal-section-content">
-            <div className="text-center">
-              <Button>Commons</Button>
-            </div>
-            { elementCommons }
-          </div>
-          <div className="horizontal-section-content">
-            <div className="text-center">
-              <Button>Common Field</Button>
-            </div>
-            { elementCommonsField }
-          </div>
-          <div className="horizontal-section-content">
-            <div className="text-center">
-              <Button>Royals</Button>
-            </div>
-            { elementRoyals }
-          </div>
-          <div className="horizontal-section-content">
-            <div className="text-center">
-              <Button>Royals Field</Button>
-            </div>
-            { elementRoyalsField }
-          </div>
-          <div className="horizontal-section-content">
-            <div className="text-center">
-              <Button>Board</Button>
+              <Badge>Board</Badge>
             </div>
             { elementGrid }
           </div>
           <div className="horizontal-section-content">
             <div className="text-center">
-              <Button>Royals Field</Button>
-            </div>
-            { elementRoyalsField }  
-          </div>
-          <div className="horizontal-section-content">
-            <div className="text-center">
-              <Button>Royals</Button>
-            </div>
-            { elementRoyals }   
-          </div>
-          <div className="horizontal-section-content">
-            <div className="text-center">
-              <Button>Commons Field</Button>
-            </div>
-            { elementCommonsField }  
-          </div>
-          <div className="horizontal-section-content">
-            <div className="text-center">
-              <Button>Commons</Button>
+              <Badge>Commons</Badge>
             </div>
             { elementCommons }
           </div>
           <div className="horizontal-section-content">
             <div className="text-center">
-              <Button>Player</Button>
+              <Badge>Royals</Badge>
             </div>
-            { elementAvatar }
-          </div>
-          <div className="horizontal-section-content">
-            <div className="text-center">
-              <Button>Hand</Button>
-            </div>
-            { elementHand }
+            { elementRoyals }
           </div>
         </div>
       </section>
