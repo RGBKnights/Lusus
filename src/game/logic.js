@@ -44,22 +44,14 @@ export class GameLogic {
         g.avatar = [];
         g.exile = [];
 
-        g.effects = {
-          basics: [false, false],
-          passify: [false, false],
-          enraged: [false, false]
-        };
-        g.draws = {
-          total: [3,3]
-        };
-        g.actions = {
-          total: [1,1],
-          count: [1,1],
-        };
-        g.movement = {
-          total: [1,1],
-          count: [1,1],
-        };
+        g.counts = {};
+        for (let i = 0; i < ctx.numPlayers; i++) {
+          let p = i.toString();
+          g.counts[p] = {};
+          g.counts[p].draws = 0;
+          g.counts[p].actions = 0;
+          g.counts[p].movement = 0;
+        }
     }
 
     setupUnits(g, ctx) {
@@ -124,5 +116,34 @@ export class GameLogic {
         ]
         g.bag = g.bag.concat(data);
       }
+    }
+
+    setupHand(g, ctx) {
+      g.hand = [];
+
+      for (let i = 0; i < ctx.numPlayers; i++) {
+        let p = i.toString();
+        let cubits = g.bag.filter(_ => _.ownership === p);
+        let deck = ctx.random.Shuffle(cubits);
+        let draws = this.getNumberOfDraws(g, ctx);
+        for (let d = 0; d < draws; d++) {
+          g.hand.push(deck.pop());
+        }
+      }
+    }
+
+    getNumberOfDraws(g, ctx) {
+      // Examine Cubits for others that would effect the hand size
+      return 3;
+    }
+
+    getNumberOfActions(g, ctx) {
+      // Examine Cubits for others that would effect the number of actions
+      return 1;
+    }
+
+    getNumberOfMovement(g, ctx) {
+      // Examine Cubits for others that would effect the number of moves
+      return 1;
     }
 }

@@ -17,6 +17,7 @@ const GameCore = Game({
       logic.initialize(data, ctx);
       logic.setupUnits(data, ctx);
       logic.setupBag(data, ctx);
+      logic.setupHand(data, ctx);
       return data;
     },
     moves: {

@@ -6,7 +6,7 @@ import GameCore from '../game/core';
 const ClientApp = Client({
   game: GameCore,
   board: GameTable,
-  debug: true,
+  debug: false,
   multiplayer: false, // { server: 'localhost:8000' }
 });
 
