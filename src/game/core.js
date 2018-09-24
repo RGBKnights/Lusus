@@ -15,6 +15,8 @@ const GameCore = Game({
       let data = {};
       let logic = new GameLogic();
       logic.initialize(data, ctx);
+      logic.setupUnits(data, ctx);
+      logic.setupBag(data, ctx);
       return data;
     },
     moves: {

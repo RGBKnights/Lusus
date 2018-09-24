@@ -62,9 +62,9 @@ class GameTable extends React.Component {
   }
 
   getGridParams(width, height) {
-    let autoSizeSquare = (window.innerHeight - 60) / 8;
-    // let sizeSquare = 20;
-    let w = width * autoSizeSquare;
+    // let autoSizeSquare = (window.innerHeight - 60) / 8;
+    let sizeSquare = 50;
+    let w = width * sizeSquare;
 
     let background = {};
     for (let x = 0; x < width; x++) {

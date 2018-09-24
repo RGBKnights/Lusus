@@ -8,6 +8,7 @@ body {
 .debug-ui {
   opacity: 1;
   z-index: 999;
+  color: #000000;
 }
 .debug-ui .pane {
   padding-bottom: 120px;

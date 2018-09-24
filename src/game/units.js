@@ -40,9 +40,6 @@ export class Unit {
       this.movement = [];
       this.obstruction = true;
 
-      // targets options
-      this.targets = [];
-
       // cubits and number of slots
       this.cubits = [];
       this.slots = slots;

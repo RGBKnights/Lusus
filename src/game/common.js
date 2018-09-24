@@ -218,9 +218,8 @@ export const GAME_PHASES = {
 export const CLASSIFICATIONS = {
     Unknown: 0,
     Unit: 1,
-    Royal: 2,
-    Cubit: 3,
-    Movement: 4,
+    Cubit: 2,
+    Movement: 3,
 };
 
 export const MOVEMENT_TYPES = {
@@ -242,6 +241,15 @@ export const MOVEMENT_CONSTRAINTS = {
     Passive: 2,
     Agressive: 3,
 };
+
+export class Movement {
+  constructor(type, constraint, distance = null, steps = null) {
+      this.type = type;
+      this.constraints = constraint;
+      this.distance = distance == null ? 1 : distance;
+      this.steps = steps == null ? [] : steps;
+  }
+}
 
 export const UNIT_RANK = {
   Unknown: 0,
@@ -267,7 +275,7 @@ export const DURATION_TYPES = {
     Move: 2,
 };
 
-export const LOCATIONS = {
+export const TARGETING_LOCATIONS = {
     Unknown: 0,
     Board: 1,
     Field: 2,
@@ -280,18 +288,9 @@ export const LOCATIONS = {
     Hand: 9,
 };
 
-export const TARGETING = {
+export const TARGETING_CONSTRAINTS = {
     Unknown: 0,
     Any: 1,
     Self: 2,
     Opponent: 3,
 };
-
-export class Movement {
-    constructor(type, constraint, distance = null, steps = null) {
-        this.type = type;
-        this.constraints = constraint;
-        this.distance = distance == null ? 1 : distance;
-        this.steps = steps == null ? [] : steps;
-    }
-}

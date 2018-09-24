@@ -1,6 +1,7 @@
 import { 
   CUBIT_TYPES,
   CLASSIFICATIONS,
+  DURATION_TYPES,
   MOVEMENT_TYPES,
   MOVEMENT_CONSTRAINTS,
   Movement,
@@ -37,17 +38,13 @@ export class Cubit {
       this.movement = [];
       this.obstruction = true;
 
-      // targets options
-      this.targets = [];
-
-      // cubits and number of slots
-      this.cubits = [];
-      this.slots = slots;
+      // targeting paramters
+      this.targeting = [];
 
       // automatic removal duration options
       this.duration = { type: DURATION_TYPES.Unknown, amount: null };
 
-      // cumsumable
+      // consumable
       this.activatable = false;
   }
 }
