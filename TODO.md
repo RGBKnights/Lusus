@@ -1,4 +1,10 @@
-boardgame.io Components
+## TODO
+
+### vNext Steps
+
+* UI Interaction - OnClick (hand) => targets
+
+### Components of Framework
 
 Context
 ```
@@ -183,4 +189,3 @@ movement: {
   count: [1,1],
 },
 ```
-

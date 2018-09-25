@@ -41,6 +41,9 @@ class GameTable extends React.Component {
   constructor(params) {
     super(params);
 
+    this.onBoardClick = this.onBoardClick.bind(this);
+    this.onHandClick = this.onHandClick.bind(this);
+
     this.teamColors = {'0': 'w', '1': 'b'};
     this.unitColors = {};
     this.unitColors[UNIT_FILE.A] = '#FF5733';
@@ -78,8 +81,8 @@ class GameTable extends React.Component {
   }
 
   getGridParams(width, height) {
-    // let autoSizeSquare = (window.innerHeight - 60) / 8;
-    let sizeSquare = 50;
+    let sizeSquare = (window.innerHeight - 60) / 8;
+    // let sizeSquare = 50;
     let w = width * sizeSquare;
 
     let colorMap = {};
@@ -122,8 +125,15 @@ class GameTable extends React.Component {
       tokens.push(token);
     }
 
-    let grid = React.createElement(Grid, this.getGridParams(8,8), tokens);
+    let params = this.getGridParams(8,8);
+    params.onClick = this.onBoardClick;
+
+    let grid = React.createElement(Grid, params, tokens);
     return grid;
+  }
+
+  onBoardClick = ({x, y}) => {
+    // alert(`${x},${y}`);
   }
   
   getUnitsField(type) {
@@ -194,9 +204,20 @@ class GameTable extends React.Component {
         tokens.push(token);
       }
     }
-    
-    let grid = React.createElement(Grid, this.getGridParams(1, cubits.length), tokens);
+
+    let params = this.getGridParams(1, cubits.length);
+    params.onClick = this.onHandClick;
+
+    let grid = React.createElement(Grid, params, tokens);
     return grid;
+  }
+
+  onHandClick = ({x, y}) => {
+    if (this.props.playerID === this.state.player) {
+      let cubits = this.props.G.hand.filter(_ => _.ownership === this.state.player);
+      let cubit = cubits[y];
+      alert(cubit.name);
+    }
   }
 
   getAvatar() {
