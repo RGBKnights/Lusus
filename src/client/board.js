@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import { FaWifi } from 'react-icons/fa';
+
 // Bootstrap
 import { 
   Container, 
@@ -71,8 +73,8 @@ class GameTable extends React.Component {
   getPlayerConnection() {
     let connected = this.props.isMultiplayer && this.props.isConnected;
     return connected ? 
-      <NavLink className="p-1 bg-success text-white rounded" title="Connected">✓</NavLink> :
-      <NavLink className="p-1 bg-danger text-white rounded" title="Disconnected">X</NavLink>
+      <NavLink className="p-1 bg-success text-white rounded" title="Connected"><FaWifi /></NavLink> :
+      <NavLink className="p-1 bg-danger text-white rounded" title="Disconnected"><FaWifi /></NavLink>
   }
 
   getPlayerView() {
