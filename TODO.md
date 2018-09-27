@@ -2,7 +2,31 @@
 
 ### vNext Steps
 
-* UI Interaction - OnClick (hand) => targets
+####  Phases
+
+**Play**
+* Actions--
+* Optional
+
+**Activations**
+* Actions--
+* Optional
+
+**Movement**
+* Moves--
+* Required
+
+**Draw**
+* Draws--
+* Required
+
+**Effects**
+* Actions: 1 + cubits
+* Moves: 1 + cubits
+* Draws: 3 + cubits
+* Basics: bool
+* Enrage: bool
+* Passive: bool
 
 ### Components of Framework
 
