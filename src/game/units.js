@@ -4,7 +4,7 @@ import {
   MOVEMENT_TYPES,
   MOVEMENT_CONSTRAINTS,
   Movement,
-  UNIT_RANK,
+  LOCATIONS,
 } from './common';
 
 const uuidv4 = require('uuid/v4');
@@ -36,7 +36,8 @@ export class Unit {
       this.turns = 0;
 
       // adictional movement options
-      this.location = null;
+      this.location = LOCATIONS.Unknown;
+      this.position = null; // (x,y)
       this.movement = [];
       this.obstruction = true;
 
@@ -47,59 +48,91 @@ export class Unit {
       // Can this unit handle any more cubits
       this.isCondemned = false;
   }
+
+  isType(type) {
+    if(type === UNIT_TYPES.All) {
+      return true;
+    } else if(type === UNIT_TYPES.Royal) {
+      return this.rank === UNIT_TYPES.Royal;
+    } else if(type === UNIT_TYPES.Common) {
+      return this.rank === UNIT_TYPES.Common;
+    } else if(type === this.type) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+ 
+  hasCubit(type) {
+    for (let i = 0; i < this.cubits.length; i++) {
+      const cubit = this.cubits[i];
+      if(cubit.type === type) {
+        return true;
+      }
+    }
+    return false;
+  }
 }
 
 export class KingUnit extends Unit {
   constructor(ownership, file) {
-      super(UNIT_TYPES.King, "King", 2, ownership, UNIT_RANK.Royal, file);
+      super(UNIT_TYPES.King, "King", 2, ownership, UNIT_TYPES.Royal, file);
 
       this.classification.push(CLASSIFICATIONS.Unit);
-      this.movement.push(new Movement(MOVEMENT_TYPES.Orthogonal, MOVEMENT_CONSTRAINTS.Either, 1));
-      this.movement.push(new Movement(MOVEMENT_TYPES.Diagonal, MOVEMENT_CONSTRAINTS.Either, 1));
+      this.movement.push(new Movement(MOVEMENT_TYPES.Orthogonal, MOVEMENT_CONSTRAINTS.Agressive, 1));
+      this.movement.push(new Movement(MOVEMENT_TYPES.Orthogonal, MOVEMENT_CONSTRAINTS.Passive, 1));
+      this.movement.push(new Movement(MOVEMENT_TYPES.Diagonal, MOVEMENT_CONSTRAINTS.Agressive, 1));
+      this.movement.push(new Movement(MOVEMENT_TYPES.Diagonal, MOVEMENT_CONSTRAINTS.Passive, 1));
+
       this.movement.push(new Movement(MOVEMENT_TYPES.Castle, MOVEMENT_CONSTRAINTS.Passive, 1));
   }
 }
 
 export class QueenUnit extends Unit {
   constructor( ownership, file) {
-      super(UNIT_TYPES.Queen, "Queen", 3, ownership, UNIT_RANK.Royal, file);
+      super(UNIT_TYPES.Queen, "Queen", 3, ownership, UNIT_TYPES.Royal, file);
 
       this.classification.push(CLASSIFICATIONS.Unit);
-      this.movement.push(new Movement(MOVEMENT_TYPES.Orthogonal, MOVEMENT_CONSTRAINTS.Either, 8));
-      this.movement.push(new Movement(MOVEMENT_TYPES.Diagonal, MOVEMENT_CONSTRAINTS.Either, 8));
+      this.movement.push(new Movement(MOVEMENT_TYPES.Orthogonal, MOVEMENT_CONSTRAINTS.Agressive, 8));
+      this.movement.push(new Movement(MOVEMENT_TYPES.Orthogonal, MOVEMENT_CONSTRAINTS.Passive, 8));
+      this.movement.push(new Movement(MOVEMENT_TYPES.Diagonal, MOVEMENT_CONSTRAINTS.Agressive, 8));
+      this.movement.push(new Movement(MOVEMENT_TYPES.Diagonal, MOVEMENT_CONSTRAINTS.Passive, 8));
   }
 }
 
 export class BishopUnit extends Unit {
   constructor(ownership, file) {
-      super(UNIT_TYPES.Bishop, "Bishop", 3, ownership, UNIT_RANK.Royal, file);
+      super(UNIT_TYPES.Bishop, "Bishop", 3, ownership, UNIT_TYPES.Royal, file);
 
       this.classification.push(CLASSIFICATIONS.Unit);
-      this.movement.push(new Movement( MOVEMENT_TYPES.Diagonal, MOVEMENT_CONSTRAINTS.Either, 8));
+      this.movement.push(new Movement( MOVEMENT_TYPES.Diagonal, MOVEMENT_CONSTRAINTS.Agressive, 8));
+      this.movement.push(new Movement( MOVEMENT_TYPES.Diagonal, MOVEMENT_CONSTRAINTS.Passive, 8));
   }
 }
 
 export class RookUnit extends Unit {
   constructor(ownership, file) {
-      super(UNIT_TYPES.Rook, "Rook", 3,  ownership, UNIT_RANK.Royal, file);
+      super(UNIT_TYPES.Rook, "Rook", 3,  ownership, UNIT_TYPES.Royal, file);
 
       this.classification.push(CLASSIFICATIONS.Unit);
-      this.movement.push(new Movement(MOVEMENT_TYPES.Orthogonal, MOVEMENT_CONSTRAINTS.Either, 8));
+      this.movement.push(new Movement(MOVEMENT_TYPES.Orthogonal, MOVEMENT_CONSTRAINTS.Agressive, 8));
+      this.movement.push(new Movement(MOVEMENT_TYPES.Orthogonal, MOVEMENT_CONSTRAINTS.Passive, 8));
   }
 }
 
 export class KnightUnit extends Unit {
   constructor(ownership, file) {
-      super(UNIT_TYPES.Knight, "Knight", 4, ownership, UNIT_RANK.Royal, file);
+      super(UNIT_TYPES.Knight, "Knight", 4, ownership, UNIT_TYPES.Royal, file);
 
       this.classification.push(CLASSIFICATIONS.Unit);
-      this.movement.push(new Movement(MOVEMENT_TYPES.Jump, MOVEMENT_CONSTRAINTS.Either, null, [2,1]));
+      this.movement.push(new Movement(MOVEMENT_TYPES.Jump, MOVEMENT_CONSTRAINTS.Agressive, null, [2,1]));
+      this.movement.push(new Movement(MOVEMENT_TYPES.Jump, MOVEMENT_CONSTRAINTS.Passive, null, [2,1]));
   }
 }
 
 export class PawnUnit extends Unit {
   constructor(ownership, file) {
-      super(UNIT_TYPES.Pawn, "Pawn", 2, ownership, UNIT_RANK.Common, file);
+      super(UNIT_TYPES.Pawn, "Pawn", 2, ownership, UNIT_TYPES.Common, file);
 
       this.classification.push(CLASSIFICATIONS.Unit);
       this.movement.push(new Movement(MOVEMENT_TYPES.Forward, MOVEMENT_CONSTRAINTS.Passive, 1));

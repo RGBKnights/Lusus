@@ -15,9 +15,7 @@ const GameCore = Game({
       let data = {};
       let logic = new GameLogic();
       logic.initialize(data, ctx);
-      logic.setupUnits(data, ctx);
-      logic.setupBag(data, ctx);
-      logic.setupHand(data, ctx);
+      logic.setup(data, ctx);
       return data;
     },
     moves: {
@@ -41,13 +39,16 @@ const GameCore = Game({
       endGame: true,
       phases: [
         {
-            name: GAME_PHASES.Action,
+          name: GAME_PHASES.Play,
         },
         {
-            name: GAME_PHASES.Move,
+          name: GAME_PHASES.Action,
         },
         {
-            name: GAME_PHASES.Draw,
+          name: GAME_PHASES.Move,
+        },
+        {
+          name: GAME_PHASES.Draw,
         },
       ],
     }

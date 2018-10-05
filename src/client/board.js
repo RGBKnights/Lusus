@@ -20,7 +20,7 @@ import {
 
 import { 
   CLASSIFICATIONS,
-  UNIT_RANK,
+  UNIT_TYPES,
   UNIT_FILE
 } from '../game/common';
 
@@ -256,6 +256,7 @@ class GameTable extends React.Component {
                   {this.getPlayerView()}
                 </NavItem>
               </Nav>
+              { /*
               <Nav className="p-1 ml-auto list-inline">
                 <NavItem className="list-inline-item">
                   <NavLink className="p-1 bg-warning text-white rounded">Skip</NavLink>
@@ -275,6 +276,7 @@ class GameTable extends React.Component {
                   {this.getPlayerConnection()}
                 </NavItem>
               </Nav>
+              */ }
             </Navbar>
           </Container>
         </div>
@@ -284,8 +286,6 @@ class GameTable extends React.Component {
               <Badge>Draws</Badge> <span className="float-right">3</span>
               <br />
               <Badge>Actions</Badge> <span className="float-right">1</span>
-              <br />
-              <Badge>Bag</Badge> <span className="float-right">30</span>
             </div>
             <div className="horizontal-warper">
               <div className="horizontal-section-content">
@@ -312,13 +312,13 @@ class GameTable extends React.Component {
             <div className="text-center">
               <Badge>Commons</Badge>
             </div>
-            { this.getUnitsField(UNIT_RANK.Common) }
+            { this.getUnitsField(UNIT_TYPES.Common) }
           </div>
           <div className="horizontal-section-content">
             <div className="text-center">
               <Badge>Royals</Badge>
             </div>
-            {  this.getUnitsField(UNIT_RANK.Royal) }
+            {  this.getUnitsField(UNIT_TYPES.Royal) }
           </div>
         </div>
       </section>

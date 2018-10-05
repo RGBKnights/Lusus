@@ -1,9 +1,12 @@
-import { 
-    // CUBIT_TYPES,
-    // UNIT_TYPES,
-    UNIT_RANK,
-    UNIT_FILE
+import {
+  CUBIT_TYPES,
+  UNIT_TYPES,
+  UNIT_FILE,
+  LOCATIONS,
 } from './common';
+
+import { getMovements } from './movements';
+import { getTargets } from './targets';
 
 import { 
   KingUnit,
@@ -14,7 +17,7 @@ import {
   PawnUnit
 } from './units';
 
-import { 
+import {
   OrthogonalCubit,
   DiagonalCubit,
   CardinalCubit,
@@ -28,38 +31,45 @@ import {
   CondemnCubit,
   KingOfHillCubit,
   EnrageCubit,
-  PassifyCubit
+  PassifyCubit,
+  AncientRevivalCubit,
+  BacktoBasicsCubit,
+  BlinkDodgeCubit,
+  CostofPowerCubit,
+  DarkMagicCubit,
+  EncumberCubit,
+  ArenaHoleCubit,
+  ArenaRockCubit,
+  ArenaIceCubit,
+  ImmunityCubit,
+  JumperCubit,
+  LooterCubit,
+  MulliganCubit,
+  NabCubit,
+  PoisonedCubit,
+  PoofCubit,
+  RecklessCubit,
+  ResourcefulCubit,
+  RevertCubit,
+  RockThrowCubit,
+  SacrificeCubit,
+  StickyFeetCubit,
+  TauntCubit,
+  ThunderDomeCubit,
+  TimebombCubit,
 } from './cubits';
 
 export class GameLogic {
     initialize(g, ctx) {
-        g.board = [];
-        g.arena = null;
-        g.afterlife = {
-          cubits: [],
-          units: []
-        };
-        g.bag = [];
-        g.hand = [];
-        g.avatar = [];
-        g.exile = [];
-
-        g.counts = {};
-        for (let i = 0; i < ctx.numPlayers; i++) {
-          let p = i.toString();
-          g.counts[p] = {};
-          g.counts[p].draws = 0;
-          g.counts[p].actions = 0;
-          g.counts[p].movement = 0;
-        }
+      g.units = [];
+      g.cubits = [];
     }
 
-    setupUnits(g, ctx) {
-      g.board = [];
+    setup(g, ctx) {
+      for (let a = 0; a < ctx.numPlayers; a++) {
+        let p = a.toString();
 
-      for (let i = 0; i < ctx.numPlayers; i++) {
-        let p = i.toString();
-        let data = [
+        let units = [
           new RookUnit(p, UNIT_FILE.A),
           new KnightUnit(p, UNIT_FILE.B),
           new BishopUnit(p, UNIT_FILE.C),
@@ -76,29 +86,24 @@ export class GameLogic {
           new PawnUnit(p, UNIT_FILE.F),
           new PawnUnit(p, UNIT_FILE.G),
           new PawnUnit(p, UNIT_FILE.H),
-        ]
+        ];
+        let options = {};
+        options[UNIT_TYPES.Common] = {"0":1, "1": 6};
+        options[UNIT_TYPES.Royal] = {"0":0, "1": 7};
 
-        g.board = g.board.concat(data);
-      };
+        for (let i = 0; i < units.length; i++) {
+          const unit = units[i];
+          let option = options[unit.rank];
+          unit.location = LOCATIONS.Board;
+          unit.position = {
+            x: option[unit.ownership], 
+            y: unit.file - 1
+          };
 
-      let options = {};
-      options[UNIT_RANK.Common] = {"0":1, "1": 6};
-      options[UNIT_RANK.Royal] = {"0":0, "1": 7};
+          g.units.push(unit);
+        }
 
-      for (let i = 0; i < g.board.length; i++) {
-        let option = options[g.board[i].rank];
-        g.board[i].location = {
-          x: option[g.board[i].ownership], 
-          y: g.board[i].file - 1
-        };
-      }
-    }
-
-    setupBag(g, ctx) {
-      g.bag = [];
-      for (let i = 0; i < ctx.numPlayers; i++) {
-        let p = i.toString();
-        let data = [
+        let cubits = [
           new OrthogonalCubit(p),
           new DiagonalCubit(p),
           new CardinalCubit(p),
@@ -112,38 +117,84 @@ export class GameLogic {
           new CondemnCubit(p),
           new KingOfHillCubit(p),
           new EnrageCubit(p),
-          new PassifyCubit(p)
-        ]
-        g.bag = g.bag.concat(data);
-      }
-    }
+          new PassifyCubit(p),
+          new AncientRevivalCubit(p),
+          new BacktoBasicsCubit(p),
+          new BlinkDodgeCubit(p),
+          new CostofPowerCubit(p),
+          new DarkMagicCubit(p),
+          new EncumberCubit(p),
+          new ArenaHoleCubit(p),
+          new ArenaRockCubit(p),
+          new ArenaIceCubit(p),
+          new ImmunityCubit(p),
+          new JumperCubit(p),
+          new LooterCubit(p),
+          new MulliganCubit(p),
+          new NabCubit(p),
+          new PoisonedCubit(p),
+          new PoofCubit(p),
+          new RecklessCubit(p),
+          new ResourcefulCubit(p),
+          new RevertCubit(p),
+          new RockThrowCubit(p),
+          new SacrificeCubit(p),
+          new StickyFeetCubit(p),
+          new TauntCubit(p),
+          new ThunderDomeCubit(p),
+          new TimebombCubit(p),
+        ];
 
-    setupHand(g, ctx) {
-      g.hand = [];
+        for (let i = 0; i < cubits.length; i++) {
+          const cubit = cubits[i];
+          cubit.location = LOCATIONS.Bag;
+          cubit.controller = p;
 
-      for (let i = 0; i < ctx.numPlayers; i++) {
-        let p = i.toString();
-        let cubits = g.bag.filter(_ => _.ownership === p);
-        let deck = ctx.random.Shuffle(cubits);
-        let draws = this.getNumberOfDraws(g, ctx);
-        for (let d = 0; d < draws; d++) {
-          g.hand.push(deck.pop());
+          g.cubits.push(cubit);
         }
+
+        g.cubits = ctx.random.Shuffle(g.cubits);
+        let draws = this.getNumberOfDraws(g, ctx);
+        for (let i = 0; i < draws; i++) {
+          g.cubits[i].location = LOCATIONS.Hand;
+        }
+      };
+    }
+
+    getTargets(g, ctx, player, id) {
+      let cubit = g.cubits.find(_ => _.id === id);
+      let targets = cubit == null ? [] : getTargets(g, ctx, player, cubit);
+      return targets;
+    }
+
+    getMovements(g, ctx, player, id) {
+      let unit = g.units.find(_ => _.id === id);
+      let moves = unit == null ? [] : getMovements(g, ctx, player, unit);
+      return moves;
+    }
+
+    getNumberOfDraws(g, ctx, player) {
+      let draws = 3;
+
+      let cubits = g.cubits.filter(_ => _.location === LOCATIONS.Player && _.controller === player).map(_ => _.type);
+      if(cubits.includes(CUBIT_TYPES.DrawPlusOne)) {
+        draws--;
       }
+      if(cubits.includes(CUBIT_TYPES.DrawNegOne)) {
+        draws++;
+      }
+
+      return draws;
     }
 
-    getNumberOfDraws(g, ctx) {
-      // Examine Cubits for others that would effect the hand size
-      return 3;
-    }
+    getNumberOfActions(g, ctx, player) {
+      let actions = 1;
 
-    getNumberOfActions(g, ctx) {
-      // Examine Cubits for others that would effect the number of actions
-      return 1;
-    }
+      let cubits = g.cubits.filter(_ => _.location === LOCATIONS.Player && _.controller === player).map(_ => _.type);
+      if(cubits.includes(CUBIT_TYPES.DoubleAction)) {
+        actions++;
+      }
 
-    getNumberOfMovement(g, ctx) {
-      // Examine Cubits for others that would effect the number of moves
-      return 1;
+      return actions;
     }
 }

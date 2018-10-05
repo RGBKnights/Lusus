@@ -23,7 +23,6 @@ export class CubitLogo extends React.Component {
 
 export class CubitText extends React.Component {
     static propTypes = {
-      name: PropTypes.string,
       team: PropTypes.string,
       color: PropTypes.string,
       value: PropTypes.string,
@@ -35,13 +34,14 @@ export class CubitText extends React.Component {
       
       return (
         <g transform="scale(0.016,0.016) translate(30,30)">
-          <title>{this.props.name}</title>
+          <title>{this.props.value}</title>
           <text style={{strokeWidth:0, fill: teamColor}} textAnchor="middle" dominantBaseline="central">{this.props.value}</text>
           <g transform="translate(-20,10)">
             <rect width="40" height="3" style={{fill: rankColor}} />
           </g>
         </g>
       );
+
     }
   }
   
