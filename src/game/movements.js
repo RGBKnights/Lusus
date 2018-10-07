@@ -145,8 +145,8 @@ export function getMovements(g, ctx, player, origin, unit) {
       targeting.push({ x: origin.x + movement.steps[1], y: origin.y - movement.steps[0] });
       targeting.push({ x: origin.x - movement.steps[1], y: origin.y - movement.steps[0] });
 
-      for (let i = 0; i < targeting.length; i++) {
-        const target = targeting[i];
+      for (let a = 0; a < targeting.length; a++) {
+        const target = targeting[a];
         checkPosition(g, player, moves, movement, target.x, target.y, isAgressive, isPassive);
       }
     } else if(movement.type === MOVEMENT_TYPES.Fork) {
@@ -154,8 +154,8 @@ export function getMovements(g, ctx, player, origin, unit) {
       targeting.push({ x: origin.x + forward, y: origin.y - 1 });
       targeting.push({ x: origin.x + forward, y: origin.y + 1 });
 
-      for (let i = 0; i < targeting.length; i++) {
-        const target = targeting[i];
+      for (let a = 0; a < targeting.length; a++) {
+        const target = targeting[a];
         let item = getItem(g, ctx, null, target.x, target.y);
         if(item && item.ownership !== player && isAgressive) {
           moves.push(new Move(MOVEMENT_CONSTRAINTS.Agressive, target.x, target.y));
@@ -193,18 +193,41 @@ export function getMovements(g, ctx, player, origin, unit) {
       targeting.push({ x: origin.x + 1, y: origin.y - 1 });
       targeting.push({ x: origin.x - 1, y: origin.y - 1 });
 
-      for (let i = 0; i < targeting.length; i++) {
-        const target = targeting[i];
+      for (let a = 0; a < targeting.length; a++) {
+        const target = targeting[a];
 
-        let unit = getUnit(g, target.x, target.y);
-        if(unit) {
+        let u = getUnit(g, target.x, target.y);
+        if(u) {
           moves.push(new Move(MOVEMENT_ACTIONS.Swap, target.x, target.y));
         }
       }
     } else if(movement.type === MOVEMENT_TYPES.Castle) {
-      // new Move(MOVEMENT_ACTIONS.Castle, 0, 0);
+      if(unit.moves > 0) {
+        continue;
+      }
 
-      // TODO: FINSIH THIS...!
+      let rooks = g.units
+        .filter(_ => _.location === LOCATIONS.Board)
+        .filter(_ => _.type === UNIT_TYPES.Rook)
+        .filter(_ => _.ownership === unit.ownership)
+        .filter(_ => _.moves == 0);
+
+      for (let a = 0; index < rooks.length; a++) {
+        const rook = rooks[a];
+        let y = rook.y;
+        let x = rook.x;
+        let walker = rook.y === 0 ? -1 : 1;
+
+        while(y != unit.y) {
+          y = y + walker;
+          let u = getUnit(g, x, y);
+          if(u) {
+            continue;
+          }
+        }
+
+        moves.push(new Move(MOVEMENT_ACTIONS.Castle, x, y));
+      }
     }
   }
 
