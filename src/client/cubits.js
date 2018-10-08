@@ -27,20 +27,65 @@ export class CubitText extends React.Component {
       color: PropTypes.string,
       value: PropTypes.string,
     };
+
+    getColor(rankColor) {
+      if(rankColor) {
+        return <g transform="translate(-20,10)">
+          <rect width="40" height="3" style={{fill: rankColor}} />
+        </g>;
+      }
+    }
+
+    singleLine(teamColor, rankColor, value) {
+      return <g transform="scale(0.016,0.016) translate(30,30)">
+          <title>{this.props.value}</title>
+          <text style={{strokeWidth:0, fill: teamColor}} textAnchor="middle" dominantBaseline="central">{value}</text>
+          { this.getColor(rankColor) }
+        </g>;
+    }
+
+    doubleLine(teamColor, rankColor, parts) {
+      return <g transform="scale(0.016,0.016) translate(30,30)">
+          <title>{this.props.value}</title>
+          
+          <g transform="translate(0,-10)">
+            <text style={{strokeWidth:0, fill: teamColor}} textAnchor="middle" dominantBaseline="central">{parts[0]}</text>
+          </g>
+          <g transform="translate(0,10)">
+            <text style={{strokeWidth:0, fill: teamColor}} textAnchor="middle" dominantBaseline="central">{parts[1]}</text>
+          </g>
+          { this.getColor(rankColor) }
+        </g>;
+    }
+
+    tripleLine(teamColor, rankColor, parts) {
+      return <g transform="scale(0.016,0.016) translate(30,30)">
+          <title>{this.props.value}</title>
+          <g transform="translate(0,-10)">
+            <text style={{strokeWidth:0, fill: teamColor}} textAnchor="middle" dominantBaseline="central">{parts[0]}</text>
+          </g>
+          <g transform="translate(0,0)">
+            <text style={{strokeWidth:0, fill: teamColor}} textAnchor="middle" dominantBaseline="central">{parts[1]}</text>
+          </g>
+          <g transform="translate(0,10)">
+            <text style={{strokeWidth:0, fill: teamColor}} textAnchor="middle" dominantBaseline="central">{parts[2]}</text>
+          </g>
+          { this.getColor(rankColor) }
+        </g>;
+    }
   
     render() {
       let teamColor = this.props.team === 'b' ? '#000000' : '#FFFFFF';
       let rankColor = this.props.color;
-      
-      return (
-        <g transform="scale(0.016,0.016) translate(30,30)">
-          <title>{this.props.value}</title>
-          <text style={{strokeWidth:0, fill: teamColor}} textAnchor="middle" dominantBaseline="central">{this.props.value}</text>
-          <g transform="translate(-20,10)">
-            <rect width="40" height="3" style={{fill: rankColor}} />
-          </g>
-        </g>
-      );
+
+      let parts = this.props.value.split(' ');
+      if(parts.length === 2) {
+        return this.doubleLine(teamColor, rankColor, parts);
+      } else if(parts.length === 3) { 
+        return this.tripleLine(teamColor, rankColor, parts);
+      } else {
+        return this.singleLine(teamColor, rankColor, this.props.value);
+      }
 
     }
   }

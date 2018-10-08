@@ -1,6 +1,8 @@
 import { 
+  UNIT_TYPES,
   CUBIT_TYPES,
   LOCATIONS,
+  MOVEMENT_ACTIONS,
   MOVEMENT_TYPES,
   MOVEMENT_CONSTRAINTS,
   Move
@@ -18,8 +20,8 @@ function getUnit(g, x, y) {
 function getCubits(g, x, y) {
   let cubits = g.cubits
     .filter(_ => _.location === LOCATIONS.Board)
-    .filter(_ => _.obstruction == true)
-    .filter(_ => _.position != null)
+    .filter(_ => _.obstruction === true)
+    .filter(_ => _.position !== null)
     .filter(_ => _.position.x === x && _.position.y === y);
 
   return cubits;
@@ -145,8 +147,8 @@ export function getMovements(g, ctx, player, origin, unit) {
       targeting.push({ x: origin.x + movement.steps[1], y: origin.y - movement.steps[0] });
       targeting.push({ x: origin.x - movement.steps[1], y: origin.y - movement.steps[0] });
 
-      for (let a = 0; a < targeting.length; a++) {
-        const target = targeting[a];
+      for (let index = 0; index < targeting.length; index++) {
+        const target = targeting[index];
         checkPosition(g, player, moves, movement, target.x, target.y, isAgressive, isPassive);
       }
     } else if(movement.type === MOVEMENT_TYPES.Fork) {
@@ -154,10 +156,10 @@ export function getMovements(g, ctx, player, origin, unit) {
       targeting.push({ x: origin.x + forward, y: origin.y - 1 });
       targeting.push({ x: origin.x + forward, y: origin.y + 1 });
 
-      for (let a = 0; a < targeting.length; a++) {
-        const target = targeting[a];
-        let item = getItem(g, ctx, null, target.x, target.y);
-        if(item && item.ownership !== player && isAgressive) {
+      for (let index = 0; index < targeting.length; index++) {
+        const target = targeting[index];
+        let u = getUnit(g, ctx, null, target.x, target.y);
+        if(u && u.ownership !== player && isAgressive) {
           moves.push(new Move(MOVEMENT_CONSTRAINTS.Agressive, target.x, target.y));
         }
       }
@@ -176,8 +178,8 @@ export function getMovements(g, ctx, player, origin, unit) {
         continue; // Goto: Next Movement
       }
 
-      checkPosition(g, player, moves, movement, target.x, target.y - 1, isAgressive, isPassive);
-      checkPosition(g, player, moves, movement, target.x, target.y + 1, isAgressive, isPassive);
+      checkPosition(g, player, moves, movement, origin.x, origin.y - 1, isAgressive, isPassive);
+      checkPosition(g, player, moves, movement, origin.x, origin.y + 1, isAgressive, isPassive);
     } else if(movement.type === MOVEMENT_TYPES.Swap) {
       if(distance < 1) {
         continue; // Goto: Next Movement
@@ -193,8 +195,8 @@ export function getMovements(g, ctx, player, origin, unit) {
       targeting.push({ x: origin.x + 1, y: origin.y - 1 });
       targeting.push({ x: origin.x - 1, y: origin.y - 1 });
 
-      for (let a = 0; a < targeting.length; a++) {
-        const target = targeting[a];
+      for (let index = 0; index < targeting.length; index++) {
+        const target = targeting[index];
 
         let u = getUnit(g, target.x, target.y);
         if(u) {
@@ -210,15 +212,15 @@ export function getMovements(g, ctx, player, origin, unit) {
         .filter(_ => _.location === LOCATIONS.Board)
         .filter(_ => _.type === UNIT_TYPES.Rook)
         .filter(_ => _.ownership === unit.ownership)
-        .filter(_ => _.moves == 0);
+        .filter(_ => _.moves === 0);
 
-      for (let a = 0; index < rooks.length; a++) {
-        const rook = rooks[a];
+      for (let index = 0; index < rooks.length; index++) {
+        const rook = rooks[index];
         let y = rook.y;
         let x = rook.x;
         let walker = rook.y === 0 ? -1 : 1;
 
-        while(y != unit.y) {
+        while(y !== unit.y) {
           y = y + walker;
           let u = getUnit(g, x, y);
           if(u) {

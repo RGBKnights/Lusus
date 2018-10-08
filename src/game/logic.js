@@ -70,7 +70,7 @@ export class GameLogic {
           new Cubits.KingOfHillCubit(p),
           new Cubits.EnrageCubit(p),
           new Cubits.PassifyCubit(p),
-          new AncientRevivalCubit(p),
+          new Cubits.AncientRevivalCubit(p),
           new Cubits.BacktoBasicsCubit(p),
           new Cubits.BlinkDodgeCubit(p),
           new Cubits.CostofPowerCubit(p),
@@ -100,15 +100,17 @@ export class GameLogic {
         for (let i = 0; i < cubits.length; i++) {
           const cubit = cubits[i];
           cubit.location = LOCATIONS.Bag;
+          cubit.ownership = p;
           cubit.controller = p;
 
           g.cubits.push(cubit);
         }
 
-        g.cubits = ctx.random.Shuffle(g.cubits);
-        let draws = this.getNumberOfDraws(g, ctx);
+        let bag = g.cubits.filter(_ => _.location === LOCATIONS.Bag && _.controller === p);
+        bag = ctx.random.Shuffle(bag);
+        let draws = this.getNumberOfDraws(g, ctx, p);
         for (let i = 0; i < draws; i++) {
-          g.cubits[i].location = LOCATIONS.Hand;
+          bag[i].location = LOCATIONS.Hand;
         }
       };
     }

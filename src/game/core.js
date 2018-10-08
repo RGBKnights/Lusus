@@ -19,15 +19,7 @@ const GameCore = Game({
       return data;
     },
     moves: {
-      playCubit: (G, ctx, source, target) => {
-        const g = clone(G);
-        return g;
-      },
-      moveUnit: (G, ctx, source, target) => {
-        const g = clone(G);
-        return g;
-      },
-      drawCubit: (G, ctx) => {
+      abc: (G, ctx, source, target) => {
         const g = clone(G);
         return g;
       }
@@ -38,19 +30,11 @@ const GameCore = Game({
       endPhase: true,
       endGame: true,
       phases: [
-        {
-          name: GAME_PHASES.Play,
-        },
-        {
-          name: GAME_PHASES.Action,
-        },
-        {
-          name: GAME_PHASES.Move,
-        },
-        {
-          name: GAME_PHASES.Draw,
-        },
-      ],
+        { name: GAME_PHASES.Play },
+        { name: GAME_PHASES.Action },
+        { name: GAME_PHASES.Move },
+        { name: GAME_PHASES.Draw }
+      ]
     }
   });
 

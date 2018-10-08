@@ -181,7 +181,7 @@ export class CondemnCubit extends Cubit {
 
 export class KingOfHillCubit extends Cubit {
   constructor(ownership) {
-      super(CUBIT_TYPES.KingOfHill, "KingOfHill", ownership);
+      super(CUBIT_TYPES.KingOfHill, "King Of Hill", ownership);
 
       this.targeting.push(new ArenaTargeting());
       this.obstruction = false;
