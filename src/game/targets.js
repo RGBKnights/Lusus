@@ -10,7 +10,6 @@ import {
 } from './common';
 
 export function getTargets(g, ctx, player, cubit) {
-  let self = player === ctx.currentPlayer;
   let opponent = player === "0" ? "1" : "0";
   let targeting = cubit.targeting;
 
@@ -20,9 +19,9 @@ export function getTargets(g, ctx, player, cubit) {
 
     // Get Controller
     let controller = null;
-    if(self && target.constraint === TARGET_CONSTRAINTS.Self) {
+    if(target.constraint === TARGET_CONSTRAINTS.Self) {
       controller = player;
-    } else if(!self && target.constraint === TARGET_CONSTRAINTS.Opponent) {
+    } else if(target.constraint === TARGET_CONSTRAINTS.Opponent) {
       controller = opponent;
     }
 

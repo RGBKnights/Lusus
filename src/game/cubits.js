@@ -69,7 +69,7 @@ export class OrthogonalCubit extends Cubit {
       this.movement.push(new Movement(MOVEMENT_TYPES.Orthogonal, MOVEMENT_CONSTRAINTS.Passive, 8));
       this.movement.push(new Movement(MOVEMENT_TYPES.Orthogonal, MOVEMENT_CONSTRAINTS.Agressive, 8));
 
-      this.targeting.push(new UnitTargeting(LOCATIONS.Unit, TARGET_CONSTRAINTS.Self));
+      this.targeting.push(new UnitTargeting(TARGET_CONSTRAINTS.Self));
   }
 }
 
@@ -82,7 +82,7 @@ export class DiagonalCubit extends Cubit {
       this.movement.push(new Movement(MOVEMENT_TYPES.Diagonal, MOVEMENT_CONSTRAINTS.Passive, 8));
       this.movement.push(new Movement(MOVEMENT_TYPES.Diagonal, MOVEMENT_CONSTRAINTS.Agressive, 8));
 
-      this.targeting.push(new UnitTargeting(LOCATIONS.Unit, TARGET_CONSTRAINTS.Self));
+      this.targeting.push(new UnitTargeting(TARGET_CONSTRAINTS.Self));
   }
 }
 
@@ -97,7 +97,7 @@ export class CardinalCubit extends Cubit {
       this.movement.push(new Movement(MOVEMENT_TYPES.Orthogonal, MOVEMENT_CONSTRAINTS.Passive, 8));
       this.movement.push(new Movement(MOVEMENT_TYPES.Orthogonal, MOVEMENT_CONSTRAINTS.Agressive, 8));
 
-      this.targeting.push(new UnitTargeting(LOCATIONS.Unit, TARGET_CONSTRAINTS.Self));
+      this.targeting.push(new UnitTargeting(TARGET_CONSTRAINTS.Self));
   }
 }
 
@@ -110,7 +110,7 @@ export class JumpCubit extends Cubit {
       this.movement.push(new Movement(MOVEMENT_TYPES.Jump, MOVEMENT_CONSTRAINTS.Passive, null, [2,1], true));
       this.movement.push(new Movement(MOVEMENT_TYPES.Jump, MOVEMENT_CONSTRAINTS.Agressive, null, [2,1], true));
 
-      this.targeting.push(new UnitTargeting(LOCATIONS.Unit, TARGET_CONSTRAINTS.Self));
+      this.targeting.push(new UnitTargeting(TARGET_CONSTRAINTS.Self));
   }
 }
 
@@ -307,6 +307,8 @@ export class JumperCubit extends Cubit {
       this.movement.push(new Movement(MOVEMENT_TYPES.Diagonal, MOVEMENT_CONSTRAINTS.Passive, 2, null, true));
       this.movement.push(new Movement(MOVEMENT_TYPES.Orthogonal, MOVEMENT_CONSTRAINTS.Agressive, 2, null, true));
       this.movement.push(new Movement(MOVEMENT_TYPES.Orthogonal, MOVEMENT_CONSTRAINTS.Passive, 2, null, true));
+
+      this.targeting.push(new UnitTargeting(TARGET_CONSTRAINTS.Self));
   }
 }
 
@@ -354,7 +356,7 @@ export class RecklessCubit extends Cubit {
   constructor(ownership) {
       super(CUBIT_TYPES.Reckless, "Reckless", ownership);
 
-      this.targeting.push(new PlayerTargeting(TARGET_CONSTRAINTS.Self));
+      this.targeting.push(new ArenaTargeting());
   }
 }
 

@@ -160,7 +160,7 @@ export const CUBIT_TYPES = {
   // onEoT() => reveal Unit in Cubit and move board at target location
   Reckless: '6b6b78fa-d42c-4713-ad1d-e3672786005e',       
   // Avatar
-  // Once placed the player reachs 5 pieces in the afterlife you win
+  // Once placed the player that reachs 5 pieces in the afterlife you win
   // [Proxy] onCapture() => check afterlife for number of units if > 5 then you win the game
   Resourceful: '517c0bc3-1ed3-462e-ba23-018e61366005',   
   // Avatar 

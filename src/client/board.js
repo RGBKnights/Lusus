@@ -19,15 +19,18 @@ import {
   Grid
 } from 'boardgame.io/ui';
 
+import {
+  CubitText
+} from './cubits';
+
 import { 
+  GAME_PHASES,
   UNIT_TYPES,
   UNIT_FILE, 
   LOCATIONS
 } from '../game/common';
 
-import {
-  CubitText
-} from './cubits';
+import { getTargets } from '../game/targets';
 
 class GameTable extends React.Component {
   static propTypes = {
@@ -44,8 +47,8 @@ class GameTable extends React.Component {
   constructor(params) {
     super(params);
 
-    // this.onBoardClick = this.onBoardClick.bind(this);
-    // this.onHandClick = this.onHandClick.bind(this);
+    this.onHandClickGrid = this.onHandClickGrid.bind(this); 
+    this.onAvatarClickGrid = this.onAvatarClickGrid.bind(this); 
 
     this.teamColors = {'0': 'w', '1': 'b'};
 
@@ -59,13 +62,12 @@ class GameTable extends React.Component {
     this.unitColors[UNIT_FILE.G] = '#800080';
     this.unitColors[UNIT_FILE.H] = '#FF0000';
 
+    let p = this.props.playerID == null ? "0" : this.props.playerID;
+
     this.state = {
-      player: this.props.playerID == null ? "0" : this.props.playerID,
-      selection: {
-        play: null,
-        action: null,
-        move: null,
-      }
+      player: p,
+      selection: null,
+      targets: []
     };
   }
 
@@ -73,7 +75,6 @@ class GameTable extends React.Component {
     let p = this.state.player === "0" ? "1" : "0";
     this.setState({ player: p });
   }
-
 
   getGridParams(width, height) {
     // let sizeSquare = 50;
@@ -112,9 +113,37 @@ class GameTable extends React.Component {
     }
 
     let params = this.getGridParams(1, cubits.length);
-    // params.onClick = this.onHandClick;
+    params.key = "handGrid";
+    params.onClick = this.onHandClickGrid;
     let grid = React.createElement(Grid, params, tokens);
-    return grid;
+
+    let header = <div key="handHeader" className="text-center"><Badge onClick={this.onHandClickHeader}>Hand</Badge></div>
+    return [header, grid];
+  }
+
+  onHandClickHeader = () => {
+    let p = this.state.player;
+    alert("Hand " + p);
+  }
+
+  onHandClickGrid = ({x, y}) => {
+    let active = this.props.ctx.phase === GAME_PHASES.Play && this.props.playerID === this.state.player;
+    if(!active) {
+      return;
+    }
+
+    let cubits = this.props.G.cubits.filter(_ => _.location === LOCATIONS.Hand && _.controller === this.state.player);
+    let cubit = cubits[y];
+    if(!cubit) {
+      return;
+    }
+
+    if(this.state.selection && this.state.selection.id === cubit.id) {
+      this.setState({ selection: null, targets: [] });
+    } else {
+      let targets = getTargets(this.props.G, this.props.ctx, this.state.player, cubit);
+      this.setState({ selection: cubit, targets: targets });
+    }
   }
 
   getAvatar() {
@@ -130,8 +159,32 @@ class GameTable extends React.Component {
       tokens.push(token);
     }
 
-    let grid = React.createElement(Grid, this.getGridParams(1, cubits.length), tokens);
-    return grid;
+    let params = this.getGridParams(1, cubits.length);
+    params.key = "avatarGrid";
+    params.onClick = this.onAvatarClickGrid;
+    let grid = React.createElement(Grid, params, tokens);
+
+    let targets = this.state.targets.filter(_ => _.location === LOCATIONS.Player).filter(_ => _.player === this.state.player);
+    let active = targets.length > 0;
+   
+    let header = <div key="avatarHeader" className="text-center"><Badge color={active ? 'success' : 'secondary'} onClick={this.onAvatarClickHeader}>Player</Badge></div>
+    return [header, grid];
+  }
+
+  onAvatarClickHeader = () => {
+    let p = this.state.player;
+    alert("Player " + p);
+  }
+
+  onAvatarClickGrid = ({x, y}) => {
+    if (this.props.playerID === this.state.player) {
+      let cubits = this.props.G.cubits.filter(_ => _.location === LOCATIONS.Hand && _.controller === this.state.player);
+      let cubit = cubits[y];
+      if(cubit) {
+        let targets = getTargets(this.props.G, this.props.ctx, this.state.player, cubit);
+        this.setState({ selection: cubit, targets: targets });
+      }
+    }
   }
 
   getBoard() {
@@ -158,10 +211,19 @@ class GameTable extends React.Component {
       tokens.push(token);
     }
 
+    let targets = this.state.targets.filter(_ => _.location === LOCATIONS.Board);
+
     let params = this.getGridParams(8,8);
     params.onClick = this.onBoardClick;
 
+    for (const target of targets) {
+      for (const pos of target.positions) {
+        params.colorMap[`${pos.x},${pos.y}`] = '#28a745';
+      }
+    }
+
     let grid = React.createElement(Grid, params, tokens);
+    
     return grid;
   }
 
@@ -202,11 +264,23 @@ class GameTable extends React.Component {
       }
     }
 
+    let targets = this.state.targets.filter(_ => _.location === LOCATIONS.Unit);
+    let indexes = [];
+    for (const target of targets) {
+      for (const unit of target.units) {
+        indexes.push(unit.id);
+      }
+    }
+
     let params = this.getGridParams(width, height);
 
     for (let y = 0; y < units.length; y++) {
       const unit = units[y];
       let slots = unit.slots;
+      
+      if( indexes.includes(unit.id)) {
+        params.colorMap[`${0},${y}`] = '#28a745';
+      }
 
       for (let x = slots; x < width; x++) {
         params.colorMap[`${x},${y}`] = '#000000';
@@ -260,15 +334,9 @@ class GameTable extends React.Component {
               </div>
               <div className="horizontal-warper">
                 <div className="horizontal-section-content">
-                  <div className="text-center">
-                    <Badge>Hand</Badge>
-                  </div>
                   { this.getHand() }
                 </div>
                 <div className="horizontal-section-content">
-                  <div className="text-center">
-                    <Badge>Player</Badge>
-                  </div>
                   { this.getAvatar() }
                 </div>
               </div>
