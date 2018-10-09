@@ -49,29 +49,6 @@ export class Unit {
       this.isCondemned = false;
   }
 
-  isType(type) {
-    if(type === UNIT_TYPES.All) {
-      return true;
-    } else if(type === UNIT_TYPES.Royal) {
-      return this.rank === UNIT_TYPES.Royal;
-    } else if(type === UNIT_TYPES.Common) {
-      return this.rank === UNIT_TYPES.Common;
-    } else if(type === this.type) {
-      return true;
-    } else {
-      return false;
-    }
-  }
- 
-  hasCubit(type) {
-    for (let i = 0; i < this.cubits.length; i++) {
-      const cubit = this.cubits[i];
-      if(cubit.type === type) {
-        return true;
-      }
-    }
-    return false;
-  }
 }
 
 export class KingUnit extends Unit {

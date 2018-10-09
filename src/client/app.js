@@ -7,13 +7,14 @@ const ClientApp = Client({
   game: GameCore,
   board: GameTable,
   debug: false,
-  multiplayer: false, // { server: 'localhost:8000' }
+  multiplayer: { server: 'localhost:8000' }
 });
 
 const App = () => (
   <div>
     <div>
       <ClientApp gameID="f5396086" playerID="0" />
+      <ClientApp gameID="f5396086" playerID="1" />
     </div>
   </div>
 );

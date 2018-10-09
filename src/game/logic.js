@@ -5,9 +5,6 @@ import {
   LOCATIONS,
 } from './common';
 
-import { getMovements } from './movements';
-import { getTargets } from './targets';
-
 import * as Units from './units';
 import * as Cubits from './cubits';
 
@@ -113,18 +110,6 @@ export class GameLogic {
           bag[i].location = LOCATIONS.Hand;
         }
       };
-    }
-
-    getTargets(g, ctx, player, id) {
-      let cubit = g.cubits.find(_ => _.id === id);
-      let targets = cubit == null ? [] : getTargets(g, ctx, player, cubit);
-      return targets;
-    }
-
-    getMovements(g, ctx, player, id) {
-      let unit = g.units.find(_ => _.id === id);
-      let moves = unit == null ? [] : getMovements(g, ctx, player, unit);
-      return moves;
     }
 
     getNumberOfDraws(g, ctx, player) {

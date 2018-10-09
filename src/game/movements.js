@@ -27,6 +27,16 @@ function getCubits(g, x, y) {
   return cubits;
 }
 
+function unitHasCubit(unit, type) {
+  for (let i = 0; i < unit.cubits.length; i++) {
+    const cubit = unit.cubits[i];
+    if(cubit.type === type) {
+      return true;
+    }
+  }
+  return false;
+}
+
 function outsideBounds(x, y) {
   if(x < 0)
     return true;
@@ -90,9 +100,9 @@ export function getMovements(g, ctx, player, origin, unit) {
     let isAgressive = movement.constraint === MOVEMENT_CONSTRAINTS.Agressive;
 
     let distance =  movement.distance;
-    if(unit.hasCubit(CUBIT_TYPES.StickyFeet)) {
+    if(unitHasCubit(unit, CUBIT_TYPES.StickyFeet)) {
       distance = 1;
-    } else if (unit.hasCubit(CUBIT_TYPES.Encumber)) {
+    } else if (unitHasCubit(unit, CUBIT_TYPES.Encumber)) {
       distance = distance - unit.cubits.length;
     }
 
@@ -133,7 +143,7 @@ export function getMovements(g, ctx, player, origin, unit) {
         if(checkPosition(g, player, moves, movement, x, y, isAgressive, isPassive)) { break; }
       }
     } else if(movement.type === MOVEMENT_TYPES.Jump) {
-      if(unit.hasCubit(CUBIT_TYPES.StickyFeet) || unit.hasCubit(CUBIT_TYPES.Encumber)) {
+      if(unitHasCubit(unit, CUBIT_TYPES.StickyFeet) || unitHasCubit(unit, CUBIT_TYPES.Encumber)) {
         continue; // Goto: Next Movement
       }
 

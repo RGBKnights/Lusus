@@ -291,6 +291,24 @@ class GameTable extends React.Component {
     return grid;
   }
 
+  getHeader() {
+    let player = (Number(this.state.player) + 1);
+    let draws = 3;
+    let actions = 1;
+
+    return (
+      <Button size="sm" color="secondary" disabled>
+        Player <Badge color="info">{ player }</Badge> Draws <Badge color="info"> { draws }</Badge> Actions <Badge color="info"> { actions }</Badge>
+      </Button>
+    );
+  }
+
+  getPlayerConnection() {
+    let connected = this.props.isMultiplayer && this.props.isConnected;
+    return connected ? 
+      <Button size="sm" color="success" title="Connected" disabled><FaWifi /></Button> :
+      <Button size="sm" color="danger" title="Disconnected" disabled><FaWifi /></Button>
+  }
 
   render() {
     let arena = React.createElement(Grid, this.getGridParams(1, 1), [])
@@ -308,9 +326,7 @@ class GameTable extends React.Component {
                 <Button size="sm" color="primary" disabled>Next</Button>
               </NavItem>
               <NavItem  className="list-inline-item">
-                <Button size="sm" color="secondary" disabled>
-                  Player <Badge color="info">1</Badge> Draws <Badge color="info">3</Badge> Actions <Badge color="info">1</Badge>
-                </Button>
+                { this.getHeader() }
               </NavItem>
               <NavItem  className="list-inline-item">
                 <Button size="sm" color="primary" title="Switch Player Views" onClick={this.switchPlayerViews}><IoIosSwitch /></Button>
@@ -318,7 +334,7 @@ class GameTable extends React.Component {
             </Nav>
             <Nav className="p-1 list-inline ml-auto ">
               <NavItem className="list-inline-item">
-                <Button size="sm" color="danger" title="Disconnected" disabled><FaWifi /></Button>
+                { this.getPlayerConnection() }
               </NavItem>
             </Nav>
           </Navbar>
@@ -361,6 +377,7 @@ class GameTable extends React.Component {
             </div>
           </div>
         </Container>
+        <br />
       </section>
     );
   }

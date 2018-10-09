@@ -1,6 +1,6 @@
 import {
   CUBIT_TYPES,
-  // UNIT_TYPES,
+  UNIT_TYPES,
   LOCATIONS,
   TARGET_CONSTRAINTS,
   ArenaTarget,
@@ -8,6 +8,30 @@ import {
   PlayerTarget,
   BoardTarget,
 } from './common';
+
+function unitIsType(unit, type) {
+  if(type === UNIT_TYPES.All) {
+    return true;
+  } else if(type === UNIT_TYPES.Royal) {
+    return unit.rank === UNIT_TYPES.Royal;
+  } else if(type === UNIT_TYPES.Common) {
+    return unit.rank === UNIT_TYPES.Common;
+  } else if(type === unit.type) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function unitHasCubit(unit, type) {
+  for (let i = 0; i < unit.cubits.length; i++) {
+    const cubit = unit.cubits[i];
+    if(cubit.type === type) {
+      return true;
+    }
+  }
+  return false;
+}
 
 export function getTargets(g, ctx, player, cubit) {
   let opponent = player === "0" ? "1" : "0";
@@ -42,14 +66,14 @@ export function getTargets(g, ctx, player, cubit) {
     } else if(target.location === LOCATIONS.Unit) {
       let units = g.units
         .filter(_ => _.ownership === controller)
-        .filter(_ => _.isType(target.type))
+        .filter(_ => unitIsType(_, target.type))
 
       if(target.attachment) {
         //TODO: Check for other Cubits that would limit targeting (like: Condemn)
         units = units
           .filter(_ => _.cubits.length < _.slots)
-          .filter(_ => _.hasCubit(CUBIT_TYPES.Condemn) === false)
-          .filter(_ => (_.hasCubit(CUBIT_TYPES.Immunity) && _.ownership === opponent) === false);
+          .filter(_ => unitHasCubit(_, CUBIT_TYPES.Condemn) === false)
+          .filter(_ => (unitHasCubit(_, CUBIT_TYPES.Immunity) && _.ownership === opponent) === false);
       }
       targets.push(new UnitTarget(units, target.targets));
 
