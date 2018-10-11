@@ -14,6 +14,7 @@ const App = () => (
   <div>
     <div>
       <ClientApp gameID="f5396086" playerID="0" />
+      <ClientApp gameID="f5396086" playerID="1" />
     </div>
   </div>
 );
