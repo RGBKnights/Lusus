@@ -8,19 +8,42 @@ import {
 import { GameLogic } from './logic';
 
 var clone = require('clone');
+let logic = new GameLogic();
 
 const GameCore = Game({
     name: 'Lusus',
+    // seed: 1010195894359804352,
     setup: (ctx) => {
-      let data = {};
-      let logic = new GameLogic();
+      let data = {};   
       logic.initialize(data, ctx);
       logic.setup(data, ctx);
       return data;
     },
     moves: {
-      abc: (G, ctx, source, target) => {
+      skipActions: (G, ctx) => {
         const g = clone(G);
+        g.players[ctx.currentPlayer].actions = 0;
+        return g;
+      },
+      skipMovement: (G, ctx) => {
+        const g = clone(G);
+        ctx.events.endPhase();
+        return g;
+      },
+      playCubit: (G, ctx, source, target) => {
+        const g = clone(G);
+        return g;
+      },
+      drawCubits: (G, ctx) => {
+        const g = clone(G);
+
+        // Reset
+        g.players[ctx.currentPlayer].actions = logic.getActivities(G, ctx, ctx.currentPlayer);
+
+        // End turn 1st and reset to 'Play' phase
+        ctx.events.endTurn();
+        ctx.events.endPhase();
+        
         return g;
       }
     },
@@ -30,10 +53,30 @@ const GameCore = Game({
       endPhase: true,
       endGame: true,
       phases: [
-        { name: GAME_PHASES.Play },
-        { name: GAME_PHASES.Action },
-        { name: GAME_PHASES.Move },
-        { name: GAME_PHASES.Draw }
+        { 
+          name: GAME_PHASES.Play,
+          allowedMoves: (G, ctx) => ['skipActions', 'playCubit'],
+          endPhaseIf: (G, ctx) => {
+            let actions = logic.getActions(G, ctx, ctx.currentPlayer);
+            return actions === 0 ? GAME_PHASES.Move : false;
+          }
+        },
+        {
+          name: GAME_PHASES.Action,
+          allowedMoves: (G, ctx) => ['skipActions'],
+          endPhaseIf: (G, ctx) => {
+            let actions = logic.getActions(G, ctx, ctx.currentPlayer);
+            return actions === 0 ? GAME_PHASES.Move : false;
+          }
+        },
+        {
+          name: GAME_PHASES.Move,
+          allowedMoves: (G, ctx) => ['skipMovement']
+        },
+        { 
+          name: GAME_PHASES.Draw,
+          allowedMoves: (G, ctx) => ['drawCubits']
+        }
       ]
     }
   });

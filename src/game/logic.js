@@ -12,11 +12,21 @@ export class GameLogic {
     initialize(g, ctx) {
       g.units = [];
       g.cubits = [];
+      g.players = {
+        "0": {},
+        "1": {},
+      };
     }
 
     setup(g, ctx) {
       for (let a = 0; a < ctx.numPlayers; a++) {
         let p = a.toString();
+
+        g.players[p] = {
+          actions: 1,
+          hand: 3,
+          // other stuff later...
+        }
 
         let units = [
           new Units.RookUnit(p, UNIT_FILE.A),
@@ -105,15 +115,38 @@ export class GameLogic {
 
         let bag = g.cubits.filter(_ => _.location === LOCATIONS.Bag && _.controller === p);
         bag = ctx.random.Shuffle(bag);
+
+        /*
         let draws = this.getNumberOfDraws(g, ctx, p);
         for (let i = 0; i < draws; i++) {
           bag[i].location = LOCATIONS.Hand;
         }
+        */
+
+        // Add a Cubit to test...
+        let collection = bag
+          .filter(_ => _.controller === p)
+          .filter(_ => 
+            _.type === CUBIT_TYPES.Timebomb ||
+            _.type === CUBIT_TYPES.Condemn || 
+            _.type === CUBIT_TYPES.DoubleAction || 
+            _.type === CUBIT_TYPES.Nab || 
+            _.type === CUBIT_TYPES.MovementCardinal
+          );
+
+        for (let i = 0; i < collection.length; i++) {
+          let cubit = collection[i];
+          cubit.location = LOCATIONS.Hand
+        } 
       };
     }
 
-    getNumberOfDraws(g, ctx, player) {
-      let draws = 3;
+    getBagSize(g, ctx, player) {
+      return g.cubits.filter(_ => _.location === LOCATIONS.Bag && _.controller === player).length;
+    }
+
+    getDraws(g, ctx, player) {
+      let draws = g.players[player].hand;
 
       let cubits = g.cubits.filter(_ => _.location === LOCATIONS.Player && _.controller === player).map(_ => _.type);
       if(cubits.includes(CUBIT_TYPES.DrawPlusOne)) {
@@ -126,8 +159,12 @@ export class GameLogic {
       return draws;
     }
 
-    getNumberOfActions(g, ctx, player) {
-      let actions = 1;
+    getHandSize(g, ctx, player) {
+      return g.cubits.filter(_ => _.location === LOCATIONS.Hand && _.controller === player).length;
+    }
+
+    getActivities(g, ctx, player) {
+      let actions = Math.min(Math.floor((ctx.turn / 10)) + 1, 5);
 
       let cubits = g.cubits.filter(_ => _.location === LOCATIONS.Player && _.controller === player).map(_ => _.type);
       if(cubits.includes(CUBIT_TYPES.DoubleAction)) {
@@ -135,5 +172,9 @@ export class GameLogic {
       }
 
       return actions;
+    }
+
+    getActions(g, ctx, player) {
+      return g.players[player].actions;
     }
 }

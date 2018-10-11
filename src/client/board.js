@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { FaWifi } from 'react-icons/fa';
-import { IoIosSwitch } from 'react-icons/io';
+import { FaWifi, FaExchangeAlt, FaArrowRight, FaUserAlt, FaClock, FaBolt, FaShoppingBag } from 'react-icons/fa';
+import { IoMdHelp } from 'react-icons/io';
 
 // Bootstrap
 import { 
@@ -30,7 +30,9 @@ import {
   LOCATIONS
 } from '../game/common';
 
+import { GameLogic } from '../game/logic';
 import { getTargets } from '../game/targets';
+import { getMovements } from '../game/movements';
 
 class GameTable extends React.Component {
   static propTypes = {
@@ -47,8 +49,14 @@ class GameTable extends React.Component {
   constructor(params) {
     super(params);
 
-    this.onHandClickGrid = this.onHandClickGrid.bind(this); 
-    this.onAvatarClickGrid = this.onAvatarClickGrid.bind(this); 
+    this.logic = new GameLogic();
+
+    this.onArenaClickGrid = this.onArenaClickGrid.bind(this);
+    this.onHandClickGrid = this.onHandClickGrid.bind(this);
+    this.onAvatarClickGrid = this.onAvatarClickGrid.bind(this);
+    this.onBoardClickGrid = this.onBoardClickGrid.bind(this);
+    this.onCommonClickGrid = this.onCommonClickGrid.bind(this);
+    this.onRoyalsClickGrid = this.onRoyalsClickGrid.bind(this);
 
     this.teamColors = {'0': 'w', '1': 'b'};
 
@@ -67,7 +75,8 @@ class GameTable extends React.Component {
     this.state = {
       player: p,
       selection: null,
-      targets: []
+      targets: [],
+      movements: [],
     };
   }
 
@@ -97,6 +106,43 @@ class GameTable extends React.Component {
     return params;
   }
 
+  getArena() {
+    let tokens = [];
+
+    let cubits = this.props.G.cubits.filter(_ => _.location === LOCATIONS.Arena);
+    for (let i = 0; i < cubits.length; i++) {
+      const cubit = cubits[i];
+
+      let team =  this.teamColors[cubit.ownership];
+      let element = React.createElement(CubitText, { name: cubit.name, value: cubit.name, team: team, color: null });
+      let token = React.createElement(Token, {key: cubit.id, x: 0, y: i}, element);
+      tokens.push(token);
+    }
+
+    let targets = this.state.targets.filter(_ => _.location === LOCATIONS.Arena);
+    let active = targets.length > 0;
+
+    let params = this.getGridParams(0, 0);
+    params.onClick = this.onArenaClickGrid;
+    let grid = React.createElement(Grid, params, tokens);
+
+    let header = <div key="arenaHeader" className="text-center"><Badge onClick={this.onArenaClickHeader} color={active ? 'success' : 'secondary'}>Arena</Badge></div>
+    let warpper = <div key="arenaGrid" className="text-center" style={{height: params.rows > 0 ? params.style.width : 0 }}>{grid}</div>
+    return [header, warpper];
+  }
+
+  onArenaClickHeader = () => {
+    let targets = this.state.targets.filter(_ => _.location === LOCATIONS.Arena);
+    let active = targets.length > 0;
+    if(active) {
+      alert('Arena');
+    }
+  }
+
+  onArenaClickGrid = ({x, y}) => {
+    // Do Somthing!
+  }
+
   getHand() {
     let tokens = [];
 
@@ -112,18 +158,21 @@ class GameTable extends React.Component {
       }
     }
 
+    let targets = this.state.targets.filter(_ => _.location === LOCATIONS.Hand).filter(_ => _.player === this.state.player);
+    let active = targets.length > 0;
+
     let params = this.getGridParams(1, cubits.length);
     params.key = "handGrid";
     params.onClick = this.onHandClickGrid;
     let grid = React.createElement(Grid, params, tokens);
 
-    let header = <div key="handHeader" className="text-center"><Badge onClick={this.onHandClickHeader}>Hand</Badge></div>
+    let header = <div key="handHeader" className="text-center"><Badge onClick={this.onHandClickHeader} color={active ? 'success' : 'secondary'}>Hand</Badge></div>
     return [header, grid];
   }
 
   onHandClickHeader = () => {
     let p = this.state.player;
-    alert("Hand " + p);
+    alert('Hand: ' + p);
   }
 
   onHandClickGrid = ({x, y}) => {
@@ -172,11 +221,16 @@ class GameTable extends React.Component {
   }
 
   onAvatarClickHeader = () => {
-    let p = this.state.player;
-    alert("Player " + p);
+    let targets = this.state.targets.filter(_ => _.location === LOCATIONS.Player).filter(_ => _.player === this.state.player);
+    let active = targets.length > 0;
+    if (active) {
+      let p = this.state.player;
+      alert('Player: ' + p);
+    }
   }
 
   onAvatarClickGrid = ({x, y}) => {
+    /*
     if (this.props.playerID === this.state.player) {
       let cubits = this.props.G.cubits.filter(_ => _.location === LOCATIONS.Hand && _.controller === this.state.player);
       let cubit = cubits[y];
@@ -185,6 +239,7 @@ class GameTable extends React.Component {
         this.setState({ selection: cubit, targets: targets });
       }
     }
+    */
   }
 
   getBoard() {
@@ -211,20 +266,41 @@ class GameTable extends React.Component {
       tokens.push(token);
     }
 
-    let targets = this.state.targets.filter(_ => _.location === LOCATIONS.Board);
-
     let params = this.getGridParams(8,8);
-    params.onClick = this.onBoardClick;
+    params.onClick = this.onBoardClickGrid;
 
+    // movements
+    let targets = this.state.targets.filter(_ => _.location === LOCATIONS.Board);
     for (const target of targets) {
       for (const pos of target.positions) {
         params.colorMap[`${pos.x},${pos.y}`] = '#28a745';
       }
     }
 
+    let moves = this.state.movements;
+    for (const move of moves) {
+      params.colorMap[`${move.x},${move.y}`] = '#28a745';
+    }
+
     let grid = React.createElement(Grid, params, tokens);
-    
     return grid;
+  }
+
+  onBoardClickGrid = ({x, y}) => {
+    if(this.props.ctx.phase === GAME_PHASES.Play) {
+      let targets = this.state.targets.filter(_ => _.location === LOCATIONS.Board);
+      for (const target of targets) {
+        for (const pos of target.positions) {
+          if(pos.x === x && pos.y === y) {
+            alert(`Board: (${x},${y})`);
+          }
+        }
+      }
+    } else if(this.props.ctx.phase === GAME_PHASES.Move) {
+      let unit = this.props.G.units.filter(_ => _.location === LOCATIONS.Board).find(_ => _.position.x === x && _.position.y === y);
+      let movements = unit == null ? [] : getMovements(this.props.G, this.props.ctx, this.state.player, {x,y}, unit);
+      this.setState({ selection: unit, movements: movements });
+    }
   }
 
   getUnitsField(type) {
@@ -235,8 +311,23 @@ class GameTable extends React.Component {
 
     units.sort((lhs, rhs) => lhs.rank - rhs.rank);
 
-    var height = units.length;
-    var width = 1;
+    let height = units.length;
+    let width = 1;
+    for (let y = 0; y < units.length; y++) {
+      const unit = units[y];
+      if (width < unit.slots) {
+        width = unit.slots;
+      }
+    }
+
+    let params = this.getGridParams(width, height);
+
+    if(type === UNIT_TYPES.Common) {
+      params.onClick = this.onCommonClickGrid;
+    } else if(type === UNIT_TYPES.Royal) { 
+      params.onClick = this.onRoyalsClickGrid;
+    }
+
     for (let y = 0; y < units.length; y++) {
       const unit = units[y];
 
@@ -248,9 +339,10 @@ class GameTable extends React.Component {
         let token = React.createElement(Token, {key: unit.id, x: 0, y: y}, element);
         tokens.push(token);
       }
-      
-      if (width < unit.slots) {
-        width = unit.slots;
+
+      let target = this.state.targets.find(_ => _.location === LOCATIONS.Unit && _.units.includes(unit.id));
+      if(target) {
+        params.colorMap[`${0},${y}`] = '#28a745';
       }
 
       // Cubits
@@ -262,26 +354,8 @@ class GameTable extends React.Component {
         let token = React.createElement(Token, {key: cubit.id, x: (x+1), y: y}, element);
         tokens.push(token);
       }
-    }
 
-    let targets = this.state.targets.filter(_ => _.location === LOCATIONS.Unit);
-    let indexes = [];
-    for (const target of targets) {
-      for (const unit of target.units) {
-        indexes.push(unit.id);
-      }
-    }
-
-    let params = this.getGridParams(width, height);
-
-    for (let y = 0; y < units.length; y++) {
-      const unit = units[y];
       let slots = unit.slots;
-      
-      if( indexes.includes(unit.id)) {
-        params.colorMap[`${0},${y}`] = '#28a745';
-      }
-
       for (let x = slots; x < width; x++) {
         params.colorMap[`${x},${y}`] = '#000000';
       }
@@ -291,14 +365,34 @@ class GameTable extends React.Component {
     return grid;
   }
 
+  onCommonClickGrid = ({x, y}) => {
+    alert('Common');
+  }
+
+  onRoyalsClickGrid = ({x, y}) => {
+    alert('Royal');
+  }
+
+  switchPlayers() {
+    let targets = this.state.targets.filter(_ => _.player != null).filter(_ => _.player !== this.state.player);
+    let active = targets.length > 0;
+    let color = active ? 'success' : 'primary';
+    return <Button size="sm" color={color} title="Switch Player Views" onClick={this.switchPlayerViews}><FaExchangeAlt /></Button>;
+  }
+
   getHeader() {
     let player = (Number(this.state.player) + 1);
-    let draws = 3;
-    let actions = 1;
+    let bag = this.logic.getBagSize(this.props.G, this.props.ctx, this.state.player);
+    let actions = this.logic.getActions(this.props.G, this.props.ctx, this.state.player);
+    let turn = this.props.ctx.turn;
+    let active = this.state.player === this.props.ctx.currentPlayer ? 'success' : 'info';
 
     return (
       <Button size="sm" color="secondary" disabled>
-        Player <Badge color="info">{ player }</Badge> Draws <Badge color="info"> { draws }</Badge> Actions <Badge color="info"> { actions }</Badge>
+        <FaUserAlt/> <Badge color={active}>{ player }</Badge>&nbsp;
+        <FaClock/> <Badge color="info"> { turn }</Badge>&nbsp;
+        <FaShoppingBag /> <Badge color="info"> { bag }</Badge>&nbsp;
+        <FaBolt /> <Badge color="info"> { actions }</Badge>
       </Button>
     );
   }
@@ -310,8 +404,19 @@ class GameTable extends React.Component {
       <Button size="sm" color="danger" title="Disconnected" disabled><FaWifi /></Button>
   }
 
+  onNext = () => {
+    if(this.props.ctx.phase === GAME_PHASES.Play) {
+      this.props.moves.skipActions();
+    } else if(this.props.ctx.phase === GAME_PHASES.Action) {
+      this.props.moves.skipActions();
+    } else if(this.props.ctx.phase === GAME_PHASES.Move) {
+      this.props.moves.skipMovement();
+    } else if(this.props.ctx.phase === GAME_PHASES.Draw) {
+      this.props.moves.drawCubits();
+    }
+  }
+
   render() {
-    let arena = React.createElement(Grid, this.getGridParams(1, 1), [])
 
     return (
       <section>
@@ -322,17 +427,26 @@ class GameTable extends React.Component {
               <strong className="p-1">Lusus</strong>
             </NavbarBrand>
             <Nav className="p-1 list-inline">
+              <NavItem  className="list-inline-item">
+                { this.switchPlayers() }
+              </NavItem>
               <NavItem className="list-inline-item">
-                <Button size="sm" color="primary" disabled>Next</Button>
+                <Button size="sm" color="secondary" disabled>{this.props.ctx.phase} Phase</Button>
+              </NavItem>
+              <NavItem className="list-inline-item">
+                <Button size="sm" color="warning" onClick={this.onNext} disabled={this.props.isActive === false} ><FaArrowRight /></Button>
               </NavItem>
               <NavItem  className="list-inline-item">
                 { this.getHeader() }
               </NavItem>
-              <NavItem  className="list-inline-item">
-                <Button size="sm" color="primary" title="Switch Player Views" onClick={this.switchPlayerViews}><IoIosSwitch /></Button>
-              </NavItem>
             </Nav>
             <Nav className="p-1 list-inline ml-auto ">
+              
+            </Nav>
+            <Nav className="p-1 list-inline ml-auto ">
+              <NavItem className="list-inline-item">
+                <Button size="sm" color="info" title="Help"><IoMdHelp /></Button>
+              </NavItem>
               <NavItem className="list-inline-item">
                 { this.getPlayerConnection() }
               </NavItem>
@@ -341,12 +455,7 @@ class GameTable extends React.Component {
           <div className="horizontal-warper">
             <div className="horizontal-section-content">
               <div className="p-1">
-                <div className="text-center">
-                  <Badge>Arena</Badge>
-                </div>
-                <div className="text-center">
-                  { arena }
-                </div>
+                { this.getArena() }
               </div>
               <div className="horizontal-warper">
                 <div className="horizontal-section-content">

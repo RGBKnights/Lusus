@@ -9,6 +9,7 @@ import {
   TARGET_CONSTRAINTS,
   ArenaTargeting,
   UnitTargeting,
+  HandTargeting,
   PlayerTargeting,
   BoardTargeting,
 } from './common';
@@ -332,7 +333,7 @@ export class NabCubit extends Cubit {
   constructor(ownership) {
       super(CUBIT_TYPES.Nab, "Nab", ownership);
 
-      this.targeting.push(new PlayerTargeting(TARGET_CONSTRAINTS.Opponent, false));
+      this.targeting.push(new HandTargeting(TARGET_CONSTRAINTS.Opponent));
   }
 }
 

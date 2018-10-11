@@ -143,6 +143,7 @@ export function getMovements(g, ctx, player, origin, unit) {
         if(checkPosition(g, player, moves, movement, x, y, isAgressive, isPassive)) { break; }
       }
     } else if(movement.type === MOVEMENT_TYPES.Jump) {
+      // Change to distance
       if(unitHasCubit(unit, CUBIT_TYPES.StickyFeet) || unitHasCubit(unit, CUBIT_TYPES.Encumber)) {
         continue; // Goto: Next Movement
       }

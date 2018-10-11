@@ -5,6 +5,7 @@ import {
   TARGET_CONSTRAINTS,
   ArenaTarget,
   UnitTarget,
+  HandTarget,
   PlayerTarget,
   BoardTarget,
 } from './common';
@@ -50,9 +51,10 @@ export function getTargets(g, ctx, player, cubit) {
     }
 
     // Test for Target
-    if (target.location === LOCATIONS.Arena) {
-      // TODO: Target the location or the locations slot
+    if (target.location === LOCATIONS.Arena) {     
       targets.push(new ArenaTarget());
+    } else if (target.location === LOCATIONS.Hand) {
+      targets.push(new HandTarget(controller));
     } else if (target.location === LOCATIONS.Player) {
       if(target.attachment) {
         // Make sure there is space on the player for new cubits
@@ -73,9 +75,10 @@ export function getTargets(g, ctx, player, cubit) {
         units = units
           .filter(_ => _.cubits.length < _.slots)
           .filter(_ => unitHasCubit(_, CUBIT_TYPES.Condemn) === false)
-          .filter(_ => (unitHasCubit(_, CUBIT_TYPES.Immunity) && _.ownership === opponent) === false);
+          .filter(_ => (unitHasCubit(_, CUBIT_TYPES.Immunity) && _.ownership === opponent) === false)
       }
-      targets.push(new UnitTarget(units, target.targets));
+      let indexes = units.map(_ => _.id);
+      targets.push(new UnitTarget(controller, indexes, target.targets));
 
     } else if (target.location === LOCATIONS.Board) {
       let units = g.units

@@ -95,6 +95,7 @@ export const CUBIT_TYPES = {
   // *NEEDS WORK*  
   // Units
   // The unit gets -1 move for ever cubie on that unit
+  // KEYWORD
   // Passive
   // HOW: 
   ForgottenPast: '269a550a-ea97-46a4-890f-395f45d3c440',  
@@ -118,7 +119,7 @@ export const CUBIT_TYPES = {
   // onPlay() => add this cubits X times to field at random locations;
   // HOW: Blocks movement, cannot land on rock
   ArenaIce: '88f8c963-c40e-4205-b10d-a540d2186177',  
-  // *NEEDS WORK*       
+  // *NEEDS WORK* 
   // Arena
   // Randomly select X spaces not on the back lines, those are now Ice spaces.
   // onPlay() => add this cubits X times to field at random locations;
@@ -132,12 +133,12 @@ export const CUBIT_TYPES = {
   Jumper: '99d14233-f9c8-40d2-b4c6-6e3fe025829f',
   // *NEEDS WORK*
   // Units
-  // Cardinal phased movement; distance = 2;
+  // Cardinal patern movement; distance = 2;
   // Passive - Movement
   // HOW: CardinalMovement + Movement.phased = true;
   Looter: '9a226a0f-4d19-41e7-852e-856275875f89',
   // Units   
-  // On capture, put cubies into your bag instead of attached to piece in afterlife.
+  // On capture, put a random cubit into your bag instead of attached to piece in afterlife.
   // onCapture() => move cubits from this unit to bag
   Mulligan: '664882e5-df52-4396-b90c-77b84956342e',     
   // Avatar
@@ -155,21 +156,21 @@ export const CUBIT_TYPES = {
   // onMove() => unit.moves > 3 then move unit to afterlife
   Poof: '319017f3-f943-4c41-b465-15ceea4b9059',           
   // Board - Unit
-  // Remove a piece from the board marking its location. It is gone until your next turn
-  // onPlay() => encapsulate Unit in Cubit (Poof); move the cubit from the board to the field; 
-  // onEoT() => reveal Unit in Cubit and move board at target location
+  // Remove a piece from the board marking its location. It is gone until your next turn;
+  // onPlay() => unit is marked as obustrtion = false, locked = true; (can't move)
+  // onReturn() => remove any unit at target location
   Reckless: '6b6b78fa-d42c-4713-ad1d-e3672786005e',       
-  // Avatar
-  // Once placed the player that reachs 5 pieces in the afterlife you win
-  // [Proxy] onCapture() => check afterlife for number of units if > 5 then you win the game
+  // Arena
+  // Once placed the player that reachs 2d6 pieces in the afterlife you win
+  // [Proxy] onCapture() => check afterlife for number of units if > 2d6 then you win the game
   Resourceful: '517c0bc3-1ed3-462e-ba23-018e61366005',   
   // Avatar 
   // Draw a new hand with one less card
-  // onActivated() => moves cubits in hand to bag; draws new hand (-1);
+  // onActivated() => moves cubits in hand to bag; draws new hand; Consumable
   Revert: 'c647e8f2-3d4c-42cc-af90-9b0053617151',     
   // *NEEDS WORK*   
   // Units 
-  // If unit is captured the move is reverted and revert Cubit is removed
+  // If unit is captured the move is reverted; Consumable
   // onCapature() => remove this cubit from unit; [ShortCurit]
   RockThrow: '18301f0f-05e3-41f9-9f66-052a5485f0e1',    
   // *NEEDS WORK*   
@@ -191,7 +192,7 @@ export const CUBIT_TYPES = {
   Taunt: 'c2b27e7d-343e-416d-bac3-149fe48da9eb',   
   // *NEEDS WORK*       
   // Units
-  // If the opposing team can take this piece as their move, they must do so
+  // If the opposing team can take this piece as their move, they must do so, single target only
   // Passive
   // HOW: update getTarget() to focus movement
   ThunderDome: 'dea9abe7-230f-4448-a1c0-ecd37fb393aa',    
@@ -222,6 +223,8 @@ export const UNIT_TYPES = {
 export const CLASSIFICATIONS = {
   Unknown: 0,
   Movement: 1,
+  Encumbered: 2,
+  Immunity: 3,
 };
 
 export const MOVEMENT_TYPES = {
@@ -329,6 +332,14 @@ export class UnitTargeting extends Targeting {
   }
 }
 
+export class HandTargeting extends Targeting {
+  constructor(constraint) {
+    super(LOCATIONS.Hand);
+
+    this.constraint = constraint;
+  }
+}
+
 export class PlayerTargeting extends Targeting {
   constructor(constraint, attachment = true) {
     super(LOCATIONS.Player);
@@ -362,10 +373,19 @@ export class ArenaTarget extends Target {
 }
 
 export class UnitTarget extends Target {
-  constructor(units, targets = 1) {
+  constructor(player, units, targets = 1) {
     super(LOCATIONS.Unit, targets);
 
+    this.player = player; // "0" OR "1"
     this.units = units;
+  }
+}
+
+export class HandTarget extends Targeting {
+  constructor(player) {
+    super(LOCATIONS.Hand);
+
+    this.player = player; // "0" OR "1"
   }
 }
 
