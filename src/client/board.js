@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { FaWifi, FaExchangeAlt, FaArrowRight, FaUserAlt, FaClock, FaBolt, FaShoppingBag } from 'react-icons/fa';
+import { FaEye, FaArrowRight, FaUserAlt, FaClock, FaBolt, FaShoppingBag, FaEject } from 'react-icons/fa';
 import { IoMdHelp } from 'react-icons/io';
+import { FiWifi, FiWifiOff }from 'react-icons/fi';
 
 // Bootstrap
 import { 
@@ -78,11 +79,6 @@ class GameTable extends React.Component {
       targets: [],
       movements: [],
     };
-  }
-
-  switchPlayerViews = () => {
-    let p = this.state.player === "0" ? "1" : "0";
-    this.setState({ player: p });
   }
 
   getGridParams(width, height) {
@@ -373,26 +369,26 @@ class GameTable extends React.Component {
     alert('Royal');
   }
 
-  switchPlayers() {
+  getSwitchPlayers() {
+    
     let targets = this.state.targets.filter(_ => _.player != null).filter(_ => _.player !== this.state.player);
-    let active = targets.length > 0;
-    let color = active ? 'success' : 'primary';
-    return <Button size="sm" color={color} title="Switch Player Views" onClick={this.switchPlayerViews}><FaExchangeAlt /></Button>;
+    let colorTarget = targets.length > 0 ? 'success' : 'primary';
+    return <Button size="sm" color={colorTarget} title="Switch Player Views" onClick={this.onSwitchPlayerViews}><FaEye /> </Button>;
+  }
+
+   onSwitchPlayerViews = () => {
+    let p = this.state.player === "0" ? "1" : "0";
+    this.setState({ player: p });
   }
 
   getHeader() {
     let player = (Number(this.state.player) + 1);
     let bag = this.logic.getBagSize(this.props.G, this.props.ctx, this.state.player);
     let actions = this.logic.getActions(this.props.G, this.props.ctx, this.state.player);
-    let turn = this.props.ctx.turn;
-    let active = this.state.player === this.props.ctx.currentPlayer ? 'success' : 'info';
-
+   
     return (
       <Button size="sm" color="secondary" disabled>
-        <FaUserAlt/> <Badge color={active}>{ player }</Badge>&nbsp;
-        <FaClock/> <Badge color="info"> { turn }</Badge>&nbsp;
-        <FaShoppingBag /> <Badge color="info"> { bag }</Badge>&nbsp;
-        <FaBolt /> <Badge color="info"> { actions }</Badge>
+        <FaUserAlt/> { player } <FaBolt /> { actions } <FaShoppingBag /> { bag } <FaEject /> 0/0
       </Button>
     );
   }
@@ -400,8 +396,14 @@ class GameTable extends React.Component {
   getPlayerConnection() {
     let connected = this.props.isMultiplayer && this.props.isConnected;
     return connected ? 
-      <Button size="sm" color="success" title="Connected" disabled><FaWifi /></Button> :
-      <Button size="sm" color="danger" title="Disconnected" disabled><FaWifi /></Button>
+      <Button size="sm" color="success" title="Connected" disabled><FiWifi /></Button> :
+      <Button size="sm" color="danger" title="Disconnected" disabled><FiWifiOff /></Button>
+  }
+
+  getNext() {
+    if(this.props.isActive) {
+      return <Button size="sm" color="success" onClick={this.onNext} ><FaArrowRight /></Button>;
+    }
   }
 
   onNext = () => {
@@ -416,6 +418,16 @@ class GameTable extends React.Component {
     }
   }
 
+  getPhase() {
+    let player = (Number(this.props.ctx.currentPlayer) + 1);
+    let phase = this.props.ctx.phase;
+    return (
+      <Button size="sm" color="secondary" disabled>
+        <FaClock/> { this.props.ctx.turn } | <FaUserAlt/> { player }  <small>{phase} Phase</small>
+      </Button>
+    );
+  }
+
   render() {
 
     return (
@@ -427,21 +439,20 @@ class GameTable extends React.Component {
               <strong className="p-1">Lusus</strong>
             </NavbarBrand>
             <Nav className="p-1 list-inline">
+              <NavItem className="list-inline-item">
+                { this.getPhase() }
+              </NavItem>
               <NavItem  className="list-inline-item">
-                { this.switchPlayers() }
-              </NavItem>
+                { this.getNext() }              
+              </NavItem>        
+            </Nav>
+            <Nav className="p-1 list-inline ml-auto ">
               <NavItem className="list-inline-item">
-                <Button size="sm" color="secondary" disabled>{this.props.ctx.phase} Phase</Button>
-              </NavItem>
-              <NavItem className="list-inline-item">
-                <Button size="sm" color="warning" onClick={this.onNext} disabled={this.props.isActive === false} ><FaArrowRight /></Button>
+                { this.getSwitchPlayers() }
               </NavItem>
               <NavItem  className="list-inline-item">
                 { this.getHeader() }
               </NavItem>
-            </Nav>
-            <Nav className="p-1 list-inline ml-auto ">
-              
             </Nav>
             <Nav className="p-1 list-inline ml-auto ">
               <NavItem className="list-inline-item">
