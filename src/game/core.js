@@ -40,6 +40,9 @@ const GameCore = Game({
         // Reset
         g.players[ctx.currentPlayer].actions = logic.getActivities(G, ctx, ctx.currentPlayer);
 
+        // Draw new hand...
+        
+
         // End turn 1st and reset to 'Play' phase
         ctx.events.endTurn();
         ctx.events.endPhase();

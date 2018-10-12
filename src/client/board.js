@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { FaEye, FaArrowRight, FaUserAlt, FaClock, FaBolt, FaShoppingBag, FaEject } from 'react-icons/fa';
+import { FaEye, FaArrowRight, FaUserAlt, FaClock, FaBolt, FaShoppingBag, FaEject, FaShareAlt } from 'react-icons/fa';
 import { IoMdHelp } from 'react-icons/io';
 import { FiWifi, FiWifiOff }from 'react-icons/fi';
 
@@ -41,6 +41,7 @@ class GameTable extends React.Component {
     ctx: PropTypes.any.isRequired,
     moves: PropTypes.any.isRequired,
     events: PropTypes.any.isRequired,
+    gameID: PropTypes.string,
     playerID: PropTypes.string,
     isActive: PropTypes.bool,
     isMultiplayer: PropTypes.bool,
@@ -52,6 +53,7 @@ class GameTable extends React.Component {
 
     this.logic = new GameLogic();
 
+    this.onShare =  this.onShare.bind(this);
     this.onArenaClickGrid = this.onArenaClickGrid.bind(this);
     this.onHandClickGrid = this.onHandClickGrid.bind(this);
     this.onAvatarClickGrid = this.onAvatarClickGrid.bind(this);
@@ -80,6 +82,18 @@ class GameTable extends React.Component {
       movements: [],
     };
   }
+
+  componentDidMount() {
+    window.addEventListener('resize', this.updateDimensions);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.updateDimensions);
+  }
+
+  updateDimensions = () => {
+    this.forceUpdate();
+  };
 
   getGridParams(width, height) {
     // let sizeSquare = 50;
@@ -373,7 +387,7 @@ class GameTable extends React.Component {
     
     let targets = this.state.targets.filter(_ => _.player != null).filter(_ => _.player !== this.state.player);
     let colorTarget = targets.length > 0 ? 'success' : 'primary';
-    return <Button size="sm" color={colorTarget} title="Switch Player Views" onClick={this.onSwitchPlayerViews}><FaEye /> </Button>;
+    return <Button size="sm" color={colorTarget} title="Switch Player Views" onClick={this.onSwitchPlayerViews}><FaEye className="icon-inline" /> </Button>;
   }
 
    onSwitchPlayerViews = () => {
@@ -388,7 +402,7 @@ class GameTable extends React.Component {
    
     return (
       <Button size="sm" color="secondary" disabled>
-        <FaUserAlt/> { player } <FaBolt /> { actions } <FaShoppingBag /> { bag } <FaEject /> 0/0
+        <FaUserAlt className="icon-inline" /> { player } <FaBolt className="icon-inline" /> { actions } <FaShoppingBag className="icon-inline" /> { bag } <FaEject className="icon-inline" /> 0/0
       </Button>
     );
   }
@@ -396,13 +410,13 @@ class GameTable extends React.Component {
   getPlayerConnection() {
     let connected = this.props.isMultiplayer && this.props.isConnected;
     return connected ? 
-      <Button size="sm" color="success" title="Connected" disabled><FiWifi /></Button> :
-      <Button size="sm" color="danger" title="Disconnected" disabled><FiWifiOff /></Button>
+      <Button size="sm" color="success" title="Connected" disabled><FiWifi className="icon-inline" /></Button> :
+      <Button size="sm" color="danger" title="Disconnected" disabled><FiWifiOff className="icon-inline" /></Button>
   }
 
   getNext() {
     if(this.props.isActive) {
-      return <Button size="sm" color="success" onClick={this.onNext} ><FaArrowRight /></Button>;
+      return <Button size="sm" color="success" onClick={this.onNext} ><FaArrowRight className="icon-inline" /></Button>;
     }
   }
 
@@ -423,13 +437,27 @@ class GameTable extends React.Component {
     let phase = this.props.ctx.phase;
     return (
       <Button size="sm" color="secondary" disabled>
-        <FaClock/> { this.props.ctx.turn } | <FaUserAlt/> { player }  <small>{phase} Phase</small>
+        <FaClock className="icon-inline" /> { this.props.ctx.turn } | <FaUserAlt className="icon-inline" /> { player }  <small>{phase} Phase</small>
       </Button>
     );
   }
 
-  render() {
+  getShare() {
+    return <Button size="sm" color="info" title="Share" onClick={this.onShare}><FaShareAlt className="icon-inline" /></Button>;
+  }
 
+  onShare() {
+    let url = window.location + "?match=" + this.props.gameID + "&player=1";
+    
+    const el = document.createElement('textarea');
+    el.value = url;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+  }
+
+  render() {
     return (
       <section>
         <Container fluid className="p-0">
@@ -456,7 +484,10 @@ class GameTable extends React.Component {
             </Nav>
             <Nav className="p-1 list-inline ml-auto ">
               <NavItem className="list-inline-item">
-                <Button size="sm" color="info" title="Help"><IoMdHelp /></Button>
+                <Button size="sm" color="info" title="Help"><IoMdHelp className="icon-inline" /></Button>
+              </NavItem>
+              <NavItem className="list-inline-item">
+                { this.getShare() }
               </NavItem>
               <NavItem className="list-inline-item">
                 { this.getPlayerConnection() }

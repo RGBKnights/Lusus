@@ -2,6 +2,11 @@
 
 ### vNext Steps
 
+1. Push to Production - http://lusus.us-3.evennode.com/
+2. Add url query string for match and player
+3. Add code for players to draw new hand in Draw()
+4. Implement onPlay() for cubits
+
 ####  Phases
 
 **Play**

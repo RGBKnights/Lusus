@@ -31,3 +31,7 @@ g > text {
   margin: 3px;
   vertical-align: top;
 }
+
+.icon-inline {
+  vertical-align: -10%;
+}
