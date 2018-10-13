@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { FaEye, FaArrowRight, FaUserAlt, FaClock, FaBolt, FaShoppingBag, FaEject, FaShareAlt } from 'react-icons/fa';
-import { IoMdHelp } from 'react-icons/io';
 import { FiWifi, FiWifiOff }from 'react-icons/fi';
 
 // Bootstrap
@@ -24,7 +23,12 @@ import {
   CubitText
 } from './cubits';
 
+import {
+  Help
+} from './help'
+
 import { 
+  GAME_FLOW,
   GAME_PHASES,
   UNIT_TYPES,
   UNIT_FILE, 
@@ -76,6 +80,7 @@ class GameTable extends React.Component {
     let p = this.props.playerID == null ? "0" : this.props.playerID;
 
     this.state = {
+      flow: GAME_FLOW.Lobby,
       player: p,
       selection: null,
       targets: [],
@@ -387,7 +392,7 @@ class GameTable extends React.Component {
     
     let targets = this.state.targets.filter(_ => _.player != null).filter(_ => _.player !== this.state.player);
     let colorTarget = targets.length > 0 ? 'success' : 'primary';
-    return <Button size="sm" color={colorTarget} title="Switch Player Views" onClick={this.onSwitchPlayerViews}><FaEye className="icon-inline" /> </Button>;
+    return <NavItem className="list-inline-item"><Button size="sm" color={colorTarget} title="Switch Player Views" onClick={this.onSwitchPlayerViews}><FaEye className="icon-inline" /> </Button></NavItem>;
   }
 
    onSwitchPlayerViews = () => {
@@ -401,22 +406,26 @@ class GameTable extends React.Component {
     let actions = this.logic.getActions(this.props.G, this.props.ctx, this.state.player);
    
     return (
-      <Button size="sm" color="secondary" disabled>
-        <FaUserAlt className="icon-inline" /> { player } <FaBolt className="icon-inline" /> { actions } <FaShoppingBag className="icon-inline" /> { bag } <FaEject className="icon-inline" /> 0/0
-      </Button>
+      <NavItem  className="list-inline-item">
+        <Button size="sm" color="secondary" disabled>
+          <FaUserAlt className="icon-inline" /> { player } <FaBolt className="icon-inline" /> { actions } <FaShoppingBag className="icon-inline" /> { bag } <FaEject className="icon-inline" /> 0/0
+        </Button>
+      </NavItem>
     );
   }
 
   getPlayerConnection() {
-    let connected = this.props.isMultiplayer && this.props.isConnected;
-    return connected ? 
-      <Button size="sm" color="success" title="Connected" disabled><FiWifi className="icon-inline" /></Button> :
-      <Button size="sm" color="danger" title="Disconnected" disabled><FiWifiOff className="icon-inline" /></Button>
+    if(this.props.playerID !== null) {
+      let connected = this.props.isMultiplayer && this.props.isConnected;
+      return connected ? 
+        <NavItem className="list-inline-item"><Button size="sm" color="success" title="Connected" disabled><FiWifi className="icon-inline" /></Button></NavItem> :
+        <NavItem className="list-inline-item"><Button size="sm" color="danger" title="Disconnected" disabled><FiWifiOff className="icon-inline" /></Button></NavItem>
+    }
   }
 
   getNext() {
-    if(this.props.isActive) {
-      return <Button size="sm" color="success" onClick={this.onNext} ><FaArrowRight className="icon-inline" /></Button>;
+    if(this.props.isActive) {      
+      return <NavItem className="list-inline-item"><Button size="sm" color="success" onClick={this.onNext} ><FaArrowRight className="icon-inline" /></Button></NavItem>;
     }
   }
 
@@ -436,64 +445,56 @@ class GameTable extends React.Component {
     let player = (Number(this.props.ctx.currentPlayer) + 1);
     let phase = this.props.ctx.phase;
     return (
-      <Button size="sm" color="secondary" disabled>
-        <FaClock className="icon-inline" /> { this.props.ctx.turn } | <FaUserAlt className="icon-inline" /> { player }  <small>{phase} Phase</small>
-      </Button>
+      <NavItem className="list-inline-item">      
+        <Button size="sm" color="secondary" disabled>
+          <FaClock className="icon-inline" /> { this.props.ctx.turn } | <FaUserAlt className="icon-inline" /> { player }  <small>{phase} Phase</small>
+        </Button>
+      </NavItem>
     );
   }
 
   getShare() {
-    return <Button size="sm" color="info" title="Share" onClick={this.onShare}><FaShareAlt className="icon-inline" /></Button>;
+    if(this.props.playerID === "0") {
+      return (
+        <NavItem className="list-inline-item">
+          <Button size="sm" color="info" title="Share" onClick={this.onShare}><FaShareAlt className="icon-inline" /></Button>
+        </NavItem>
+      );
+    }
   }
 
   onShare() {
-    let url = window.location + "?match=" + this.props.gameID + "&player=1";
-    
-    const el = document.createElement('textarea');
-    el.value = url;
-    document.body.appendChild(el);
-    el.select();
-    document.execCommand('copy');
-    document.body.removeChild(el);
+    let url = window.location.origin + "?match=" + this.props.gameID + "&player=1";
+    navigator.clipboard.writeText(url);
+    alert("URL Copied!");
   }
 
   render() {
+
     return (
-      <section>
+      <section className="gameboard">
         <Container fluid className="p-0">
-          <Navbar color="dark" dark expand="md" className="rounded-bottom p-0">
-            <NavbarBrand className="p-0">
-              <img className="p-1"  height="32" src="/favicon.ico" alt="Logo"></img>
-              <strong className="p-1">Lusus</strong>
-            </NavbarBrand>
-            <Nav className="p-1 list-inline">
-              <NavItem className="list-inline-item">
+          <div>
+            <Navbar color="dark" dark expand="md" className="rounded-bottom p-0">
+              <NavbarBrand className="p-0">
+                <img className="p-1"  height="32" src="/favicon.ico" alt="Logo"></img>
+                <strong className="p-1">Lusus</strong>
+              </NavbarBrand>
+              <Nav className="p-1 list-inline">
                 { this.getPhase() }
-              </NavItem>
-              <NavItem  className="list-inline-item">
-                { this.getNext() }              
-              </NavItem>        
-            </Nav>
-            <Nav className="p-1 list-inline ml-auto ">
-              <NavItem className="list-inline-item">
+                { this.getNext() }
+              </Nav>
+              <Nav className="p-1 list-inline ml-auto ">
                 { this.getSwitchPlayers() }
-              </NavItem>
-              <NavItem  className="list-inline-item">
                 { this.getHeader() }
-              </NavItem>
-            </Nav>
-            <Nav className="p-1 list-inline ml-auto ">
-              <NavItem className="list-inline-item">
-                <Button size="sm" color="info" title="Help"><IoMdHelp className="icon-inline" /></Button>
-              </NavItem>
-              <NavItem className="list-inline-item">
+              </Nav>
+              <Nav className="p-1 list-inline ml-auto ">
+                <Help />
                 { this.getShare() }
-              </NavItem>
-              <NavItem className="list-inline-item">
                 { this.getPlayerConnection() }
-              </NavItem>
-            </Nav>
-          </Navbar>
+              </Nav>
+            </Navbar>
+          </div>
           <div className="horizontal-warper">
             <div className="horizontal-section-content">
               <div className="p-1">

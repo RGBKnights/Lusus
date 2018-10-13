@@ -18,6 +18,51 @@ export class GameLogic {
       };
     }
 
+    getCubits(p) {
+      const cubits = [
+        new Cubits.OrthogonalCubit(p),
+        new Cubits.DiagonalCubit(p),
+        new Cubits.CardinalCubit(p),
+        new Cubits.JumpCubit(p),
+        new Cubits.SideStepCubit(p),
+        new Cubits.SwapCubit(p),
+        new Cubits.DrawNegOneCubit(p),
+        new Cubits.DrawPlusOneCubit(p),
+        new Cubits.DoubleActionCubit(p),
+        new Cubits.KnowledgeCubit(p),
+        new Cubits.CondemnCubit(p),
+        new Cubits.KingOfHillCubit(p),
+        new Cubits.EnrageCubit(p),
+        new Cubits.PassifyCubit(p),
+        new Cubits.AncientRevivalCubit(p),
+        new Cubits.BacktoBasicsCubit(p),
+        new Cubits.BlinkDodgeCubit(p),
+        new Cubits.CostofPowerCubit(p),
+        new Cubits.DarkMagicCubit(p),
+        new Cubits.EncumberCubit(p),
+        new Cubits.ArenaHoleCubit(p),
+        new Cubits.ArenaRockCubit(p),
+        new Cubits.ArenaIceCubit(p),
+        new Cubits.ImmunityCubit(p),
+        new Cubits.JumperCubit(p),
+        new Cubits.LooterCubit(p),
+        new Cubits.MulliganCubit(p),
+        new Cubits.NabCubit(p),
+        new Cubits.PoisonedCubit(p),
+        new Cubits.PoofCubit(p),
+        new Cubits.RecklessCubit(p),
+        new Cubits.ResourcefulCubit(p),
+        new Cubits.RevertCubit(p),
+        new Cubits.RockThrowCubit(p),
+        new Cubits.SacrificeCubit(p),
+        new Cubits.StickyFeetCubit(p),
+        new Cubits.TauntCubit(p),
+        new Cubits.ThunderDomeCubit(p),
+        new Cubits.TimebombCubit(p),
+      ];
+      return cubits;
+    }
+
     setup(g, ctx) {
       for (let a = 0; a < ctx.numPlayers; a++) {
         let p = a.toString();
@@ -62,47 +107,7 @@ export class GameLogic {
           g.units.push(unit);
         }
 
-        let cubits = [
-          new Cubits.OrthogonalCubit(p),
-          new Cubits.DiagonalCubit(p),
-          new Cubits.CardinalCubit(p),
-          new Cubits.JumpCubit(p),
-          new Cubits.SideStepCubit(p),
-          new Cubits.SwapCubit(p),
-          new Cubits.DrawNegOneCubit(p),
-          new Cubits.DrawPlusOneCubit(p),
-          new Cubits.DoubleActionCubit(p),
-          new Cubits.KnowledgeCubit(p),
-          new Cubits.CondemnCubit(p),
-          new Cubits.KingOfHillCubit(p),
-          new Cubits.EnrageCubit(p),
-          new Cubits.PassifyCubit(p),
-          new Cubits.AncientRevivalCubit(p),
-          new Cubits.BacktoBasicsCubit(p),
-          new Cubits.BlinkDodgeCubit(p),
-          new Cubits.CostofPowerCubit(p),
-          new Cubits.DarkMagicCubit(p),
-          new Cubits.EncumberCubit(p),
-          new Cubits.ArenaHoleCubit(p),
-          new Cubits.ArenaRockCubit(p),
-          new Cubits.ArenaIceCubit(p),
-          new Cubits.ImmunityCubit(p),
-          new Cubits.JumperCubit(p),
-          new Cubits.LooterCubit(p),
-          new Cubits.MulliganCubit(p),
-          new Cubits.NabCubit(p),
-          new Cubits.PoisonedCubit(p),
-          new Cubits.PoofCubit(p),
-          new Cubits.RecklessCubit(p),
-          new Cubits.ResourcefulCubit(p),
-          new Cubits.RevertCubit(p),
-          new Cubits.RockThrowCubit(p),
-          new Cubits.SacrificeCubit(p),
-          new Cubits.StickyFeetCubit(p),
-          new Cubits.TauntCubit(p),
-          new Cubits.ThunderDomeCubit(p),
-          new Cubits.TimebombCubit(p),
-        ];
+        let cubits = this.getCubits(p);
 
         for (let i = 0; i < cubits.length; i++) {
           const cubit = cubits[i];

@@ -1,3 +1,10 @@
+export const GAME_FLOW = {
+  Unknown: '',
+  Lobby: 'Start',
+  Occurring: 'Occurring',
+  GameOver: 'End',
+};
+
 export const GAME_PHASES = {
   Unknown: '',
   Play: 'Play',
