@@ -67,7 +67,7 @@ function checkPosition(g, player, moves, movement, x, y, isAgressive, isPassive)
     if(unit.obstruction && movement.phased) {
       return false;
     } else if(isAgressive && unit.ownership !== player) {
-      moves.push(new Move(MOVEMENT_ACTIONS.Capture, x, y));
+      moves.push(new Move(MOVEMENT_ACTIONS.Capture, x, y, unit.id));
       return true;  // Break Loop;
     } else {
       return true;  // Break Loop;
@@ -171,7 +171,7 @@ export function getMovements(g, ctx, player, origin, unit) {
         const target = targeting[index];
         let u = getUnit(g, ctx, null, target.x, target.y);
         if(u && u.ownership !== player && isAgressive) {
-          moves.push(new Move(MOVEMENT_CONSTRAINTS.Agressive, target.x, target.y));
+          moves.push(new Move(MOVEMENT_ACTIONS.Capture, target.x, target.y, u.id));
         }
       }
     } else if(movement.type === MOVEMENT_TYPES.Forward) {
@@ -211,7 +211,7 @@ export function getMovements(g, ctx, player, origin, unit) {
 
         let u = getUnit(g, target.x, target.y);
         if(u) {
-          moves.push(new Move(MOVEMENT_ACTIONS.Swap, target.x, target.y));
+          moves.push(new Move(MOVEMENT_ACTIONS.Swap, target.x, target.y, u.id));
         }
       }
     } else if(movement.type === MOVEMENT_TYPES.Castle) {
@@ -239,7 +239,8 @@ export function getMovements(g, ctx, player, origin, unit) {
           }
         }
 
-        moves.push(new Move(MOVEMENT_ACTIONS.Castle, x, y));
+        // TODO: finish it by split out 2 moves left and right castle
+        // moves.push(new Move(MOVEMENT_ACTIONS.Castle, x, y));
       }
     }
   }
@@ -247,9 +248,9 @@ export function getMovements(g, ctx, player, origin, unit) {
   for (let i = 0; i < unit.cubits.length; i++) {
     const cubit = unit.cubits[i];
     if(cubit.type === CUBIT_TYPES.Enrage) {
-        moves = moves.filter(_ => _.constraint === MOVEMENT_CONSTRAINTS.Agressive);
+        moves = moves.filter(_ => _.action === MOVEMENT_ACTIONS.Agressive);
     } else if(cubit.type === CUBIT_TYPES.Passify) {
-        moves = moves.filter(_ => _.constraint === MOVEMENT_CONSTRAINTS.Passive);
+        moves = moves.filter(_ => _.action === MOVEMENT_ACTIONS.Passive);
     }
   }
 

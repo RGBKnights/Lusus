@@ -52,9 +52,13 @@ export function getTargets(g, ctx, player, cubit) {
 
     // Test for Target
     if (target.location === LOCATIONS.Arena) {     
+      
       targets.push(new ArenaTarget());
+
     } else if (target.location === LOCATIONS.Hand) {
+      
       targets.push(new HandTarget(controller));
+
     } else if (target.location === LOCATIONS.Player) {
       if(target.attachment) {
         // Make sure there is space on the player for new cubits
@@ -63,23 +67,24 @@ export function getTargets(g, ctx, player, cubit) {
           targets.push(new PlayerTarget(controller));
         }
       } else {
-        targets.push(new PlayerTarget(controller));
+        // TODO: Cubit Targeting...
+        // targets.push(new PlayerTarget(controller));
       }
     } else if(target.location === LOCATIONS.Unit) {
-      let units = g.units
-        .filter(_ => _.ownership === controller)
-        .filter(_ => unitIsType(_, target.type))
-
       if(target.attachment) {
         //TODO: Check for other Cubits that would limit targeting (like: Condemn)
-        units = units
+        let units = g.units
+          .filter(_ => _.ownership === controller)
+          .filter(_ => unitIsType(_, target.type))
           .filter(_ => _.cubits.length < _.slots)
           .filter(_ => unitHasCubit(_, CUBIT_TYPES.Condemn) === false)
           .filter(_ => (unitHasCubit(_, CUBIT_TYPES.Immunity) && _.ownership === opponent) === false)
-      }
-      let indexes = units.map(_ => _.id);
-      targets.push(new UnitTarget(controller, indexes, target.targets));
 
+          let indexes = units.map(_ => _.id);
+          targets.push(new UnitTarget(controller, indexes, target.targets));
+      } else {
+        // TODO: Cubit Targeting...
+      }
     } else if (target.location === LOCATIONS.Board) {
       let units = g.units
         .filter(_ => _.location === LOCATIONS.Board)

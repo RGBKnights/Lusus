@@ -8,7 +8,7 @@ const queryString = require('query-string');
 
 const parsed = queryString.parse(window.location.search);
 const matchId = parsed.match ? parsed.match : uuidv4();
-const playerId = parsed.player ? parsed.player : "0";
+const playerId = parsed.player ? parsed.player : null;
 
 const ClientApp = Client({
   game: GameCore,

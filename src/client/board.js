@@ -32,7 +32,8 @@ import {
   GAME_PHASES,
   UNIT_TYPES,
   UNIT_FILE, 
-  LOCATIONS
+  LOCATIONS,
+  MOVEMENT_ACTIONS
 } from '../game/common';
 
 import { GameLogic } from '../game/logic';
@@ -77,8 +78,11 @@ class GameTable extends React.Component {
     this.unitColors[UNIT_FILE.G] = '#800080';
     this.unitColors[UNIT_FILE.H] = '#FF0000';
 
-    let p = this.props.playerID == null ? "0" : this.props.playerID;
+    this.unitsMap = {};
+    this.unitsMap[UNIT_TYPES.Common] = {};
+    this.unitsMap[UNIT_TYPES.Royal] = {};
 
+    let p = this.props.playerID == null ? "0" : this.props.playerID;
     this.state = {
       flow: GAME_FLOW.Lobby,
       player: p,
@@ -137,7 +141,8 @@ class GameTable extends React.Component {
     let targets = this.state.targets.filter(_ => _.location === LOCATIONS.Arena);
     let active = targets.length > 0;
 
-    let params = this.getGridParams(0, 0);
+    let size = tokens.length > 0 ? 1 : 0;
+    let params = this.getGridParams(size, size);
     params.onClick = this.onArenaClickGrid;
     let grid = React.createElement(Grid, params, tokens);
 
@@ -150,29 +155,33 @@ class GameTable extends React.Component {
     let targets = this.state.targets.filter(_ => _.location === LOCATIONS.Arena);
     let active = targets.length > 0;
     if(active) {
-      alert('Arena');
+      this.props.moves.attachCubitToArena(this.state.selection.id);
+      this.setState({ selection: null, targets: [] });
     }
   }
 
   onArenaClickGrid = ({x, y}) => {
-    // Do Somthing!
+    // Target Cubits...
   }
 
   getHand() {
     let tokens = [];
 
     let cubits = this.props.G.cubits.filter(_ => _.location === LOCATIONS.Hand && _.controller === this.state.player);
-    if(this.state.player === this.props.playerID) {
-      for (let i = 0; i < cubits.length; i++) {
-        const cubit = cubits[i];
-  
-        let team =  this.teamColors[cubit.ownership];
-        let element = React.createElement(CubitText, { name: cubit.name, value: cubit.name, team: team, color: null });
-        let token = React.createElement(Token, {key: cubit.id, x: 0, y: i}, element);
-        tokens.push(token);
-      }
+    for (let i = 0; i < cubits.length; i++) {
+      const cubit = cubits[i];
+
+      let team =  this.teamColors[cubit.ownership];
+      let element = React.createElement(CubitText, { name: cubit.name, value: cubit.name, team: team, color: null });
+      let token = React.createElement(Token, {key: cubit.id, x: 0, y: i}, element);
+      tokens.push(token);
     }
 
+    /*
+    if(this.state.player === this.props.playerID) {      
+    }
+    */
+   
     let targets = this.state.targets.filter(_ => _.location === LOCATIONS.Hand).filter(_ => _.player === this.state.player);
     let active = targets.length > 0;
 
@@ -186,8 +195,8 @@ class GameTable extends React.Component {
   }
 
   onHandClickHeader = () => {
-    let p = this.state.player;
-    alert('Hand: ' + p);
+    // let p = this.state.player;
+    // alert('Hand: ' + p);
   }
 
   onHandClickGrid = ({x, y}) => {
@@ -239,22 +248,13 @@ class GameTable extends React.Component {
     let targets = this.state.targets.filter(_ => _.location === LOCATIONS.Player).filter(_ => _.player === this.state.player);
     let active = targets.length > 0;
     if (active) {
-      let p = this.state.player;
-      alert('Player: ' + p);
+      this.props.moves.attachCubitToPlayer(this.state.selection.id, this.state.player);
+      this.setState({ selection: null, targets: [] });
     }
   }
 
   onAvatarClickGrid = ({x, y}) => {
-    /*
-    if (this.props.playerID === this.state.player) {
-      let cubits = this.props.G.cubits.filter(_ => _.location === LOCATIONS.Hand && _.controller === this.state.player);
-      let cubit = cubits[y];
-      if(cubit) {
-        let targets = getTargets(this.props.G, this.props.ctx, this.state.player, cubit);
-        this.setState({ selection: cubit, targets: targets });
-      }
-    }
-    */
+    // Target Cubits...
   }
 
   getBoard() {
@@ -288,13 +288,18 @@ class GameTable extends React.Component {
     let targets = this.state.targets.filter(_ => _.location === LOCATIONS.Board);
     for (const target of targets) {
       for (const pos of target.positions) {
-        params.colorMap[`${pos.x},${pos.y}`] = '#28a745';
+        params.colorMap[`${pos.x},${pos.y}`] = '#28A745';
       }
     }
 
     let moves = this.state.movements;
     for (const move of moves) {
-      params.colorMap[`${move.x},${move.y}`] = '#28a745';
+      if(move.action === MOVEMENT_ACTIONS.Capture) {
+        params.colorMap[`${move.x},${move.y}`] = '#A74528';
+      } else {
+        params.colorMap[`${move.x},${move.y}`] = '#28A745';
+      }
+      
     }
 
     let grid = React.createElement(Grid, params, tokens);
@@ -307,18 +312,45 @@ class GameTable extends React.Component {
       for (const target of targets) {
         for (const pos of target.positions) {
           if(pos.x === x && pos.y === y) {
-            alert(`Board: (${x},${y})`);
+            this.props.moves.attachCubitToBroad(this.state.selection.id, x, y);
+            this.setState({ selection: null, targets: [] });
           }
         }
       }
     } else if(this.props.ctx.phase === GAME_PHASES.Move) {
-      let unit = this.props.G.units.filter(_ => _.location === LOCATIONS.Board).find(_ => _.position.x === x && _.position.y === y);
-      let movements = unit == null ? [] : getMovements(this.props.G, this.props.ctx, this.state.player, {x,y}, unit);
-      this.setState({ selection: unit, movements: movements });
+      let movements = this.state.movements;
+      if(movements.length > 0) {
+        for (const move of movements) {
+          if(move.x === x && move.y === y) {
+            if(move.action === MOVEMENT_ACTIONS.Passive) {
+              this.props.moves.movePassive(this.state.selection.id, x, y);
+              this.setState({ selection: null, movements: [] });
+              return;
+            } else if(move.action === MOVEMENT_ACTIONS.Capture) {
+              this.props.moves.moveCapture(this.state.selection.id, move.unit);
+              this.setState({ selection: null, movements: [] });
+              return;
+            } else if(move.action === MOVEMENT_ACTIONS.Swap) {
+              this.props.moves.moveCapture(this.state.selection.id, move.unit);
+              this.setState({ selection: null, movements: [] });
+              return;
+            } else {
+              alert("Move", `${x},${y}`);
+            }
+          }
+        }
+        this.setState({ selection: null, movements: [] });
+      } else {
+        let unit = this.props.G.units.filter(_ => _.location === LOCATIONS.Board).find(_ => _.position.x === x && _.position.y === y);
+        let movements = unit == null ? [] : getMovements(this.props.G, this.props.ctx, this.state.player, {x,y}, unit);
+        this.setState({ selection: unit, movements: movements });
+      }
     }
   }
 
   getUnitsField(type) {
+    this.unitsMap[type] = {};
+
     let tokens = [];
     let units = this.props.G.units
       .filter(_ => _.ownership === this.state.player)
@@ -355,6 +387,8 @@ class GameTable extends React.Component {
         tokens.push(token);
       }
 
+      this.unitsMap[type][`${0},${y}`] = unit.id;
+
       let target = this.state.targets.find(_ => _.location === LOCATIONS.Unit && _.units.includes(unit.id));
       if(target) {
         params.colorMap[`${0},${y}`] = '#28a745';
@@ -364,10 +398,13 @@ class GameTable extends React.Component {
       for (let x = 0; x < unit.cubits.length; x++) {
         const cubit = unit.cubits[x];
 
+        let offset = (x+1);
         let team = this.teamColors[unit.ownership];
         let element = React.createElement(CubitText, { name: cubit.name, value: cubit.name, team: team, color: '' });
-        let token = React.createElement(Token, {key: cubit.id, x: (x+1), y: y}, element);
+        let token = React.createElement(Token, {key: cubit.id, x: offset, y: y}, element);
         tokens.push(token);
+
+        this.unitsMap[type][`${offset},${y}`] = cubit.id;
       }
 
       let slots = unit.slots;
@@ -381,11 +418,25 @@ class GameTable extends React.Component {
   }
 
   onCommonClickGrid = ({x, y}) => {
-    alert('Common');
+    if(x === 0) {
+      let unitId = this.unitsMap[UNIT_TYPES.Common][`${x},${y}`];
+      this.props.moves.attachCubitToUnit(this.state.selection.id, unitId);
+      this.setState({ selection: null, targets: [] });
+    } else {
+      // let cuitId = this.unitsMap[`${x},${y}`];
+      // Target Cubits
+    }
   }
 
   onRoyalsClickGrid = ({x, y}) => {
-    alert('Royal');
+    if(x === 0) {
+      let unitId = this.unitsMap[UNIT_TYPES.Royal][`${x},${y}`];
+      this.props.moves.attachCubitToUnit(this.state.selection.id, unitId);
+      this.setState({ selection: null, targets: [] });
+    } else {
+      // let cuitId = this.unitsMap[`${x},${y}`];
+      // Target Cubits
+    }
   }
 
   getSwitchPlayers() {
@@ -404,11 +455,16 @@ class GameTable extends React.Component {
     let player = (Number(this.state.player) + 1);
     let bag = this.logic.getBagSize(this.props.G, this.props.ctx, this.state.player);
     let actions = this.logic.getActions(this.props.G, this.props.ctx, this.state.player);
+    let alUnits = this.logic.getAfterlifeUnits(this.props.G, this.props.ctx, this.state.player);
+    let alCubits = this.logic.getAfterlifeCubits(this.props.G, this.props.ctx, this.state.player);
    
     return (
       <NavItem  className="list-inline-item">
         <Button size="sm" color="secondary" disabled>
-          <FaUserAlt className="icon-inline" /> { player } <FaBolt className="icon-inline" /> { actions } <FaShoppingBag className="icon-inline" /> { bag } <FaEject className="icon-inline" /> 0/0
+          <FaUserAlt className="icon-inline" /> { player } 
+          <FaBolt className="icon-inline" /> { actions } 
+          <FaShoppingBag className="icon-inline" /> { bag } 
+          <FaEject className="icon-inline" /> { alUnits } / { alCubits }
         </Button>
       </NavItem>
     );

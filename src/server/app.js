@@ -4,8 +4,14 @@ import GameCore from '../game/core';
 const path = require('path');
 const serve = require('koa-static');
 
+var currentPath = process.cwd();
+let env =  process.env.NODE_ENV
 let host = process.env.MONGO_URI;
 let database = process.env.MONGO_DATABASE
+const port = process.env.PORT || 8000;
+
+console.log('Startup - Environment: ', env);
+console.log('Startup - Database: ', host);
 
 let db = undefined;
 if (host && database) {
@@ -17,11 +23,9 @@ const server = Server({
   db: db
 })
 
-var currentPath = process.cwd();
 const buildPath = path.join(currentPath, '/build/client/');
 server.app.use(serve(buildPath));
 
-const port = process.env.PORT || 8000;
 server.run(port, () => {
-  console.log(`Listening at: http://localhost:${port}/`);
+  console.log(`Startup - Listening on [${port}]`);
 });

@@ -256,7 +256,7 @@ export class EncumberCubit extends Cubit {
   constructor(ownership) {
       super(CUBIT_TYPES.Encumber, "Encumber", ownership);
 
-      this.targeting.push(new UnitTargeting(TARGET_CONSTRAINTS.Self));
+      this.targeting.push(new UnitTargeting(TARGET_CONSTRAINTS.Opponent));
   }
 }
 
