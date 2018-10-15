@@ -1,5 +1,8 @@
-import { Server, Mongo, InMemory } from 'boardgame.io/server';
+import { Server, Mongo } from 'boardgame.io/server';
 import GameCore from '../game/core';
+
+const path = require('path');
+const serve = require('koa-static');
 
 let host = process.env.MONGO_URI;
 let database = process.env.MONGO_DATABASE
@@ -13,6 +16,9 @@ const server = Server({
   games: [GameCore],
   db: db
 })
+
+const buildPath = path.join(__dirname, '../../build');
+server.app.use(serve(buildPath));
 
 const port = process.env.PORT || 8000;
 server.run(port, () => {

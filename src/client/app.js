@@ -14,7 +14,7 @@ const ClientApp = Client({
   game: GameCore,
   board: GameTable,
   debug: false,
-  multiplayer: { server: process.env.REACT_APP_SERVER_URL }
+  multiplayer: { server: process.env.REACT_APP_SERVER_URL } // 'lusus.us-3.evennode.com'
 });
 
 const App = () => (

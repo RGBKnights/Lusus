@@ -465,8 +465,12 @@ class GameTable extends React.Component {
 
   onShare() {
     let url = window.location.origin + "?match=" + this.props.gameID + "&player=1";
-    navigator.clipboard.writeText(url);
-    alert("URL Copied!");
+    const el = document.createElement('textarea');
+    el.value = url;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
   }
 
   render() {
