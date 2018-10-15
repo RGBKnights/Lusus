@@ -2,10 +2,21 @@
 
 ### vNext Steps
 
+1. Add WebPack for Server to do what "build-server": "npx babel src --out-dir build/host --presets=zero --source-maps --ignore client" 
+is doing currently...
+2. Create Reference too client and host build paths
+3. Figure out if we can do the same things for development
+
+### THEN
+
 1. Push to Production - http://lusus.us-3.evennode.com/
 2. Add url query string for match and player
 3. Add code for players to draw new hand in Draw()
 4. Implement onPlay() for cubits
+
+.
+.
+.
 
 ####  Phases
 

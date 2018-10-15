@@ -17,11 +17,11 @@ const server = Server({
   db: db
 })
 
-const buildPath = path.join(__dirname, '../../build');
+var currentPath = process.cwd();
+const buildPath = path.join(currentPath, '/build/client/');
 server.app.use(serve(buildPath));
 
 const port = process.env.PORT || 8000;
 server.run(port, () => {
-  console.log(`Serving at: http://localhost:${port}/`);
-  console.log(`Serving at: http://localhost:${port+1}/`);
+  console.log(`Listening at: http://localhost:${port}/`);
 });
