@@ -1,3 +1,10 @@
+export const GAME_FLOW = {
+  Unknown: '',
+  Lobby: 'Start',
+  Occurring: 'Occurring',
+  GameOver: 'End',
+};
+
 export const GAME_PHASES = {
   Unknown: '',
   Play: 'Play',
@@ -265,10 +272,11 @@ export class Movement {
 }
 
 export class Move {
-  constructor(action, x, y) {
+  constructor(action, x, y, unit = null) {
     this.action = action;
     this.x = x;
     this.y = y;
+    this.unit = unit;
   }
 }
 

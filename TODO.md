@@ -2,6 +2,9 @@
 
 ### vNext Steps
 
+1. Fix movement in getMovements()
+2. Implement onPlay() for cubits
+
 ####  Phases
 
 **Play**

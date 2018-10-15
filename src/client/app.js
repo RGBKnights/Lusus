@@ -3,18 +3,28 @@ import { Client } from 'boardgame.io/react';
 import GameTable from './board';
 import GameCore from '../game/core';
 
+const uuidv4 = require('uuid/v4');
+const queryString = require('query-string');
+
+const parsed = queryString.parse(window.location.search);
+if(parsed.m === undefined && parsed.p === undefined) {
+  window.location = window.location.origin + "?p=0&m=" + uuidv4();
+}
+
+const matchId = parsed.m;
+const playerId = parsed.p;
+
 const ClientApp = Client({
   game: GameCore,
   board: GameTable,
   debug: false,
-  multiplayer: { server: process.env.REACT_APP_SERVER_URL }
+  multiplayer: { server: process.env.REACT_APP_SERVER_URL } // 'lusus.us-3.evennode.com'
 });
 
 const App = () => (
   <div>
     <div>
-      <ClientApp gameID="f5396086" playerID="0" />
-      <ClientApp gameID="f5396086" playerID="1" />
+      <ClientApp gameID={matchId} playerID={playerId} />
     </div>
   </div>
 );
