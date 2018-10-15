@@ -1,13 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { FaEye, FaArrowRight, FaUserAlt, FaClock, FaBolt, FaShoppingBag, FaEject, FaShareAlt } from 'react-icons/fa';
-import { FiWifi, FiWifiOff }from 'react-icons/fi';
+import { FaEye, FaArrowRight, FaUserAlt, FaClock, FaShareAlt } from 'react-icons/fa';
+import { FiWifiOff }from 'react-icons/fi';
 
 // Bootstrap
 import { 
   Container, 
-  // Row, Col,
+  Row, Col,
   Navbar, NavbarBrand, Nav, NavItem,
   Button,
   Badge
@@ -451,31 +451,12 @@ class GameTable extends React.Component {
     this.setState({ player: p });
   }
 
-  getHeader() {
-    let player = (Number(this.state.player) + 1);
-    let bag = this.logic.getBagSize(this.props.G, this.props.ctx, this.state.player);
-    let actions = this.logic.getActions(this.props.G, this.props.ctx, this.state.player);
-    let alUnits = this.logic.getAfterlifeUnits(this.props.G, this.props.ctx, this.state.player);
-    let alCubits = this.logic.getAfterlifeCubits(this.props.G, this.props.ctx, this.state.player);
-   
-    return (
-      <NavItem  className="list-inline-item">
-        <Button size="sm" color="secondary" disabled>
-          <FaUserAlt className="icon-inline" /> { player } 
-          <FaBolt className="icon-inline" /> { actions } 
-          <FaShoppingBag className="icon-inline" /> { bag } 
-          <FaEject className="icon-inline" /> { alUnits } / { alCubits }
-        </Button>
-      </NavItem>
-    );
-  }
-
   getPlayerConnection() {
     if(this.props.playerID !== null) {
       let connected = this.props.isMultiplayer && this.props.isConnected;
-      return connected ? 
-        <NavItem className="list-inline-item"><Button size="sm" color="success" title="Connected" disabled><FiWifi className="icon-inline" /></Button></NavItem> :
-        <NavItem className="list-inline-item"><Button size="sm" color="danger" title="Disconnected" disabled><FiWifiOff className="icon-inline" /></Button></NavItem>
+      if(connected === false) {
+        return <NavItem className="list-inline-item"><Button size="sm" color="danger" title="Disconnected" disabled><FiWifiOff className="icon-inline" /></Button></NavItem>;
+      }
     }
   }
 
@@ -498,35 +479,77 @@ class GameTable extends React.Component {
   }
 
   getPhase() {
-    let player = (Number(this.props.ctx.currentPlayer) + 1);
+    let playerController = (Number(this.props.playerID) + 1);
+    let playerTurn = (Number(this.props.ctx.currentPlayer) + 1);
+
     let phase = this.props.ctx.phase;
-    return (
+    return [
+      <NavItem className="list-inline-item">
+        <Button size="sm" color="secondary" disabled>
+          <FaUserAlt className="icon-inline" /> { playerController } 
+        </Button>
+      </NavItem>,
       <NavItem className="list-inline-item">      
         <Button size="sm" color="secondary" disabled>
-          <FaClock className="icon-inline" /> { this.props.ctx.turn } | <FaUserAlt className="icon-inline" /> { player }  <small>{phase} Phase</small>
+          <Badge color="info">
+            <FaClock className="icon-inline" /> { this.props.ctx.turn } 
+          </Badge>
+          &nbsp;
+          <Badge color="info">
+            <FaUserAlt className="icon-inline" /> { playerTurn } 
+          </Badge>
+          &nbsp;
+          <small>{phase} Phase</small>
         </Button>
       </NavItem>
-    );
+    ]
   }
 
   getShare() {
     if(this.props.playerID === "0") {
       return (
         <NavItem className="list-inline-item">
-          <Button size="sm" color="info" title="Share" onClick={this.onShare}><FaShareAlt className="icon-inline" /></Button>
+          <Button size="sm" color="primary" title="Share" onClick={this.onShare}><FaShareAlt className="icon-inline" /></Button>
         </NavItem>
       );
     }
   }
 
   onShare() {
-    let url = window.location.origin + "?match=" + this.props.gameID + "&player=1";
+    let url = window.location.origin + "?p=1&m=" + this.props.gameID;
     const el = document.createElement('textarea');
     el.value = url;
     document.body.appendChild(el);
     el.select();
     document.execCommand('copy');
     document.body.removeChild(el);
+  }
+
+  getPlayerStats() {
+    let playerView = (Number(this.state.player) + 1);
+    let bag = this.logic.getBagSize(this.props.G, this.props.ctx, this.state.player);
+    let actions = this.logic.getActions(this.props.G, this.props.ctx, this.state.player);
+    let alUnits = this.logic.getAfterlifeUnits(this.props.G, this.props.ctx, this.state.player);
+    let alCubits = this.logic.getAfterlifeCubits(this.props.G, this.props.ctx, this.state.player);
+
+    return [
+      <Row key="player">
+        <Col><Badge color="secondary">Player</Badge></Col>
+        <Col><div className="text-right">{ playerView }</div></Col>
+      </Row>,
+      <Row key="bag">
+        <Col><Badge color="secondary">Bag</Badge></Col>
+        <Col><div className="text-right">{ bag }</div></Col>
+      </Row>,
+      <Row key="actions">
+        <Col><Badge color="secondary">Actions</Badge></Col>
+        <Col><div className="text-right">{ actions }</div></Col>
+      </Row>,
+      <Row key="afterlife">
+        <Col><Badge color="secondary">Afterlife</Badge></Col>
+        <Col><div className="text-right">{ alUnits }/{ alCubits }</div></Col>
+      </Row>
+    ];
   }
 
   render() {
@@ -543,10 +566,7 @@ class GameTable extends React.Component {
               <Nav className="p-1 list-inline">
                 { this.getPhase() }
                 { this.getNext() }
-              </Nav>
-              <Nav className="p-1 list-inline ml-auto ">
                 { this.getSwitchPlayers() }
-                { this.getHeader() }
               </Nav>
               <Nav className="p-1 list-inline ml-auto ">
                 <Help />
@@ -558,6 +578,7 @@ class GameTable extends React.Component {
           <div className="horizontal-warper">
             <div className="horizontal-section-content">
               <div className="p-1">
+                { this.getPlayerStats() }
                 { this.getArena() }
               </div>
               <div className="horizontal-warper">

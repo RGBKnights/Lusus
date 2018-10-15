@@ -7,8 +7,12 @@ const uuidv4 = require('uuid/v4');
 const queryString = require('query-string');
 
 const parsed = queryString.parse(window.location.search);
-const matchId = parsed.match ? parsed.match : uuidv4();
-const playerId = parsed.player ? parsed.player : null;
+if(parsed.m === undefined && parsed.p === undefined) {
+  window.location = window.location.origin + "?p=0&m=" + uuidv4();
+}
+
+const matchId = parsed.m;
+const playerId = parsed.p;
 
 const ClientApp = Client({
   game: GameCore,

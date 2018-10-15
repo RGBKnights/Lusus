@@ -75,7 +75,7 @@ export class Help extends React.Component {
 
     return (
       <NavItem className="list-inline-item">
-        <Button size="sm" color="info" title="Help" onClick={this.toggle}><IoMdHelp className="icon-inline" /></Button>
+        <Button size="sm" color="primary" title="Help" onClick={this.toggle}><IoMdHelp className="icon-inline" /></Button>
 
         <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
           <ModalHeader toggle={this.toggle}>Help</ModalHeader>

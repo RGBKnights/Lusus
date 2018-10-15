@@ -17,6 +17,7 @@ export class GameLogic {
       new Cubits.CardinalCubit(p),
       new Cubits.JumpCubit(p),
       new Cubits.SideStepCubit(p),
+      /*
       new Cubits.SwapCubit(p),
       new Cubits.DrawNegOneCubit(p),
       new Cubits.DrawPlusOneCubit(p),
@@ -26,7 +27,7 @@ export class GameLogic {
       new Cubits.KingOfHillCubit(p),
       new Cubits.EnrageCubit(p),
       new Cubits.PassifyCubit(p),
-      /*
+      
       new Cubits.AncientRevivalCubit(p),
       new Cubits.BacktoBasicsCubit(p),
       new Cubits.BlinkDodgeCubit(p),
