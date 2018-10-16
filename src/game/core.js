@@ -115,11 +115,13 @@ const GameCore = Game({
           return undefined;
         }
 
-        unit.position = {x,y};
+        unit.position.x = x;
+        unit.position.y = y;
         unit.moves++;
 
         for (const cubit of unit.cubits) {
-          cubit.position = {x,y};
+          cubit.position.x = x;
+          cubit.position.x = y;
           cubit.moves++;
         }
 

@@ -1,17 +1,8 @@
-html {
+
+.gameboard {
   background-color: #000000;
   color: #ffffff;
   font-size: 0.8em;
-}
-
-body {
-  background-color: #000000;
-  color: #ffffff;
-  font-size: 0.8em;
-}
-
-.modal {
-  color: #000000;
 }
 
 g > text {
