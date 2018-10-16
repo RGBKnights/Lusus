@@ -115,15 +115,7 @@ const GameCore = Game({
           return undefined;
         }
 
-        unit.position = {x,y};
-        unit.moves++;
-
-        for (const cubit of unit.cubits) {
-          cubit.position = {x,y};
-          cubit.moves++;
-        }
-
-        g.players[ctx.currentPlayer].moves--;
+        logic.onMove(g, ctx, unit, x, y);
 
         return g;
       },
@@ -143,10 +135,46 @@ const GameCore = Game({
         if(destination.type === UNIT_TYPES.King) {
           // GameOver
           ctx.events.endGame(ctx.currentPlayer);
-          return g;
+        } else {
+          // Move Source to Destination
+          source.position.x = destination.position.x;
+          source.position.y = destination.position.y;
+          source.moves++;
+
+          for (const cubit of source.cubits) {
+            cubit.position.x = source.position.x
+            cubit.position.y = source.position.y;
+            cubit.moves++;
+          }
+
+          // Move destination to Afterlife
+          destination.location = LOCATIONS.Afterlife;
+
+          for (const cubit of destination.cubits) {
+            cubit.location = LOCATIONS.Afterlife;
+          }
+
+          g.players[ctx.currentPlayer].moves--;
         }
 
-        // Move Source to Destination
+        return g;
+      },
+      moveSwap(G, ctx, sourceId, destinationId) {
+        const g = clone(G);
+        
+        let source = g.units.find(_ => _.id === sourceId);
+        if(!source) {
+          return undefined;
+        }
+
+        let destination = g.units.find(_ => _.id === destinationId);
+        if(!destination) {
+          return undefined;
+        }
+        
+        let x = source.position.x;
+        let y = source.position.y;
+
         source.position.x = destination.position.x;
         source.position.y = destination.position.y;
         source.moves++;
@@ -157,19 +185,18 @@ const GameCore = Game({
           cubit.moves++;
         }
 
-        // Move destination to Afterlife
-        destination.location = LOCATIONS.Afterlife;
+        destination.position.x = x;
+        destination.position.y = y;
+        destination.moves++;
 
         for (const cubit of destination.cubits) {
-          cubit.location = LOCATIONS.Afterlife;
+          cubit.position.x = destination.position.x
+          cubit.position.y = destination.position.y;
+          cubit.moves++;
         }
 
         g.players[ctx.currentPlayer].moves--;
 
-        return g;
-      },
-      moveSwap(G, ctx, sourceId, destinationId) {
-        const g = clone(G);
         return g;
       },
       // Draw new Hand

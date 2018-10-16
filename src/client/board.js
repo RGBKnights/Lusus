@@ -35,7 +35,8 @@ import {
   UNIT_TYPES,
   UNIT_FILE, 
   LOCATIONS,
-  MOVEMENT_ACTIONS
+  MOVEMENT_ACTIONS,
+  CUBIT_TYPES
 } from '../game/common';
 
 import { GameLogic } from '../game/logic';
@@ -225,7 +226,8 @@ class GameTable extends React.Component {
 
     let cubits = this.props.G.cubits.filter(_ => _.location === LOCATIONS.Hand && _.controller === this.state.player);
 
-    if(this.state.player === this.props.playerID) { 
+    let hasKnowledge = this.logic.hasCubit(this.props.G, this.props.ctx, CUBIT_TYPES.Knowledge, LOCATIONS.Player, this.props.playerID);
+    if(this.state.player === this.props.playerID || hasKnowledge) { 
       
       for (let i = 0; i < cubits.length; i++) {
         const cubit = cubits[i];
@@ -396,7 +398,7 @@ class GameTable extends React.Component {
                 this.setState({ selection: null, movements: [] });
                 return;
               } else if(move.action === MOVEMENT_ACTIONS.Swap) {
-                this.props.moves.moveCapture(this.state.selection.id, move.unit);
+                this.props.moves.moveSwap(this.state.selection.id, move.unit);
                 this.setState({ selection: null, movements: [] });
               } else {
                 alert("Move", `${x},${y}`);

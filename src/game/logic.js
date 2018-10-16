@@ -2,6 +2,7 @@ import {
   CUBIT_TYPES,
   UNIT_TYPES,
   UNIT_FILE,
+  MOVEMENT_TYPES,
   LOCATIONS,
 } from './common';
 
@@ -17,17 +18,16 @@ export class GameLogic {
       new Cubits.CardinalCubit(p),
       new Cubits.JumpCubit(p),
       new Cubits.SideStepCubit(p),
-      /*
       new Cubits.SwapCubit(p),
       new Cubits.DrawNegOneCubit(p),
       new Cubits.DrawPlusOneCubit(p),
       new Cubits.DoubleActionCubit(p),
       new Cubits.KnowledgeCubit(p),
       new Cubits.CondemnCubit(p),
-      new Cubits.KingOfHillCubit(p),
       new Cubits.EnrageCubit(p),
       new Cubits.PassifyCubit(p),
-      
+      /*
+      new Cubits.KingOfHillCubit(p),
       new Cubits.AncientRevivalCubit(p),
       new Cubits.BacktoBasicsCubit(p),
       new Cubits.BlinkDodgeCubit(p),
@@ -161,7 +161,45 @@ export class GameLogic {
     return true;
   }
 
+  onMove(g, ctx, unit, x, y) {
+    unit.position = {x,y};
+    unit.moves++;
+
+    switch (unit.type) {
+      case UNIT_TYPES.Pawn:
+        unit.movement = unit.movement.filter(_ => (_.type === MOVEMENT_TYPES.Forward && _.distance === 2) === false); break; // Remove DoubleStep
+      case UNIT_TYPES.King:
+        unit.movement = unit.movement.filter(_ => (_.type === MOVEMENT_TYPES.Castle) === false); break; // Remove Castle
+      default:
+        break;
+    }
+
+    for (const cubit of unit.cubits) {
+      cubit.position = {x,y};
+      cubit.moves++;
+
+      switch (cubit.type) {
+        case CUBIT_TYPES.Poisoned:
+          break;
+        default:
+          break;
+      }
+    }
+
+    g.players[ctx.currentPlayer].moves--;
+  }
+
   // PROPERTIES
+
+  hasCubit(g, ctx, type, location, player = null) {
+    let cubits = g.cubits.filter(_ => _.location === location && _.controller === player);
+    for (let i = 0; i < cubits.length; i++) {
+      if(cubits[i].type === type) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   getBagSize(g, ctx, player) {
     return g.cubits.filter(_ => _.location === LOCATIONS.Bag && _.controller === player).length;
@@ -172,10 +210,10 @@ export class GameLogic {
 
     let cubits = g.cubits.filter(_ => _.location === LOCATIONS.Player && _.controller === player).map(_ => _.type);
     if(cubits.includes(CUBIT_TYPES.DrawPlusOne)) {
-      draws--;
+      draws++;
     }
     if(cubits.includes(CUBIT_TYPES.DrawNegOne)) {
-      draws++;
+      draws--;
     }
 
     return draws;

@@ -3,6 +3,7 @@
 ### vNext Steps
 
 1. Fix movement in getMovements()
+a. Pawn Fork Capture
 2. Implement onPlay() for cubits
 
 ####  Phases

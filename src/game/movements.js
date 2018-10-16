@@ -173,7 +173,7 @@ export function getMovements(g, ctx, player, origin, unit) {
 
       for (let index = 0; index < targeting.length; index++) {
         const target = targeting[index];
-        let u = getUnit(g, ctx, null, target.x, target.y);
+        let u = getUnit(g, target.x, target.y);
         if(u && u.ownership !== player && isAgressive) {
           moves.push(new Move(MOVEMENT_ACTIONS.Capture, target.x, target.y, u.id));
         }
