@@ -1,0 +1,34 @@
+html {
+  background-color: #000000;
+  color: #ffffff;
+  font-size: 0.8em;
+}
+
+body {
+  background-color: #000000;
+  color: #ffffff;
+  font-size: 0.8em;
+}
+
+.modal {
+  color: #000000;
+}
+
+g > text {
+  cursor: pointer;
+}
+
+.horizontal-warper {
+  overflow: auto; 
+  white-space: nowrap;
+}
+
+.horizontal-section-content {
+  display: inline-block;
+  margin: 3px;
+  vertical-align: top;
+}
+
+.icon-inline {
+  vertical-align: -10%;
+}
