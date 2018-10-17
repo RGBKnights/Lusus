@@ -1,13 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { FaEye, FaUserAlt, FaClock, FaShareAlt } from 'react-icons/fa';
+import { FaEye, FaUserAlt, FaClock, FaShareAlt, FaBolt, FaShoppingBag, FaChess, FaSquare } from 'react-icons/fa';
 import { FiWifiOff }from 'react-icons/fi';
+
+import { ToastContainer, toast } from 'react-toastify';
 
 // Bootstrap
 import { 
   Container, 
-  Row, Col,
+  // Row, Col,
   Navbar, NavbarBrand, Nav, NavItem,
   Button,
   Badge
@@ -102,6 +104,15 @@ class GameTable extends React.Component {
     window.removeEventListener('resize', this.updateDimensions);
   }
 
+  componentDidUpdate(props) {
+    if (this.props.isActive && this.props.ctx.phase === "Play" && props.ctx.phase !== "Play") {
+      toast("Your Turn!");
+    }
+    if (this.props.isActive && this.props.ctx.phase === "Draw" && props.ctx.phase !== "Draw") {
+      this.props.moves.drawCubits();
+    }
+  }
+
   updateDimensions = () => {
     this.forceUpdate();
   };
@@ -153,6 +164,7 @@ class GameTable extends React.Component {
     return params;
   }
 
+  /*
   getPlayerStats() {
     // let playerView = this.state.player === "0" ? "White" : this.state.player === "1" ? "Black" : "";
     let bag = this.logic.getBagSize(this.props.G, this.props.ctx, this.state.player);
@@ -161,12 +173,6 @@ class GameTable extends React.Component {
     let alCubits = this.logic.getAfterlifeCubits(this.props.G, this.props.ctx, this.state.player);
 
     return [
-      /*
-      <Row key="player">
-        <Col><Badge color="secondary">View</Badge></Col>
-        <Col><div className="text-right">{ playerView }</div></Col>
-      </Row>,
-      */
       <Row key="bag">
         <Col><Badge color="secondary">Bag</Badge></Col>
         <Col><div className="text-right">{ bag }</div></Col>
@@ -177,10 +183,15 @@ class GameTable extends React.Component {
       </Row>,
       <Row key="afterlife">
         <Col><Badge color="secondary">Afterlife</Badge></Col>
-        <Col><div className="text-right">{ alUnits } | { alCubits }</div></Col>
+        <Col><div className="text-right">{ alUnits }</div></Col>
+      </Row>,
+      <Row key="graveyard">
+        <Col><Badge color="secondary">Graveyard</Badge></Col>
+        <Col><div className="text-right">{ alCubits }</div></Col>
       </Row>
     ];
   }
+  */
 
   getArena() {
     let tokens = [];
@@ -478,8 +489,8 @@ class GameTable extends React.Component {
 
         let offset = (x+1);
         let team = this.teamColors[unit.ownership];
-        let type = this.getCubitFromType(cubit.type);
-        let element = React.createElement(type, { name: cubit.name, value: cubit.name, team: team, color: '' });
+        let cubitType = this.getCubitFromType(cubit.type);
+        let element = React.createElement(cubitType, { name: cubit.name, value: cubit.name, team: team, color: '' });
         let token = React.createElement(Token, {key: cubit.id, x: offset, y: y}, element);
         tokens.push(token);
 
@@ -545,15 +556,16 @@ class GameTable extends React.Component {
 
   getNext() {
     if(this.props.isActive) {
-      let message = this.props.ctx.phase === GAME_PHASES.Draw ? "End Turn" : "Skip Phase";
-      let color =  this.props.ctx.phase === GAME_PHASES.Draw ? "success" : "warning";
-      return <NavItem className="list-inline-item"><Button size="sm" color={color} onClick={this.onNext}>{ message }</Button></NavItem>;
+      if(this.props.ctx.phase === GAME_PHASES.Play) {
+        let color = this.props.G.players[this.props.playerID].actions_used > 1 ? "success" : "warning";
+        return <NavItem className="list-inline-item"><Button size="sm" color={color} onClick={this.onNext}>Pass</Button></NavItem>;
+      }
     }
   }
 
   onNext = () => {
     if(this.props.ctx.phase === GAME_PHASES.Play) {
-      this.props.moves.skipDraw();
+      this.props.moves.skipPlay();
     } else if(this.props.ctx.phase === GAME_PHASES.Move) {
       this.props.moves.skipMovement();
     } else if(this.props.ctx.phase === GAME_PHASES.Draw) {
@@ -587,7 +599,7 @@ class GameTable extends React.Component {
   }
   
   getPhase() {
-    let phase = this.props.ctx.phase + " Phase";
+    let phase = this.props.ctx.phase;
     let color = "icon-inline";
     if(this.props.ctx.currentPlayer === "0") {
       color = "icon-inline text-light";
@@ -595,18 +607,32 @@ class GameTable extends React.Component {
       color = "icon-inline text-dark";
     }
     
-    return [
-      <NavItem key="turn" className="list-inline-item">      
+    return (
+      <NavItem className="list-inline-item">      
         <Button size="sm" color="secondary" disabled>
-          <FaClock className="icon-inline" /> { this.props.ctx.turn }
-        </Button>
-      </NavItem>,
-      <NavItem key="phase" className="list-inline-item">      
-        <Button size="sm" color="secondary" disabled>
+          <FaClock className="icon-inline" /> { this.props.ctx.turn } &nbsp;&nbsp;
           <FaUserAlt className={color} /> { phase }
         </Button>
       </NavItem>
-    ];
+    );
+  }
+
+  getPlayerStats() {
+    let bag = this.logic.getBagSize(this.props.G, this.props.ctx, this.state.player);
+    let actions = this.logic.getActions(this.props.G, this.props.ctx, this.state.player);
+    let alUnits = this.logic.getAfterlifeUnits(this.props.G, this.props.ctx, this.state.player);
+    let alCubits = this.logic.getAfterlifeCubits(this.props.G, this.props.ctx, this.state.player);
+
+    return (
+      <NavItem className="list-inline-item">      
+        <Button size="sm" color="secondary" disabled>
+          <FaBolt className="icon-inline" /> {actions} &nbsp;&nbsp;
+          <FaShoppingBag className="icon-inline" /> {bag} &nbsp;&nbsp;
+          <FaChess className="icon-inline" /> { alUnits } &nbsp;&nbsp;
+          <FaSquare className="icon-inline" /> {alCubits}
+        </Button>
+      </NavItem>
+    );
   }
 
   getShare() {
@@ -634,44 +660,7 @@ class GameTable extends React.Component {
     window.location = url;
   }
 
-  getTable() {
-    return (
-      <div className="horizontal-warper">
-        <div className="horizontal-section-content">
-          <div className="p-1">
-            { /* this.getPlayerStats() */ }
-            { this.getArena() }
-          </div>
-          <div className="horizontal-warper">
-            <div className="horizontal-section-content">
-              { this.getHand() }
-            </div>
-            <div className="horizontal-section-content">
-              { this.getAvatar() }
-            </div>
-          </div>
-        </div>
-        <div className="horizontal-section-content">
-          <div className="text-center">
-            <Badge>Board</Badge>
-          </div>
-          { this.getBoard() }
-        </div>
-        <div className="horizontal-section-content">
-          <div className="text-center">
-            <Badge>Commons</Badge>
-          </div>
-          { this.getUnitsField(UNIT_TYPES.Common) }
-        </div>
-        <div className="horizontal-section-content">
-          <div className="text-center">
-            <Badge>Royals</Badge>
-          </div>
-          { this.getUnitsField(UNIT_TYPES.Royal) }
-        </div>
-      </div>
-    );
-  }
+  
 
   getHeaderActive() {
     return (
@@ -682,8 +671,9 @@ class GameTable extends React.Component {
             <strong className="p-1">Lusus</strong>
           </NavbarBrand>
           <Nav className="p-1 list-inline">
-            { this.getPlayer() }
             { this.getSwitchPlayers() }
+            { this.getPlayer() }
+            { this.getPlayerStats() }
             { this.getPhase() }
             { this.getNext() }
           </Nav>
@@ -725,6 +715,44 @@ class GameTable extends React.Component {
     );
   }
 
+  getTable() {
+    return (
+      <div className="horizontal-warper">
+        <div className="horizontal-section-content">
+          <div className="p-1">
+            { this.getArena() }
+          </div>
+          <div className="horizontal-warper">
+            <div className="horizontal-section-content">
+              { this.getHand() }
+            </div>
+            <div className="horizontal-section-content">
+              { this.getAvatar() }
+            </div>
+          </div>
+        </div>
+        <div className="horizontal-section-content">
+          <div className="text-center">
+            <Badge>Board</Badge>
+          </div>
+          { this.getBoard() }
+        </div>
+        <div className="horizontal-section-content">
+          <div className="text-center">
+            <Badge>Commons</Badge>
+          </div>
+          { this.getUnitsField(UNIT_TYPES.Common) }
+        </div>
+        <div className="horizontal-section-content">
+          <div className="text-center">
+            <Badge>Royals</Badge>
+          </div>
+          { this.getUnitsField(UNIT_TYPES.Royal) }
+        </div>
+      </div>
+    );
+  }
+
   render() {
     let header = this.props.ctx.gameover ? this.getHeaderGameover() : this.getHeaderActive();
     let table = this.getTable();
@@ -732,6 +760,7 @@ class GameTable extends React.Component {
       <section>
         { header }
         { table }
+        <ToastContainer autoClose={2000} position={toast.POSITION.BOTTOM_RIGHT} />
       </section>
     );
   }

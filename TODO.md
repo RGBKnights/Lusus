@@ -5,6 +5,9 @@
 1. Add Cost to Skip Phase
 a. discard cubit from hand to afterlife at random
 2. Implement onPlay() for cubits
+a. this is needed for next Cubit KingOfHill
+3. Come up with Process to figure out if there are any valid targets
+a. Add this to OnBeginPhase() => Move to determine if there are any moves if not that opppent wins game
 
 ####  Phases
 

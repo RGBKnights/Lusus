@@ -26,8 +26,8 @@ export class GameLogic {
       new Cubits.CondemnCubit(p),
       new Cubits.EnrageCubit(p),
       new Cubits.PassifyCubit(p),
-      /*
       new Cubits.KingOfHillCubit(p),
+      /*
       new Cubits.AncientRevivalCubit(p),
       new Cubits.BacktoBasicsCubit(p),
       new Cubits.BlinkDodgeCubit(p),
@@ -75,7 +75,9 @@ export class GameLogic {
       let p = a.toString();
 
       g.players[p] = {
-        actions: 1,
+        // actions: 1,
+        actions_used: 0,
+        actions_left: 1,
         hand: 3,
         moves: 1,
       }
@@ -137,6 +139,10 @@ export class GameLogic {
 
   // ACTIONS
 
+  onPlay(g, ctx) {
+
+  }
+
   onDraw(g, ctx) {
     // Draw - Move hand to Bag
     let hand = g.cubits.filter(_ => _.location === LOCATIONS.Hand && _.controller === ctx.currentPlayer);
@@ -161,8 +167,7 @@ export class GameLogic {
     return true;
   }
 
-  onMove(g, ctx, unit, x, y) {
-    unit.position = {x,y};
+  afterMove(g, ctx, unit) {
     unit.moves++;
 
     switch (unit.type) {
@@ -175,7 +180,9 @@ export class GameLogic {
     }
 
     for (const cubit of unit.cubits) {
-      cubit.position = {x,y};
+      cubit.location = unit.location;
+      cubit.position.x = unit.position.x;
+      cubit.position.y = unit.position.y;
       cubit.moves++;
 
       switch (cubit.type) {
@@ -185,8 +192,82 @@ export class GameLogic {
           break;
       }
     }
+  }
+
+  onMove(g, ctx, unitId, x, y) {
+    let unit = g.units.find(_ => _.id === unitId);
+    if(!unit) {
+      return false;
+    }
+
+    unit.position = {x,y};
 
     g.players[ctx.currentPlayer].moves--;
+
+    this.afterMove(g, ctx, unit);
+
+    return true;
+  }
+
+  onCapture(g, ctx, sourceId, destinationId) {
+    let source = g.units.find(_ => _.id === sourceId);
+    if(!source) {
+      return false;
+    }
+
+    let destination = g.units.find(_ => _.id === destinationId);
+    if(!destination) {
+      return false;
+    }
+
+    if(destination.type === UNIT_TYPES.King) {
+      // GameOver
+      ctx.events.endGame(ctx.currentPlayer);
+      return true;
+    }
+
+    // Move Source to Destination
+    source.position.x = destination.position.x;
+    source.position.y = destination.position.y;
+
+    // Move destination to Afterlife
+    destination.location = LOCATIONS.Afterlife;
+
+    g.players[ctx.currentPlayer].moves--;
+
+    this.afterMove(g, ctx, source);
+    this.afterMove(g, ctx, destination);
+
+    return true;
+  }
+
+  
+  onSwap(g, ctx, sourceId, destinationId) {
+    let source = g.units.find(_ => _.id === sourceId);
+    if(!source) {
+      return false;
+    }
+
+    let destination = g.units.find(_ => _.id === destinationId);
+    if(!destination) {
+      return false;
+    }
+    
+    let x = source.position.x;
+    let y = source.position.y;
+
+    source.position.x = destination.position.x;
+    source.position.y = destination.position.y;
+
+    destination.position.x = x;
+    destination.position.y = y;
+
+    g.players[ctx.currentPlayer].moves--;
+
+    this.afterMove(g, ctx, source);
+    this.afterMove(g, ctx, destination);
+    
+    return true;
   }
 
   // PROPERTIES
@@ -208,11 +289,10 @@ export class GameLogic {
   getDraws(g, ctx, player) {
     let draws = g.players[player].hand;
 
-    let cubits = g.cubits.filter(_ => _.location === LOCATIONS.Player && _.controller === player).map(_ => _.type);
-    if(cubits.includes(CUBIT_TYPES.DrawPlusOne)) {
+    if(this.hasCubit(g, ctx, CUBIT_TYPES.DrawPlusOne, LOCATIONS.Player, player)) {
       draws++;
     }
-    if(cubits.includes(CUBIT_TYPES.DrawNegOne)) {
+    if(this.hasCubit(g, ctx, CUBIT_TYPES.DrawNegOne, LOCATIONS.Player, player)) {
       draws--;
     }
 
@@ -226,8 +306,7 @@ export class GameLogic {
   getActivities(g, ctx, player) {
     let actions = Math.min(Math.floor((ctx.turn / 10)) + 1, 5);
 
-    let cubits = g.cubits.filter(_ => _.location === LOCATIONS.Player && _.controller === player).map(_ => _.type);
-    if(cubits.includes(CUBIT_TYPES.DoubleAction)) {
+    if(this.hasCubit(g, ctx, CUBIT_TYPES.DoubleAction, LOCATIONS.Player, player)) {
       actions++;
     }
 
@@ -235,7 +314,7 @@ export class GameLogic {
   }
 
   getActions(g, ctx, player) {
-    return g.players[player].actions;
+    return g.players[player].actions_left;
   }
 
   getMoves(g, ctx, player) {

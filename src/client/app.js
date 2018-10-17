@@ -23,9 +23,7 @@ const ClientApp = Client({
 
 const App = () => (
   <div>
-    <div>
-      <ClientApp gameID={matchId} playerID={playerId} />
-    </div>
+    <ClientApp gameID={matchId} playerID={playerId} />
   </div>
 );
 

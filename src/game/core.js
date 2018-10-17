@@ -2,7 +2,7 @@ import { Game } from 'boardgame.io/core';
 import { 
     GAME_PHASES,
     LOCATIONS,
-    UNIT_TYPES
+    // UNIT_TYPES
 } from './common';
 
 import { GameLogic } from './logic';
@@ -21,16 +21,25 @@ const GameCore = Game({
     },
     moves: {
       // Actions
-      skipDraw: (G, ctx) => {
+      skipPlay: (G, ctx) => {
         const g = clone(G);
-        // Discard a cubit from hand...
-        g.players[ctx.currentPlayer].actions = 0;
+
+        if(g.players[ctx.currentPlayer].actions_used === 0) {
+          let hand = g.cubits.filter(_ => _.location === LOCATIONS.Hand && _.ownership === ctx.currentPlayer);
+          let dice = ctx.random.Die(hand.length) - 1;
+          hand[dice].location = LOCATIONS.Afterlife;
+        }
+
+        ctx.events.endPhase(GAME_PHASES.Move);
+
         return g;
       },
       // Movement
       skipMovement: (G, ctx) => {
         const g = clone(G);
-        g.players[ctx.currentPlayer].moves = 0;
+        
+        ctx.events.endPhase(GAME_PHASES.Draw);
+
         return g;
       },
       // Attach Cubit to Location
@@ -49,7 +58,8 @@ const GameCore = Game({
 
         cubit.location = LOCATIONS.Arena;
 
-        g.players[ctx.currentPlayer].actions--;
+        g.players[ctx.currentPlayer].actions_left--;
+        g.players[ctx.currentPlayer].actions_used++;
 
         return g;
       },
@@ -64,7 +74,8 @@ const GameCore = Game({
         cubit.location = LOCATIONS.Player;
         cubit.controller = playerId;
 
-        g.players[ctx.currentPlayer].actions--;
+        g.players[ctx.currentPlayer].actions_left--;
+        g.players[ctx.currentPlayer].actions_used++;
 
         return g;
       },
@@ -89,7 +100,8 @@ const GameCore = Game({
         // Update Unit
         unit.cubits.push(cubit);
 
-        g.players[ctx.currentPlayer].actions--;
+        g.players[ctx.currentPlayer].actions_left--;
+        g.players[ctx.currentPlayer].actions_used++;
 
         return g;
       },
@@ -104,101 +116,40 @@ const GameCore = Game({
         cubit.location = LOCATIONS.Board;
         cubit.position = {x,y};
 
-        g.players[ctx.currentPlayer].actions--;
+        g.players[ctx.currentPlayer].actions_left--;
+        g.players[ctx.currentPlayer].actions_used++;
 
         return g;
       },
       movePassive(G, ctx, unitId, x, y) {
         const g = clone(G);
 
-        let unit = g.units.find(_ => _.id === unitId);
-        if(!unit) {
+        let result = logic.onMove(g, ctx, unitId, x, y);
+        if(result) {
+          return g;
+        } else {
           return undefined;
         }
-
-        logic.onMove(g, ctx, unit, x, y);
-
-        return g;
       },
       moveCapture(G, ctx, sourceId, destinationId) {
         const g = clone(G);
 
-        let source = g.units.find(_ => _.id === sourceId);
-        if(!source) {
-          return undefined;
-        }
-
-        let destination = g.units.find(_ => _.id === destinationId);
-        if(!destination) {
-          return undefined;
-        }
-
-        if(destination.type === UNIT_TYPES.King) {
-          // GameOver
-          ctx.events.endGame(ctx.currentPlayer);
+        let result = logic.onCapture(g, ctx, sourceId, destinationId);
+        if(result) {
+          return g;
         } else {
-          // Move Source to Destination
-          source.position.x = destination.position.x;
-          source.position.y = destination.position.y;
-          source.moves++;
-
-          for (const cubit of source.cubits) {
-            cubit.position.x = source.position.x
-            cubit.position.y = source.position.y;
-            cubit.moves++;
-          }
-
-          // Move destination to Afterlife
-          destination.location = LOCATIONS.Afterlife;
-
-          for (const cubit of destination.cubits) {
-            cubit.location = LOCATIONS.Afterlife;
-          }
-
-          g.players[ctx.currentPlayer].moves--;
+          return undefined;
         }
-
-        return g;
       },
       moveSwap(G, ctx, sourceId, destinationId) {
         const g = clone(G);
-        
-        let source = g.units.find(_ => _.id === sourceId);
-        if(!source) {
+
+        let result = logic.onSwap(g, ctx, sourceId, destinationId);
+        if(result) {
+          return g;
+        } else {
           return undefined;
         }
-
-        let destination = g.units.find(_ => _.id === destinationId);
-        if(!destination) {
-          return undefined;
-        }
-        
-        let x = source.position.x;
-        let y = source.position.y;
-
-        source.position.x = destination.position.x;
-        source.position.y = destination.position.y;
-        source.moves++;
-
-        for (const cubit of source.cubits) {
-          cubit.position.x = source.position.x
-          cubit.position.y = source.position.y;
-          cubit.moves++;
-        }
-
-        destination.position.x = x;
-        destination.position.y = y;
-        destination.moves++;
-
-        for (const cubit of destination.cubits) {
-          cubit.position.x = destination.position.x
-          cubit.position.y = destination.position.y;
-          cubit.moves++;
-        }
-
-        g.players[ctx.currentPlayer].moves--;
-
-        return g;
       },
       // Draw new Hand
       drawCubits: (G, ctx) => {
@@ -208,7 +159,8 @@ const GameCore = Game({
         let result = logic.onDraw(g, ctx);
         if(result) {
           // Reset Action Counter to Activity Count
-          g.players[ctx.currentPlayer].actions = logic.getActivities(G, ctx, ctx.currentPlayer);
+          g.players[ctx.currentPlayer].actions_used = 0;
+          g.players[ctx.currentPlayer].actions_left = logic.getActivities(G, ctx, ctx.currentPlayer);
           g.players[ctx.currentPlayer].moves = 1;
 
           // End turn frist and end phase reseting to 'Play'
@@ -233,7 +185,7 @@ const GameCore = Game({
           name: GAME_PHASES.Play,
           allowedMoves: (G, ctx) => 
           [
-            'skipDraw',
+            'skipPlay',
             'attachCubitToArena',
             'attachCubitToPlayer',
             'attachCubitToUnit',
