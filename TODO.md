@@ -2,12 +2,6 @@
 
 ### vNext Steps
 
-1. Landing Page
-a. Create a simple landing page with 3 options"
-b. Install: https://developers.google.com/web/fundamentals/app-install-banners/
-c. New Match: redirect with ?m&p paramters; create new 'm' from uuidv4() and set p=0
-d. Join Match: redirect with ?m&p paramters; set m=input set p=1
-
 2. Implement onPlay() for cubits
 a. this is needed for next Cubit KingOfHill
 

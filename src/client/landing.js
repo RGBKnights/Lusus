@@ -4,6 +4,7 @@ import React from 'react';
 import { 
   Container, 
   Row, Col,
+  Navbar, NavbarBrand, Nav,
   Button,
   Input
 } from 'reactstrap';
@@ -37,20 +38,24 @@ class Landing extends React.Component {
 
   render() {
     return (
-      <Container>
+      <Container fluid className="p-0">
+        <Navbar color="light" expand="md" className="rounded-bottom p-0">
+          <NavbarBrand className="p-0" style={{color: '#FFFFFF'}}>
+            <img className="p-1"  height="32" src="/favicon.ico" alt="Logo"></img>
+            <strong className="p-1">Lusus</strong> <small>Tactical Chess</small>
+          </NavbarBrand>
+          <Nav>
+           
+          </Nav>
+        </Navbar>
+        <br />
         <Row>
           <Col xs={{ size: 8, offset: 2 }} md={{ size: 6, offset: 3 }}>
             <div className="card">
               <div className="card-header text-center">
-                <h3 className="p-1">
-                  <img className="p-1" height="60" src="/favicon.ico" alt="Logo"></img>
-                  <strong>Lusus</strong> <small>Tactical Chess</small>
-                </h3>
+              <h5 className="p-1">Join Match</h5>
               </div>
               <ul className="list-group list-group-flush ">
-                <li className="list-group-item  text-center">
-                  <Button onClick={this.onNewMatch} color="primary">New Match</Button>
-                </li>
                 <li className="list-group-item text-center">
                   <Input type="text" name="code" id="matchCode" placeholder="Code" value={this.state.code} onChange={this.onInputChange} />
                   <br />
@@ -58,6 +63,18 @@ class Landing extends React.Component {
                 </li>
               </ul>
             </div>
+            <br />
+            <div className="card">
+              <div className="card-header text-center">
+                <h5 className="p-1">New Match</h5>
+              </div>
+              <ul className="list-group list-group-flush ">
+                <li className="list-group-item  text-center">
+                  <Button onClick={this.onNewMatch} color="primary">Start Match</Button>
+                </li>
+              </ul>
+            </div>
+            <br />
           </Col>
         </Row>
       </Container>

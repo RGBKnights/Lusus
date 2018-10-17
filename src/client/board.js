@@ -672,9 +672,9 @@ class GameTable extends React.Component {
     return (
       <Container fluid className="p-0">
         <Navbar color="light" expand="md" className="rounded-bottom p-0">
-          <NavbarBrand className="p-0">
+          <NavbarBrand className="p-0" href="/">
             <img className="p-1"  height="32" src="/favicon.ico" alt="Logo"></img>
-            <strong className="p-1"><a href="/" className="text-white">Lusus</a></strong>
+            <strong className="p-1 text-white">Lusus</strong>
           </NavbarBrand>
           <Nav className="p-1 list-inline">
             { this.getSwitchPlayers() }
