@@ -158,6 +158,9 @@ const GameCore = Game({
         // Draw
         let result = logic.onDraw(g, ctx);
         if(result) {
+          // TODO: move this stuff inside of OnDraw (as it can not use events)
+          // Result should be resvered to canceling the move (just in case)
+
           // Reset Action Counter to Activity Count
           g.players[ctx.currentPlayer].actions_used = 0;
           g.players[ctx.currentPlayer].actions_left = logic.getActivities(G, ctx, ctx.currentPlayer);

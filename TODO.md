@@ -2,10 +2,15 @@
 
 ### vNext Steps
 
-1. Add Cost to Skip Phase
-a. discard cubit from hand to afterlife at random
+1. Landing Page
+a. Create a simple landing page with 3 options"
+b. Install: https://developers.google.com/web/fundamentals/app-install-banners/
+c. New Match: redirect with ?m&p paramters; create new 'm' from uuidv4() and set p=0
+d. Join Match: redirect with ?m&p paramters; set m=input set p=1
+
 2. Implement onPlay() for cubits
 a. this is needed for next Cubit KingOfHill
+
 3. Come up with Process to figure out if there are any valid targets
 a. Add this to OnBeginPhase() => Move to determine if there are any moves if not that opppent wins game
 

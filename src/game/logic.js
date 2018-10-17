@@ -180,9 +180,6 @@ export class GameLogic {
     }
 
     for (const cubit of unit.cubits) {
-      cubit.location = unit.location;
-      cubit.position.x = unit.position.x;
-      cubit.position.y = unit.position.y;
       cubit.moves++;
 
       switch (cubit.type) {
@@ -219,13 +216,7 @@ export class GameLogic {
     if(!destination) {
       return false;
     }
-
-    if(destination.type === UNIT_TYPES.King) {
-      // GameOver
-      ctx.events.endGame(ctx.currentPlayer);
-      return true;
-    }
-
+    
     // Move Source to Destination
     source.position.x = destination.position.x;
     source.position.y = destination.position.y;
@@ -234,6 +225,12 @@ export class GameLogic {
     destination.location = LOCATIONS.Afterlife;
 
     g.players[ctx.currentPlayer].moves--;
+
+    if(destination.type === UNIT_TYPES.King) {
+      // GameOver
+      ctx.events.endGame(ctx.currentPlayer);
+      return true;
+    }
 
     this.afterMove(g, ctx, source);
     this.afterMove(g, ctx, destination);

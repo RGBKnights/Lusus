@@ -64,9 +64,7 @@ function checkPosition(g, player, moves, movement, x, y, isAgressive, isPassive)
 
   let unit = getUnit(g, x, y);
   if(unit) {
-    if(unit.obstruction && movement.phased) {
-      return false;
-    } else if(isAgressive && unit.ownership !== player) {
+    if(isAgressive && unit.ownership !== player) {
       moves.push(new Move(MOVEMENT_ACTIONS.Capture, x, y, unit.id));
       return true;  // Break Loop;
     } else {

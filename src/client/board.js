@@ -144,8 +144,8 @@ class GameTable extends React.Component {
   }
 
   getGridParams(width, height) {
-    // let sizeSquare = (window.innerHeight - 70) / 8;
-    let sizeSquare = 35;
+    let sizeSquare = (window.innerHeight - 70) / 8;
+    // let sizeSquare = 35;
     let w = width * sizeSquare;
 
     let colorMap = {};
@@ -447,13 +447,15 @@ class GameTable extends React.Component {
     units.sort((lhs, rhs) => lhs.rank - rhs.rank);
 
     let height = units.length;
-    let width = 1;
+    let width = 0;
     for (let y = 0; y < units.length; y++) {
       const unit = units[y];
       if (width < unit.slots) {
         width = unit.slots;
       }
     }
+
+    width++;
 
     let params = this.getGridParams(width, height);
 
@@ -476,11 +478,12 @@ class GameTable extends React.Component {
         tokens.push(token);
       }
 
-      this.unitsMap[type][`${0},${y}`] = unit.id;
+      
 
       let target = this.state.targets.find(_ => _.location === LOCATIONS.Unit && _.units.includes(unit.id));
       if(target) {
         params.colorMap[`${0},${y}`] = '#28a745';
+        this.unitsMap[type][`${0},${y}`] = unit.id;
       }
 
       // Cubits
@@ -494,11 +497,11 @@ class GameTable extends React.Component {
         let token = React.createElement(Token, {key: cubit.id, x: offset, y: y}, element);
         tokens.push(token);
 
-        this.unitsMap[type][`${offset},${y}`] = cubit.id;
+        // Enable with targeting
+        // this.unitsMap[type][`${offset},${y}`] = cubit.id;
       }
 
-      let slots = unit.slots;
-      for (let x = slots; x < width; x++) {
+      for (let x = unit.slots + 1; x < width; x++) {
         params.colorMap[`${x},${y}`] = '#000000';
       }
     }
@@ -511,8 +514,10 @@ class GameTable extends React.Component {
     if(this.props.isActive) {
       if(x === 0) {
         let unitId = this.unitsMap[UNIT_TYPES.Common][`${x},${y}`];
-        this.props.moves.attachCubitToUnit(this.state.selection.id, unitId);
-        this.setState({ selection: null, targets: [] });
+        if(unitId) {
+          this.props.moves.attachCubitToUnit(this.state.selection.id, unitId);
+          this.setState({ selection: null, targets: [] });
+        }
       } else {
         // let cuitId = this.unitsMap[`${x},${y}`];
         // Target Cubits
@@ -524,8 +529,10 @@ class GameTable extends React.Component {
     if(this.props.isActive) {
       if(x === 0) {
         let unitId = this.unitsMap[UNIT_TYPES.Royal][`${x},${y}`];
-        this.props.moves.attachCubitToUnit(this.state.selection.id, unitId);
-        this.setState({ selection: null, targets: [] });
+        if(unitId) {
+          this.props.moves.attachCubitToUnit(this.state.selection.id, unitId);
+          this.setState({ selection: null, targets: [] });
+        }
       } else {
         // let cuitId = this.unitsMap[`${x},${y}`];
         // Target Cubits
@@ -576,9 +583,9 @@ class GameTable extends React.Component {
   getPlayer() {
     let color = "icon-inline";
     if(this.props.playerID === "0") {
-      color = "icon-inline text-light";
-    } else if (this.props.playerID === "1") {
       color = "icon-inline text-dark";
+    } else if (this.props.playerID === "1") {
+      color = "icon-inline text-light";
     }
 
     if(this.props.playerID) {
@@ -602,9 +609,9 @@ class GameTable extends React.Component {
     let phase = this.props.ctx.phase;
     let color = "icon-inline";
     if(this.props.ctx.currentPlayer === "0") {
-      color = "icon-inline text-light";
-    } else if (this.props.ctx.currentPlayer === "1") {
       color = "icon-inline text-dark";
+    } else if (this.props.ctx.currentPlayer === "1") {
+      color = "icon-inline text-light";
     }
     
     return (
@@ -646,9 +653,10 @@ class GameTable extends React.Component {
   }
 
   onShare() {
-    let url = window.location.origin + "/?p=1&m=" + this.props.gameID;
+    let code = this.props.gameID;
+    
     const el = document.createElement('textarea');
-    el.value = url;
+    el.value = code;
     document.body.appendChild(el);
     el.select();
     document.execCommand('copy');
@@ -660,15 +668,13 @@ class GameTable extends React.Component {
     window.location = url;
   }
 
-  
-
   getHeaderActive() {
     return (
       <Container fluid className="p-0">
-        <Navbar color="dark" dark expand="md" className="rounded-bottom p-0">
+        <Navbar color="light" expand="md" className="rounded-bottom p-0">
           <NavbarBrand className="p-0">
             <img className="p-1"  height="32" src="/favicon.ico" alt="Logo"></img>
-            <strong className="p-1">Lusus</strong>
+            <strong className="p-1"><a href="/" className="text-white">Lusus</a></strong>
           </NavbarBrand>
           <Nav className="p-1 list-inline">
             { this.getSwitchPlayers() }
@@ -692,7 +698,7 @@ class GameTable extends React.Component {
 
     return (
       <Container fluid className="p-0">
-        <Navbar color="dark" dark expand="md" className="rounded-bottom p-0">
+        <Navbar color="light" expand="md" className="rounded-bottom p-0">
           <NavbarBrand className="p-0">
             <img className="p-1"  height="32" src="/favicon.ico" alt="Logo"></img>
             <strong className="p-1">Lusus</strong>
@@ -757,10 +763,10 @@ class GameTable extends React.Component {
     let header = this.props.ctx.gameover ? this.getHeaderGameover() : this.getHeaderActive();
     let table = this.getTable();
     return (
-      <section>
+      <section className="game-board">
         { header }
         { table }
-        <ToastContainer autoClose={2000} position={toast.POSITION.BOTTOM_RIGHT} />
+        <ToastContainer autoClose={2000} position={toast.POSITION.BOTTOM_CENTER} />
       </section>
     );
   }

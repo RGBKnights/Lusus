@@ -53,7 +53,7 @@ export class Unit {
 
 export class KingUnit extends Unit {
   constructor(ownership, file) {
-      super(UNIT_TYPES.King, "King", 2, ownership, UNIT_TYPES.Royal, file);
+      super(UNIT_TYPES.King, "King", 1, ownership, UNIT_TYPES.Royal, file);
 
       this.classification.push(CLASSIFICATIONS.Unit);
       this.movement.push(new Movement(MOVEMENT_TYPES.Orthogonal, MOVEMENT_CONSTRAINTS.Agressive, 1));
@@ -67,7 +67,7 @@ export class KingUnit extends Unit {
 
 export class QueenUnit extends Unit {
   constructor( ownership, file) {
-      super(UNIT_TYPES.Queen, "Queen", 3, ownership, UNIT_TYPES.Royal, file);
+      super(UNIT_TYPES.Queen, "Queen", 2, ownership, UNIT_TYPES.Royal, file);
 
       this.classification.push(CLASSIFICATIONS.Unit);
       this.movement.push(new Movement(MOVEMENT_TYPES.Orthogonal, MOVEMENT_CONSTRAINTS.Agressive, 8));
@@ -79,7 +79,7 @@ export class QueenUnit extends Unit {
 
 export class BishopUnit extends Unit {
   constructor(ownership, file) {
-      super(UNIT_TYPES.Bishop, "Bishop", 3, ownership, UNIT_TYPES.Royal, file);
+      super(UNIT_TYPES.Bishop, "Bishop", 2, ownership, UNIT_TYPES.Royal, file);
 
       this.classification.push(CLASSIFICATIONS.Unit);
       this.movement.push(new Movement( MOVEMENT_TYPES.Diagonal, MOVEMENT_CONSTRAINTS.Agressive, 8));
@@ -89,7 +89,7 @@ export class BishopUnit extends Unit {
 
 export class RookUnit extends Unit {
   constructor(ownership, file) {
-      super(UNIT_TYPES.Rook, "Rook", 3,  ownership, UNIT_TYPES.Royal, file);
+      super(UNIT_TYPES.Rook, "Rook", 2,  ownership, UNIT_TYPES.Royal, file);
 
       this.classification.push(CLASSIFICATIONS.Unit);
       this.movement.push(new Movement(MOVEMENT_TYPES.Orthogonal, MOVEMENT_CONSTRAINTS.Agressive, 8));
@@ -99,7 +99,7 @@ export class RookUnit extends Unit {
 
 export class KnightUnit extends Unit {
   constructor(ownership, file) {
-      super(UNIT_TYPES.Knight, "Knight", 4, ownership, UNIT_TYPES.Royal, file);
+      super(UNIT_TYPES.Knight, "Knight", 3, ownership, UNIT_TYPES.Royal, file);
 
       this.classification.push(CLASSIFICATIONS.Unit);
       this.movement.push(new Movement(MOVEMENT_TYPES.Jump, MOVEMENT_CONSTRAINTS.Agressive, null, [2,1]));
@@ -109,7 +109,7 @@ export class KnightUnit extends Unit {
 
 export class PawnUnit extends Unit {
   constructor(ownership, file) {
-      super(UNIT_TYPES.Pawn, "Pawn", 2, ownership, UNIT_TYPES.Common, file);
+      super(UNIT_TYPES.Pawn, "Pawn", 1, ownership, UNIT_TYPES.Common, file);
 
       this.classification.push(CLASSIFICATIONS.Unit);
       this.movement.push(new Movement(MOVEMENT_TYPES.Forward, MOVEMENT_CONSTRAINTS.Passive, 1));

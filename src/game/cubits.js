@@ -108,8 +108,8 @@ export class JumpCubit extends Cubit {
 
       this.classification.push(CLASSIFICATIONS.Movement);
 
-      this.movement.push(new Movement(MOVEMENT_TYPES.Jump, MOVEMENT_CONSTRAINTS.Passive, null, [2,1], true));
-      this.movement.push(new Movement(MOVEMENT_TYPES.Jump, MOVEMENT_CONSTRAINTS.Agressive, null, [2,1], true));
+      this.movement.push(new Movement(MOVEMENT_TYPES.Jump, MOVEMENT_CONSTRAINTS.Passive, null, [2,1]));
+      this.movement.push(new Movement(MOVEMENT_TYPES.Jump, MOVEMENT_CONSTRAINTS.Agressive, null, [2,1]));
 
       this.targeting.push(new UnitTargeting(TARGET_CONSTRAINTS.Self));
   }

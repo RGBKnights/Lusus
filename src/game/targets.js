@@ -72,6 +72,7 @@ export function getTargets(g, ctx, player, cubit) {
       }
     } else if(target.location === LOCATIONS.Unit) {
       if(target.attachment) {
+
         //TODO: Check for other Cubits that would limit targeting (like: Condemn)
         let units = g.units
           .filter(_ => _.ownership === controller)
