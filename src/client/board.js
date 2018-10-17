@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { FaEye, FaArrowRight, FaUserAlt, FaClock, FaShareAlt } from 'react-icons/fa';
+import { FaEye, FaUserAlt, FaClock, FaShareAlt } from 'react-icons/fa';
 import { FiWifiOff }from 'react-icons/fi';
 
 // Bootstrap
@@ -19,10 +19,7 @@ import {
   Grid
 } from 'boardgame.io/ui';
 
-import {
-  CubitText
-} from './cubits';
-
+import * as Cubits from './cubits';
 import * as Units from './units';
 
 import {
@@ -124,7 +121,14 @@ class GameTable extends React.Component {
       case UNIT_TYPES.Rook:
         return Units.UnitRook;
       default:
-        return CubitText;
+        return Cubits.CubitText;
+    }
+  }
+
+  getCubitFromType(type) {
+    switch (type) {
+      default:
+        return Cubits.CubitText;
     }
   }
 
@@ -186,7 +190,8 @@ class GameTable extends React.Component {
       const cubit = cubits[i];
 
       let team =  this.teamColors[cubit.ownership];
-      let element = React.createElement(CubitText, { name: cubit.name, value: cubit.name, team: team, color: null });
+      let type = this.getCubitFromType(cubit.type);
+      let element = React.createElement(type, { name: cubit.name, value: cubit.name, team: team, color: null });
       let token = React.createElement(Token, {key: cubit.id, x: 0, y: i}, element);
       tokens.push(token);
     }
@@ -227,13 +232,15 @@ class GameTable extends React.Component {
     let cubits = this.props.G.cubits.filter(_ => _.location === LOCATIONS.Hand && _.controller === this.state.player);
 
     let hasKnowledge = this.logic.hasCubit(this.props.G, this.props.ctx, CUBIT_TYPES.Knowledge, LOCATIONS.Player, this.props.playerID);
-    if(this.state.player === this.props.playerID || hasKnowledge) { 
+    let isCurrentPlayer = this.state.player === this.props.playerID;
+    if(isCurrentPlayer || hasKnowledge) { 
       
       for (let i = 0; i < cubits.length; i++) {
         const cubit = cubits[i];
 
         let team =  this.teamColors[cubit.ownership];
-        let element = React.createElement(CubitText, { name: cubit.name, value: cubit.name, team: team, color: null });
+        let type = this.getCubitFromType(cubit.type);
+        let element = React.createElement(type, { name: cubit.name, value: cubit.name, team: team, color: null });
         let token = React.createElement(Token, {key: cubit.id, x: 0, y: i}, element);
         tokens.push(token);
       }    
@@ -288,7 +295,8 @@ class GameTable extends React.Component {
       const cubit = cubits[i];
 
       let team =  this.teamColors[cubit.ownership];
-      let element = React.createElement(CubitText, { name: cubit.name, value: cubit.name, team: team, color: null });
+      let type = this.getCubitFromType(cubit.type);
+      let element = React.createElement(type, { name: cubit.name, value: cubit.name, team: team, color: null });
       let token = React.createElement(Token, {key: cubit.id, x: 0, y: i}, element);
       tokens.push(token);
     }
@@ -330,7 +338,8 @@ class GameTable extends React.Component {
       const item = cubits[i];
 
       let team =  this.teamColors[item.ownership];
-      let element =  React.createElement(CubitText, { name: item.name, value: item.name, team: team, color: '' });
+      let type = this.getCubitFromType(item.type);
+      let element =  React.createElement(type, { name: item.name, value: item.name, team: team, color: '' });
       let token = React.createElement(Token, {key: item.id, x: item.position.x, y: item.position.y}, element);
       tokens.push(token);
     }
@@ -469,7 +478,8 @@ class GameTable extends React.Component {
 
         let offset = (x+1);
         let team = this.teamColors[unit.ownership];
-        let element = React.createElement(CubitText, { name: cubit.name, value: cubit.name, team: team, color: '' });
+        let type = this.getCubitFromType(cubit.type);
+        let element = React.createElement(type, { name: cubit.name, value: cubit.name, team: team, color: '' });
         let token = React.createElement(Token, {key: cubit.id, x: offset, y: y}, element);
         tokens.push(token);
 
@@ -534,16 +544,16 @@ class GameTable extends React.Component {
   }
 
   getNext() {
-    if(this.props.isActive) {      
-      return <NavItem className="list-inline-item"><Button size="sm" color="success" onClick={this.onNext} ><FaArrowRight className="icon-inline" /></Button></NavItem>;
+    if(this.props.isActive) {
+      let message = this.props.ctx.phase === GAME_PHASES.Draw ? "End Turn" : "Skip Phase";
+      let color =  this.props.ctx.phase === GAME_PHASES.Draw ? "success" : "warning";
+      return <NavItem className="list-inline-item"><Button size="sm" color={color} onClick={this.onNext}>{ message }</Button></NavItem>;
     }
   }
 
   onNext = () => {
     if(this.props.ctx.phase === GAME_PHASES.Play) {
-      this.props.moves.skipActions();
-    } else if(this.props.ctx.phase === GAME_PHASES.Action) {
-      this.props.moves.skipActions();
+      this.props.moves.skipDraw();
     } else if(this.props.ctx.phase === GAME_PHASES.Move) {
       this.props.moves.skipMovement();
     } else if(this.props.ctx.phase === GAME_PHASES.Draw) {
@@ -585,21 +595,18 @@ class GameTable extends React.Component {
       color = "icon-inline text-dark";
     }
     
-    return (
-      <NavItem key="state" className="list-inline-item">      
+    return [
+      <NavItem key="turn" className="list-inline-item">      
         <Button size="sm" color="secondary" disabled>
-          <Badge color="info">
-            <FaClock className="icon-inline" /> { this.props.ctx.turn } 
-          </Badge>
-          &nbsp;
-          <Badge color="info">
-            <FaUserAlt className={color} />
-          </Badge>
-          &nbsp;
-          <small>{phase}</small>
+          <FaClock className="icon-inline" /> { this.props.ctx.turn }
+        </Button>
+      </NavItem>,
+      <NavItem key="phase" className="list-inline-item">      
+        <Button size="sm" color="secondary" disabled>
+          <FaUserAlt className={color} /> { phase }
         </Button>
       </NavItem>
-    );
+    ];
   }
 
   getShare() {
@@ -632,7 +639,7 @@ class GameTable extends React.Component {
       <div className="horizontal-warper">
         <div className="horizontal-section-content">
           <div className="p-1">
-            { this.getPlayerStats() }
+            { /* this.getPlayerStats() */ }
             { this.getArena() }
           </div>
           <div className="horizontal-warper">
@@ -676,11 +683,11 @@ class GameTable extends React.Component {
           </NavbarBrand>
           <Nav className="p-1 list-inline">
             { this.getPlayer() }
+            { this.getSwitchPlayers() }
             { this.getPhase() }
             { this.getNext() }
-            { this.getSwitchPlayers() }
           </Nav>
-          <Nav className="p-1 list-inline ml-auto ">
+          <Nav className="p-1 list-inline ml-auto">
             <Help />
             { this.getShare() }
             { this.getPlayerConnection() }
@@ -710,7 +717,7 @@ class GameTable extends React.Component {
               <Button size="sm" color="primary" onClick={this.onNewGame}>New Game</Button>
             </NavItem>
           </Nav>
-          <Nav className="p-1 list-inline ml-auto ">
+          <Nav className="p-1 list-inline ml-auto">
             { this.getPlayerConnection() }
           </Nav>
         </Navbar>

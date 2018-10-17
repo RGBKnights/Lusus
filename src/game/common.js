@@ -8,7 +8,6 @@ export const GAME_FLOW = {
 export const GAME_PHASES = {
   Unknown: '',
   Play: 'Play',
-  Action: 'Action',
   Move: 'Move',
   Draw: 'Draw',
 };

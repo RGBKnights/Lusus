@@ -2,8 +2,8 @@
 
 ### vNext Steps
 
-1. Fix movement in getMovements()
-a. Pawn Fork Capture
+1. Add Cost to Skip Phase
+a. discard cubit from hand to afterlife at random
 2. Implement onPlay() for cubits
 
 ####  Phases

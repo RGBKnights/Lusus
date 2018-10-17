@@ -21,8 +21,9 @@ const GameCore = Game({
     },
     moves: {
       // Actions
-      skipActions: (G, ctx) => {
+      skipDraw: (G, ctx) => {
         const g = clone(G);
+        // Discard a cubit from hand...
         g.players[ctx.currentPlayer].actions = 0;
         return g;
       },
@@ -232,20 +233,12 @@ const GameCore = Game({
           name: GAME_PHASES.Play,
           allowedMoves: (G, ctx) => 
           [
-            'skipActions',
+            'skipDraw',
             'attachCubitToArena',
             'attachCubitToPlayer',
             'attachCubitToUnit',
             'attachCubitToBroad'
           ],
-          endPhaseIf: (G, ctx) => {
-            let actions = logic.getActions(G, ctx, ctx.currentPlayer);
-            return actions === 0 ? GAME_PHASES.Move : false;
-          }
-        },
-        {
-          name: GAME_PHASES.Action,
-          allowedMoves: (G, ctx) => ['skipActions'],
           endPhaseIf: (G, ctx) => {
             let actions = logic.getActions(G, ctx, ctx.currentPlayer);
             return actions === 0 ? GAME_PHASES.Move : false;
