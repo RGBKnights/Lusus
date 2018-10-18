@@ -51,15 +51,18 @@ const GameCore = Game({
           return undefined;
         }
 
-        let orginal = g.cubits.find(_ => _.locations === LOCATIONS.Arena);
+        let orginal = g.cubits.find(_ => _.location === LOCATIONS.Arena);
         if(orginal) {
           orginal.location = LOCATIONS.Afterlife;
+          logic.onRemoved(g, ctx, orginal);
         }
 
         cubit.location = LOCATIONS.Arena;
 
         g.players[ctx.currentPlayer].actions_left--;
         g.players[ctx.currentPlayer].actions_used++;
+
+        logic.onPlay(g, ctx, cubit);
 
         return g;
       },
@@ -93,12 +96,11 @@ const GameCore = Game({
         }
 
         // Update Cubit
-        cubit.location = LOCATIONS.Unit;
-        cubit.position = unit.position;
         cubit.controller = unit.ownership;
+        cubit.location = LOCATIONS.Unit;
 
-        // Update Unit
-        unit.cubits.push(cubit);
+        // Add cuits to unit
+        unit.cubits.push(cubit.id);
 
         g.players[ctx.currentPlayer].actions_left--;
         g.players[ctx.currentPlayer].actions_used++;
@@ -158,24 +160,10 @@ const GameCore = Game({
         // Draw
         let result = logic.onDraw(g, ctx);
         if(result) {
-          // TODO: move this stuff inside of OnDraw (as it can not use events)
-          // Result should be resvered to canceling the move (just in case)
-
-          // Reset Action Counter to Activity Count
-          g.players[ctx.currentPlayer].actions_used = 0;
-          g.players[ctx.currentPlayer].actions_left = logic.getActivities(G, ctx, ctx.currentPlayer);
-          g.players[ctx.currentPlayer].moves = 1;
-
-          // End turn frist and end phase reseting to 'Play'
-          ctx.events.endTurn();
-          ctx.events.endPhase();
+          return g;
         } else {
-          // GameOver
-          let opponent = ctx.currentPlayer === "0" ? "1" : "0"
-          ctx.events.endGame(opponent);
+          return undefined;
         }
-
-        return g;
       }
     },
     flow: {

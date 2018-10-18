@@ -24,9 +24,9 @@ function unitIsType(unit, type) {
   }
 }
 
-function unitHasCubit(unit, type) {
-  for (let i = 0; i < unit.cubits.length; i++) {
-    const cubit = unit.cubits[i];
+function unitHasCubit(g, ctx, unit, type) {
+  for (const id of unit.cubits) {
+    const cubit = g.cubits.find(_ => _.id === id);
     if(cubit.type === type) {
       return true;
     }
@@ -78,8 +78,8 @@ export function getTargets(g, ctx, player, cubit) {
           .filter(_ => _.ownership === controller)
           .filter(_ => unitIsType(_, target.type))
           .filter(_ => _.cubits.length < _.slots)
-          .filter(_ => unitHasCubit(_, CUBIT_TYPES.Condemn) === false)
-          .filter(_ => (unitHasCubit(_, CUBIT_TYPES.Immunity) && _.ownership === opponent) === false)
+          .filter(_ => unitHasCubit(g, ctx, _, CUBIT_TYPES.Condemn) === false)
+          .filter(_ => (unitHasCubit(g, ctx, _, CUBIT_TYPES.Immunity) && _.ownership === opponent) === false)
 
           let indexes = units.map(_ => _.id);
           targets.push(new UnitTarget(controller, indexes, target.targets));

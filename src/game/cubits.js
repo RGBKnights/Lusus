@@ -56,8 +56,10 @@ export class Cubit {
       // automatic removal duration options
       this.duration = null;
 
-      // consumable
-      this.activatable = false;
+      this.consumable = false;
+
+      // Cubits that create other cubits are childern...
+      this.children = [];
   }
 }
 
@@ -185,7 +187,6 @@ export class KingOfHillCubit extends Cubit {
       super(CUBIT_TYPES.KingOfHill, "King Of Hill", ownership);
 
       this.targeting.push(new ArenaTargeting());
-      this.obstruction = false;
   }
 }
 

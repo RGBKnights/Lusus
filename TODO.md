@@ -2,11 +2,12 @@
 
 ### vNext Steps
 
-2. Implement onPlay() for cubits
-a. this is needed for next Cubit KingOfHill
-
-3. Come up with Process to figure out if there are any valid targets
+1. Come up with Process to figure out if there are any valid targets
 a. Add this to OnBeginPhase() => Move to determine if there are any moves if not that opppent wins game
+
+2. Implement a Removal Cubit
+a. Needs to target the cubit
+b. Sends cubit to afterlife
 
 ####  Phases
 

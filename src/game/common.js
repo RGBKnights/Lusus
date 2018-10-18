@@ -16,71 +16,51 @@ export const GAME_PHASES = {
 export const CUBIT_TYPES = {
   Unknown: '',
   MovementOrthogonal: '4ca1291d-5298-ea4a-8b6b-6ffbfdeefda1',
-  // Units
   // adds orthogonal movement to unit
-  // Passive - Movement
   MovementDiagonal: 'b1cc8951-61af-0cf3-9e71-d2db03885226',
-  // Units
   // adds diagonal movement to unit
-  // Passive - Movement
   MovementCardinal: 'a39e2c74-0968-eb73-7ea8-c71b21608685',
-  // Units
   // adds cardinal movement to unit
-  // Passive - Movement
   MovementJump: '2ca5a85e-116a-7971-6bbb-693d17f6ce3f',
-  // Units
   // adds jump [2,1] movement to unit
-  // Passive - Movement
   MovementSideStep: 'd1f075a1-2d8c-8b2a-5776-b5c711134e67',
-  // Units
   // adds side step 1 movement to unit
-  // Passive - Movement
   MovementSwap: '0b6d75f8-a2c2-29dc-e32c-c53a0fb1aeea',
-  // Units
   // adds swap to unit
-  // Passive - Movement
   DrawNegOne: '68308f8c-2087-b64d-7bd8-97b98488e5aa',
-  // Avatar
   // -1 to draw to opppents draw
-  // onPlay() => g.player[].draws--;
   DrawPlusOne: '1fa0d186-0237-e13e-7449-f54092211149',
-  // Avatar
   // +1 to draw to players draw
-  // onPlay() => g.player[].draws++;
   DoubleAction: '40617317-15e1-5aa3-8cdd-3d3d131e9b4f', 
-  // Avatar
   // +1 action to the player
-  // onPlay() => g.player[].actions.total++;
   Knowledge: '0994b86a-4709-f096-63c9-07c6e1008bfd',
-  // Avatar
   // Reveral the oppents hand
-  // Passive
   Condemn: 'b0dca050-b7d4-f83a-554f-4cfc4f2c7854',
   // Attach
-  // onPlay() => unit.condemn = true;
   KingOfHill: '99d4a12e-e368-7700-5cd0-46548040fced',
-  // Aerna
   // When King moves on to this cubit on the field then that play wins the game
-  // onPlay() => add cubit to field at random location;
-  // [Proxy] onMove() => if King moves on to this cubit on the field then that play wins the game
   Enrage: '765857db-7109-4b3a-b12f-2657ac4cc3cd',
-  // Units
   // This unit can not make capture moves
-  // Passive
   Passify: '93eeb236-e43a-4b72-9f1f-5fb3687474fe',
-  // Units
   // This unit can not make passive moves
-  // Passive
+  StickyFeet: 'c74980b0-c356-4990-92fa-3b1a202770d0',
+  // This piece cannot move more than one space
+  Encumber: '35fb4558-7f55-46bb-afd8-78bee2d71d66',
+  // The unit gets -1 move for ever cubie on that unit
+  Immunity: '8faf8b97-5e47-4ac2-a5f2-0616120a4adb',
+  // This piece cannot be targeted by opponents, other cubies on this piece cannot be targeted by opponnents
+
+
+  BacktoBasics: '3b9d5f24-daaa-485c-810d-7efc969024de',
+  // Aerna
+  // All other cubies have no effect
+  // onPlay() => set g.effects.basics = true; 
+  // TODO: update all checks for this value when testing for Cubit affects
   AncientRevival: '10e38ff2-2954-43f5-9a06-b11fcc06fad9', 
   // Trap
   // When this piece is captured, return it to the board to an unoccupied space, of your choice, in your back line after your opponnets next turn
   // onCapture() => encapsulate Unit in Cubit (Revival); add Duration(turns, 0/1); move to Avator (if there is space in the []);
   // onActivate() w / target => reveal Unit in Cubit and move to target exile Cubit
-  BacktoBasics: '3b9d5f24-daaa-485c-810d-7efc969024de',   
-  // Aerna
-  // All other cubies have no effect
-  // onPlay() => set g.effects.basics = true; 
-  // TODO: update all checks for this value when testing for Cubit affects
   BlinkDodge: 'a80cd286-9e00-4ea1-9356-744d663b9098',     
   // Trap
   // When this piece would be taken instead move it to a random unoccupied adjacent space. If none, it is taken
@@ -97,13 +77,6 @@ export const CUBIT_TYPES = {
   // On capture, you may take (select) a cubie from the afterlife and put it on this piece
   // onCapture() => g.players[].reaction = true; 
   // HOW: onReaction() /w target => move cubit from unit in afterlife to this unit (if able);
-  Encumber: '35fb4558-7f55-46bb-afd8-78bee2d71d66',
-  // *NEEDS WORK*  
-  // Units
-  // The unit gets -1 move for ever cubie on that unit
-  // KEYWORD
-  // Passive
-  // HOW: 
   ForgottenPast: '269a550a-ea97-46a4-890f-395f45d3c440',  
   // Avatar 
   // Exile everything in the afterlife
@@ -130,12 +103,6 @@ export const CUBIT_TYPES = {
   // Randomly select X spaces not on the back lines, those are now Ice spaces.
   // onPlay() => add this cubits X times to field at random locations;
   // HOW: Ice froces continus movement
-  Immunity: '8faf8b97-5e47-4ac2-a5f2-0616120a4adb',
-  // *NEEDS WORK*
-  // Units 
-  // This piece cannot be targeted by opponents, other cubies on this piece cannot be targeted by opponnents
-  // Passive
-  // HOW: 
   Jumper: '99d14233-f9c8-40d2-b4c6-6e3fe025829f',
   // *NEEDS WORK*
   // Units
@@ -189,12 +156,6 @@ export const CUBIT_TYPES = {
   // Field
   // The unit must remove a Cubit to move away from this space
   // HOW: 
-  StickyFeet: 'c74980b0-c356-4990-92fa-3b1a202770d0',
-  // *NEEDS WORK*
-  // Units
-  // This piece cannot move more than one space
-  // Passive
-  // HOW: update getTarget() to focus movement
   Taunt: 'c2b27e7d-343e-416d-bac3-149fe48da9eb',   
   // *NEEDS WORK*       
   // Units

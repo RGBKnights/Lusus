@@ -27,9 +27,9 @@ function getCubits(g, x, y) {
   return cubits;
 }
 
-function unitHasCubit(unit, type) {
-  for (let i = 0; i < unit.cubits.length; i++) {
-    const cubit = unit.cubits[i];
+function unitHasCubit(g, ctx, unit, type) {
+  for (const id of unit.cubits) {
+    const cubit = g.cubits.find(_ => _.id === id);
     if(cubit.type === type) {
       return true;
     }
@@ -90,9 +90,9 @@ export function getMovements(g, ctx, player, origin, unit) {
   let bounds = { x: 0, y: 0, width: 8, height: 8 };
 
   let movements = [].concat(unit.movement);
-  for (let i = 0; i < unit.cubits.length; i++) {
-      const cubit = unit.cubits[i];
-      movements = movements.concat(cubit.movement);
+  for (const id of unit.cubits) {
+    const cubit = g.cubits.find(_ => _.id === id);
+    movements = movements.concat(cubit.movement);
   }
 
   for (let i = 0; i < movements.length; i++) {
@@ -102,9 +102,9 @@ export function getMovements(g, ctx, player, origin, unit) {
     let isAgressive = movement.constraint === MOVEMENT_CONSTRAINTS.Agressive;
 
     let distance =  movement.distance;
-    if(unitHasCubit(unit, CUBIT_TYPES.StickyFeet)) {
+    if(unitHasCubit(g, ctx, unit, CUBIT_TYPES.StickyFeet)) {
       distance = 1;
-    } else if (unitHasCubit(unit, CUBIT_TYPES.Encumber)) {
+    } else if (unitHasCubit(g, ctx, unit, CUBIT_TYPES.Encumber)) {
       distance = distance - unit.cubits.length;
     }
 
@@ -146,7 +146,7 @@ export function getMovements(g, ctx, player, origin, unit) {
       }
     } else if(movement.type === MOVEMENT_TYPES.Jump) {
       // Change to distance
-      if(unitHasCubit(unit, CUBIT_TYPES.StickyFeet) || unitHasCubit(unit, CUBIT_TYPES.Encumber)) {
+      if(unitHasCubit(g, ctx, unit, CUBIT_TYPES.StickyFeet) || unitHasCubit(g, ctx, unit, CUBIT_TYPES.Encumber)) {
         continue; // Goto: Next Movement
       }
 
@@ -247,8 +247,8 @@ export function getMovements(g, ctx, player, origin, unit) {
     }
   }
 
-  for (let i = 0; i < unit.cubits.length; i++) {
-    const cubit = unit.cubits[i];
+  for (const id of unit.cubits) {
+    const cubit = g.cubits.find(_ => _.id === id);
     if(cubit.type === CUBIT_TYPES.Enrage) {
         moves = moves.filter(_ => _.action === MOVEMENT_ACTIONS.Agressive);
     } else if(cubit.type === CUBIT_TYPES.Passify) {

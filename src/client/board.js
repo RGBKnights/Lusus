@@ -488,7 +488,8 @@ class GameTable extends React.Component {
 
       // Cubits
       for (let x = 0; x < unit.cubits.length; x++) {
-        const cubit = unit.cubits[x];
+        const id =  unit.cubits[x];
+        const cubit = this.props.G.cubits.find(_ => _.id === id);
 
         let offset = (x+1);
         let team = this.teamColors[unit.ownership];

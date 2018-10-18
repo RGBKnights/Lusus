@@ -27,17 +27,18 @@ export class GameLogic {
       new Cubits.EnrageCubit(p),
       new Cubits.PassifyCubit(p),
       new Cubits.KingOfHillCubit(p),
+      new Cubits.StickyFeetCubit(p),
+      new Cubits.EncumberCubit(p),
+      new Cubits.ImmunityCubit(p),
       /*
       new Cubits.AncientRevivalCubit(p),
       new Cubits.BacktoBasicsCubit(p),
       new Cubits.BlinkDodgeCubit(p),
       new Cubits.CostofPowerCubit(p),
       new Cubits.DarkMagicCubit(p),
-      new Cubits.EncumberCubit(p),
       new Cubits.ArenaHoleCubit(p),
       new Cubits.ArenaRockCubit(p),
       new Cubits.ArenaIceCubit(p),
-      new Cubits.ImmunityCubit(p),
       new Cubits.JumperCubit(p),
       new Cubits.LooterCubit(p),
       new Cubits.MulliganCubit(p),
@@ -49,7 +50,6 @@ export class GameLogic {
       new Cubits.RevertCubit(p),
       new Cubits.RockThrowCubit(p),
       new Cubits.SacrificeCubit(p),
-      new Cubits.StickyFeetCubit(p),
       new Cubits.TauntCubit(p),
       new Cubits.ThunderDomeCubit(p),
       new Cubits.TimebombCubit(p),
@@ -139,32 +139,42 @@ export class GameLogic {
 
   // ACTIONS
 
-  onPlay(g, ctx) {
-
+  onPlay(g, ctx, cubit) {  
+    switch (cubit.type) {
+      case CUBIT_TYPES.KingOfHill:
+      {
+        // Add board marker
+        let options = {
+          '1': {x: 3, y: 3},
+          '2': {x: 3, y: 4},
+          '3': {x: 4, y: 3},
+          '4': {x: 4, y: 4},
+        };
+        const die = ctx.random.D4();
+        let item = new Cubits.KingOfHillCubit(cubit.ownership);
+        item.location = LOCATIONS.Board;
+        item.position = options[die];
+        item.obstruction = false;
+        cubit.children.push(item.id);
+        g.cubits.push(item);
+        break;
+      }
+      default:
+        break;
+    }
   }
 
-  onDraw(g, ctx) {
-    // Draw - Move hand to Bag
-    let hand = g.cubits.filter(_ => _.location === LOCATIONS.Hand && _.controller === ctx.currentPlayer);
-    for (const cubit of hand) {
-      cubit.location = LOCATIONS.Bag;
+  onRemoved(g, ctx, cubit) {
+    switch (cubit.type) {
+      case CUBIT_TYPES.KingOfHill:
+      {
+        // Remove Childern
+        g.cubits = g.cubits.filter(_ => cubit.children.includes(_.id) === false);
+        break;
+      }
+      default:
+        break;
     }
-
-    // Shuffle Bag
-    let bag = g.cubits.filter(_ => _.location === LOCATIONS.Bag && _.controller === ctx.currentPlayer);
-    bag = ctx.random.Shuffle(bag);
-
-    // If bag is less then number of draws then GameOver()
-    let draws = this.getDraws(g, ctx, ctx.currentPlayer);
-    if(draws > bag.length) {
-      return false;
-    }
-
-    // Draw new hand
-    for (let i = 0; i < draws; i++) {
-      bag[i].location = LOCATIONS.Hand;
-    }
-    return true;
   }
 
   afterMove(g, ctx, unit) {
@@ -172,14 +182,34 @@ export class GameLogic {
 
     switch (unit.type) {
       case UNIT_TYPES.Pawn:
-        unit.movement = unit.movement.filter(_ => (_.type === MOVEMENT_TYPES.Forward && _.distance === 2) === false); break; // Remove DoubleStep
+      {
+        // Remove DoubleStep
+        unit.movement = unit.movement.filter(_ => (_.type === MOVEMENT_TYPES.Forward && _.distance === 2) === false); 
+        break;
+      }
       case UNIT_TYPES.King:
-        unit.movement = unit.movement.filter(_ => (_.type === MOVEMENT_TYPES.Castle) === false); break; // Remove Castle
+      {
+        // King of Hill
+        let kingOfHill = g.cubits.filter(_ => _.type === CUBIT_TYPES.KingOfHill)
+          .filter(_ => _.location === LOCATIONS.Board)
+          .filter(_ => _.position.x === unit.position.x)
+          .filter(_ => _.position.y === unit.position.y);
+
+        if(kingOfHill.length > 0) {
+          ctx.events.endGame(unit.ownership);
+          return;
+        }
+
+        // Remove Castle
+        unit.movement = unit.movement.filter(_ => (_.type === MOVEMENT_TYPES.Castle) === false); 
+        break; 
+      }
       default:
         break;
     }
 
-    for (const cubit of unit.cubits) {
+    for (const id of unit.cubits) {
+      let cubit = g.cubits.find(_ => _.id === id);
       cubit.moves++;
 
       switch (cubit.type) {
@@ -237,7 +267,6 @@ export class GameLogic {
 
     return true;
   }
-
   
   onSwap(g, ctx, sourceId, destinationId) {
     let source = g.units.find(_ => _.id === sourceId);
@@ -264,6 +293,43 @@ export class GameLogic {
     this.afterMove(g, ctx, source);
     this.afterMove(g, ctx, destination);
     
+    return true;
+  }
+
+  onDraw(g, ctx) {
+    // Reset Action Counter to Activity Count
+    g.players[ctx.currentPlayer].actions_used = 0;
+    g.players[ctx.currentPlayer].actions_left = this.getActivities(g, ctx, ctx.currentPlayer);
+    g.players[ctx.currentPlayer].moves = 1;
+
+    // Draw - Move hand to Bag
+    let hand = g.cubits.filter(_ => _.location === LOCATIONS.Hand && _.controller === ctx.currentPlayer);
+    for (const cubit of hand) {
+      cubit.location = LOCATIONS.Bag;
+    }
+
+    // Shuffle Bag
+    let bag = g.cubits.filter(_ => _.location === LOCATIONS.Bag && _.controller === ctx.currentPlayer);
+    bag = ctx.random.Shuffle(bag);
+
+    // If bag is less then number of draws then GameOver()
+    let draws = this.getDraws(g, ctx, ctx.currentPlayer);
+    if(draws > bag.length) {
+      // GameOver
+      let opponent = ctx.currentPlayer === "0" ? "1" : "0"
+      ctx.events.endGame(opponent);
+      return true;
+    }
+
+    // Draw new hand
+    for (let i = 0; i < draws; i++) {
+      bag[i].location = LOCATIONS.Hand;
+    }
+
+    // End turn frist and end phase reseting to 'Play'
+    ctx.events.endTurn();
+    ctx.events.endPhase();
+
     return true;
   }
 
