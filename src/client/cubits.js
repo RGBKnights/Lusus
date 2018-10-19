@@ -23,27 +23,6 @@ export class CubitText extends React.Component {
     name: PropTypes.string,
   };
 
-  singleLine2(teamColor, name) {
-    name = "King of Hill";
-    // name = "Draw +1";
-    // name = "Knowledge";
-    let size = (1 / name.length) * 1.3;
-
-    return (
-      <g>
-        <title>{this.props.name}</title>
-        <text x="0.5" y="0.6" strokeWidth="0" textAnchor="middle" fill={teamColor} fontSize={size}>
-          { name }
-        </text>
-      </g>
-    );
-  }
-
-  singleLine(teamColor, name) {
-    
-    
-  }
-
   render() {
     let teamColor = this.props.team === 'b' ? '#000000' : '#FFFFFF';
     // let rankColor = this.props.color;
@@ -95,7 +74,7 @@ export class CubitOrthogonal extends React.Component {
 
   render() {
     let teamColor = this.props.team === 'b' ? '#000000' : '#FFFFFF';
-    let style = { fill: teamColor, fillOpacity: 1 };
+    let style = { fill: teamColor };
 
     return (
       <g transform="scale(0.0018,0.0018) translate(20,20)">
@@ -119,10 +98,10 @@ export class CubitDiagonal extends React.Component {
 
   render() {
     let teamColor = this.props.team === 'b' ? '#000000' : '#FFFFFF';
-    let style = { fill: teamColor, fillOpacity: 1 };
+    let style = { fill: teamColor };
 
     return (
-      <g transform=" scale(0.0018,0.0018) translate(20,20)">
+      <g transform=" scale(0.0018,0.0018) translate(20,20)" >
         <title>{this.props.name}</title>
         <path 
            d="M256 34.47l-90.51 90.51h67.883v108.393H124.98V165.49L34.47 256l90.51 90.51v-67.883h108.393V387.02H165.49L256 477.53l90.51-90.51h-67.883V278.627H387.02v67.883L477.53 256l-90.51-90.51v67.883H278.627V124.98h67.883L256 34.47z"

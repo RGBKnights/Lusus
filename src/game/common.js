@@ -49,13 +49,12 @@ export const CUBIT_TYPES = {
   // The unit gets -1 move for ever cubie on that unit
   Immunity: '8faf8b97-5e47-4ac2-a5f2-0616120a4adb',
   // This piece cannot be targeted by opponents, other cubies on this piece cannot be targeted by opponnents
-
-
+  
+  Removal: 'e3698666-2839-4167-b91a-14502bae30f7',
+  // Target any Cubit @ any location then move that cubit to the afterlife 
+  // units with imunity are still targets (not their other cubits, must imunity)
   BacktoBasics: '3b9d5f24-daaa-485c-810d-7efc969024de',
-  // Aerna
   // All other cubies have no effect
-  // onPlay() => set g.effects.basics = true; 
-  // TODO: update all checks for this value when testing for Cubit affects
   AncientRevival: '10e38ff2-2954-43f5-9a06-b11fcc06fad9', 
   // Trap
   // When this piece is captured, return it to the board to an unoccupied space, of your choice, in your back line after your opponnets next turn
@@ -66,29 +65,25 @@ export const CUBIT_TYPES = {
   // When this piece would be taken instead move it to a random unoccupied adjacent space. If none, it is taken
   // onCapture() => Move to random unoccupied adjacent space; if none move to afterlife
   CostofPower: '55168e9e-06f6-4cfe-bbdc-149a86173b5e',
-  // *NEEDS WORK*  
   // Avatar
   // Each player draws an additional card and loses a random cubie from the bag
   // onDraw() => find Cubit; if exists remove random cubie;
   // HOW: loses a random cubie from the bag...?
-  DarkMagic: '19c2696e-d456-482c-bb5b-d2abd8c80486',  
-  // *NEEDS WORK*  
+  DarkMagic: '19c2696e-d456-482c-bb5b-d2abd8c80486', 
   // Trap 
-  // On capture, you may take (select) a cubie from the afterlife and put it on this piece
-  // onCapture() => g.players[].reaction = true; 
-  // HOW: onReaction() /w target => move cubit from unit in afterlife to this unit (if able);
+  // On capture a cubie random Target Unit from the afterlife and put it on this piece
   ForgottenPast: '269a550a-ea97-46a4-890f-395f45d3c440',  
-  // Avatar 
+  // Avatar
   // Exile everything in the afterlife
   // onPlay() => find all cubits in the afterlife move them to exile
-  Heirloom: '5f510368-b76e-4a9b-9f29-96ca821ba26b',       
+  Heirloom: '5f510368-b76e-4a9b-9f29-96ca821ba26b',
   // Trap
   // When captured, put your cubies into bag instead of attached to piece in afterlife.
   // onCapture() => move cubits from unit to bag
-  ArenaHole: '7ee25860-b996-442d-95da-9bd0a447cff3',   
+  ArenaHole: '7ee25860-b996-442d-95da-9bd0a447cff3',
   // *NEEDS WORK*   
   // Arena
-  // Randomly select X unoccupied spaces not on the back lines, those are now Hole spaces.
+  // Randomly select [fix amount vs dyanmic based on turn number vs incrase / turn (needs end of turn logic)] unoccupied spaces not on the back lines, those are now Hole spaces.
   // onPlay() => add this cubits X times to field at random locations;
   // HOW:  You can move over but not land on a hole
   ArenaRock: 'e281b0bd-8a1f-4e9a-9db0-b1cdfe978151', 
@@ -104,74 +99,36 @@ export const CUBIT_TYPES = {
   // onPlay() => add this cubits X times to field at random locations;
   // HOW: Ice froces continus movement
   Jumper: '99d14233-f9c8-40d2-b4c6-6e3fe025829f',
-  // *NEEDS WORK*
-  // Units
   // Cardinal patern movement; distance = 2;
-  // Passive - Movement
-  // HOW: CardinalMovement + Movement.phased = true;
   Looter: '9a226a0f-4d19-41e7-852e-856275875f89',
-  // Units   
   // On capture, put a random cubit into your bag instead of attached to piece in afterlife.
-  // onCapture() => move cubits from this unit to bag
   Mulligan: '664882e5-df52-4396-b90c-77b84956342e',     
-  // Avatar
   // You shuffle your hand back in and draw a new one, you get one additional action this turn
-  // onPlay() => move cubits from hand to bag; move cubits from bag to hand; g.players[].actions.count--;
   Nab: 'e07970c5-a967-4c4a-903a-4b2502b2a9b1',
-  // *NEEDS WORK*          
-  // Avatar
   // Look at your opponents hand, you may play one of their cubies
-  // onActivate() /w target => move from there hand to yours
-  // HOW: update board if target location isHidden() then override to true
   Poisoned: 'abbc5454-2714-4e80-aa2e-674a4a19cc99',
-  // Units
   // After this piece makes 3 moves it is removed
-  // onMove() => unit.moves > 3 then move unit to afterlife
-  Poof: '319017f3-f943-4c41-b465-15ceea4b9059',           
-  // Board - Unit
-  // Remove a piece from the board marking its location. It is gone until your next turn;
-  // onPlay() => unit is marked as obustrtion = false, locked = true; (can't move)
-  // onReturn() => remove any unit at target location
+  Poof: '319017f3-f943-4c41-b465-15ceea4b9059',
+  // Remove a piece from the board marking its location. Duration 1; onDurrtionEnd() => [];
   Reckless: '6b6b78fa-d42c-4713-ad1d-e3672786005e',       
-  // Arena
   // Once placed the player that reachs 2d6 pieces in the afterlife you win
   // [Proxy] onCapture() => check afterlife for number of units if > 2d6 then you win the game
   Resourceful: '517c0bc3-1ed3-462e-ba23-018e61366005',   
-  // Avatar 
   // Draw a new hand with one less card
   // onActivated() => moves cubits in hand to bag; draws new hand; Consumable
   Revert: 'c647e8f2-3d4c-42cc-af90-9b0053617151',     
-  // *NEEDS WORK*   
-  // Units 
   // If unit is captured the move is reverted; Consumable
   // onCapature() => remove this cubit from unit; [ShortCurit]
   RockThrow: '18301f0f-05e3-41f9-9f66-052a5485f0e1',    
-  // *NEEDS WORK*   
-  // Field
   // Select 3 unoccupid spaces. Those spaces act as if they are occupied by a peice
-  // onPlay() => add 3 cubits to field based on the 3 targets
-  // HOW: to select mulitple targets...?
-  Sacrifice: 'b01a5d36-0f89-4264-a89a-a46554a1700a', 
-  // *NEEDS WORK*     
-  // Field
-  // The unit must remove a Cubit to move away from this space
-  // HOW: 
-  Taunt: 'c2b27e7d-343e-416d-bac3-149fe48da9eb',   
-  // *NEEDS WORK*       
-  // Units
+  Sacrifice: 'b01a5d36-0f89-4264-a89a-a46554a1700a',  
+  // afterMove() => remove a random cubit from this unit; if cubits.length == 0 then move unit to afterlife
+  Taunt: 'c2b27e7d-343e-416d-bac3-149fe48da9eb',       
   // If the opposing team can take this piece as their move, they must do so, single target only
-  // Passive
-  // HOW: update getTarget() to focus movement
   ThunderDome: 'dea9abe7-230f-4448-a1c0-ecd37fb393aa',    
-  // *NEEDS WORK* 
-  // Arena
   // You cannot make passive moves if a capture is available
-  // Passive
-  // HOW: update getTarget() to focus movement
-  Timebomb: '259d4841-a8a9-483b-ab78-bfb024184400',      
-  // Fields
+  Timebomb: '259d4841-a8a9-483b-ab78-bfb024184400', 
   // Start a 3 turn timer, count it down at end of each turn; at 0 detonate it destroying all pieces on that, and the sourrounding spaces
-  // onPlay() => turns++; turns > 3; remove all units at location and sourrounding spaces
 };
 
 export const UNIT_TYPES = {

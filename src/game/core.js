@@ -157,6 +157,12 @@ const GameCore = Game({
       drawCubits: (G, ctx) => {
         const g = clone(G);
 
+        // logic.onEndTurn()
+        // Reset Action Counter to Activity Count
+        g.players[ctx.currentPlayer].actions_used = 0;
+        g.players[ctx.currentPlayer].actions_left = logic.getActivities(g, ctx, ctx.currentPlayer);
+        g.players[ctx.currentPlayer].moves = 1;
+
         // Draw
         let result = logic.onDraw(g, ctx);
         if(result) {

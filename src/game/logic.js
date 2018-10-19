@@ -9,6 +9,8 @@ import {
 import * as Units from './units';
 import * as Cubits from './cubits';
 
+const uuidv4 = require('uuid/v4');
+
 export class GameLogic {
 
   getCubits(p) {
@@ -62,11 +64,15 @@ export class GameLogic {
   // SETUP
 
   initialize(g, ctx) {
+    g.next = uuidv4();
     g.units = [];
     g.cubits = [];
     g.players = {
       "0": {},
       "1": {},
+    };
+    g.effects = {
+      basic: false,
     };
   }
 
@@ -254,6 +260,11 @@ export class GameLogic {
     // Move destination to Afterlife
     destination.location = LOCATIONS.Afterlife;
 
+    for (const id of destination.cubits) {
+      let cubit = g.cubits.find(_ => _.id === id);
+      cubit.location = LOCATIONS.Afterlife;
+    }
+
     g.players[ctx.currentPlayer].moves--;
 
     if(destination.type === UNIT_TYPES.King) {
@@ -297,10 +308,6 @@ export class GameLogic {
   }
 
   onDraw(g, ctx) {
-    // Reset Action Counter to Activity Count
-    g.players[ctx.currentPlayer].actions_used = 0;
-    g.players[ctx.currentPlayer].actions_left = this.getActivities(g, ctx, ctx.currentPlayer);
-    g.players[ctx.currentPlayer].moves = 1;
 
     // Draw - Move hand to Bag
     let hand = g.cubits.filter(_ => _.location === LOCATIONS.Hand && _.controller === ctx.currentPlayer);
@@ -325,6 +332,8 @@ export class GameLogic {
     for (let i = 0; i < draws; i++) {
       bag[i].location = LOCATIONS.Hand;
     }
+
+    // Reset g.players[player].hand = 3;
 
     // End turn frist and end phase reseting to 'Play'
     ctx.events.endTurn();
@@ -384,13 +393,13 @@ export class GameLogic {
     return g.players[player].moves;
   }
 
-  getAfterlifeUnits(g, ctx, player) {
-    let units = g.units.filter(_ => _.location === LOCATIONS.Afterlife && _.ownership === player);
+  getAfterlifeUnits(g, ctx, player = null) {
+    let units = g.units.filter(_ => _.location === LOCATIONS.Afterlife && (player == null ||  _.ownership === player));
     return units.length;
   }
 
-  getAfterlifeCubits(g, ctx, player) {
-    let cubits = g.cubits.filter(_ => _.location === LOCATIONS.Afterlife && _.ownership === player);
+  getAfterlifeCubits(g, ctx, player = null) {
+    let cubits = g.cubits.filter(_ => _.location === LOCATIONS.Afterlife && (player == null ||  _.ownership === player));
     return cubits.length;
   }
 }

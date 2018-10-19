@@ -10,8 +10,8 @@ export class UnitBishop extends React.Component {
 
   render() {
     let teamColor = this.props.team === 'b' ? '#000000' : '#FFFFFF';
-    let styleMain = { fill: teamColor, fillOpacity: 1 };
-    let styleRank = { fill: this.props.color, fillOpacity: 1 };
+    let styleMain = { fill: teamColor };
+    let styleRank = { fill: this.props.color };
 
     return (
       <g transform="scale(0.0018,0.0018) translate(20,20)">
@@ -35,8 +35,8 @@ export class UnitKing extends React.Component {
 
   render() {
     let teamColor = this.props.team === 'b' ? '#000000' : '#FFFFFF';
-    let styleMain = { fill: teamColor, fillOpacity: 1 };
-    let styleRank = { fill: this.props.color, fillOpacity: 1 };
+    let styleMain = { fill: teamColor };
+    let styleRank = { fill: this.props.color };
 
     return (
       <g transform="scale(0.0018,0.0018) translate(20,20)">
@@ -61,8 +61,8 @@ export class UnitKnight extends React.Component {
 
   render() {
     let teamColor = this.props.team === 'b' ? '#000000' : '#FFFFFF';
-    let styleMain = { fill: teamColor, fillOpacity: 1 };
-    let styleRank = { fill: this.props.color, fillOpacity: 1 };
+    let styleMain = { fill: teamColor };
+    let styleRank = { fill: this.props.color };
 
     return (
       <g transform="scale(0.0018,0.0018) translate(20,20)">
@@ -83,8 +83,9 @@ export class UnitPawn extends React.Component {
 
   render() {
     let teamColor = this.props.team === 'b' ? '#000000' : '#FFFFFF';
-    let styleMain = { fill: teamColor, fillOpacity: 1 };
-    let styleRank = { fill: this.props.color, fillOpacity: 1 };
+    let styleMain = { fill: teamColor };
+    let styleRank = { fill: this.props.color };
+    // style={{opacity: 0.4}}
 
     return (
       <g transform="scale(0.0018,0.0018) translate(20,20)">
@@ -106,8 +107,8 @@ export class UnitQueen extends React.Component {
 
   render() {
     let teamColor = this.props.team === 'b' ? '#000000' : '#FFFFFF';
-    let styleMain = { fill: teamColor, fillOpacity: 1 };
-    let styleRank = { fill: this.props.color, fillOpacity: 1 };
+    let styleMain = { fill: teamColor };
+    let styleRank = { fill: this.props.color };
 
     return (
       <g transform="scale(0.0018,0.0018) translate(20,20)">

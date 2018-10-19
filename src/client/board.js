@@ -469,6 +469,7 @@ class GameTable extends React.Component {
       const unit = units[y];
 
       // Unit
+      if(unit.location === LOCATIONS.Board)
       {
         let team =  this.teamColors[unit.ownership];
         let color = this.unitColors[unit.file];
@@ -477,8 +478,6 @@ class GameTable extends React.Component {
         let token = React.createElement(Token, {key: unit.id, x: 0, y: y}, element);
         tokens.push(token);
       }
-
-      
 
       let target = this.state.targets.find(_ => _.location === LOCATIONS.Unit && _.units.includes(unit.id));
       if(target) {
@@ -491,12 +490,15 @@ class GameTable extends React.Component {
         const id =  unit.cubits[x];
         const cubit = this.props.G.cubits.find(_ => _.id === id);
 
-        let offset = (x+1);
-        let team = this.teamColors[unit.ownership];
-        let cubitType = this.getCubitFromType(cubit.type);
-        let element = React.createElement(cubitType, { name: cubit.name, value: cubit.name, team: team, color: '' });
-        let token = React.createElement(Token, {key: cubit.id, x: offset, y: y}, element);
-        tokens.push(token);
+        if(cubit.location === LOCATIONS.Unit)
+        {
+          let offset = (x+1);
+          let team = this.teamColors[unit.ownership];
+          let cubitType = this.getCubitFromType(cubit.type);
+          let element = React.createElement(cubitType, { name: cubit.name, value: cubit.name, team: team, color: '' });
+          let token = React.createElement(Token, {key: cubit.id, x: offset, y: y}, element);
+          tokens.push(token);
+        }
 
         // Enable with targeting
         // this.unitsMap[type][`${offset},${y}`] = cubit.id;
@@ -628,8 +630,8 @@ class GameTable extends React.Component {
   getPlayerStats() {
     let bag = this.logic.getBagSize(this.props.G, this.props.ctx, this.state.player);
     let actions = this.logic.getActions(this.props.G, this.props.ctx, this.state.player);
-    let alUnits = this.logic.getAfterlifeUnits(this.props.G, this.props.ctx, this.state.player);
-    let alCubits = this.logic.getAfterlifeCubits(this.props.G, this.props.ctx, this.state.player);
+    let alUnits = this.logic.getAfterlifeUnits(this.props.G, this.props.ctx);
+    let alCubits = this.logic.getAfterlifeCubits(this.props.G, this.props.ctx);
 
     return (
       <NavItem className="list-inline-item">      
@@ -664,9 +666,39 @@ class GameTable extends React.Component {
     document.body.removeChild(el);
   }
 
+  getNewGame() {
+    if(this.props.playerID) {
+      return (
+        <NavItem className="list-inline-item">
+          <Button size="sm" color="primary" onClick={this.onNewGame}>New Game</Button>
+        </NavItem>
+      );
+    }
+  }
+
   onNewGame() {
-    let url = window.location.origin + "/?p=0&m=" + uuidv4();
-    window.location = url;
+    if(this.props.playerID) {
+      let url = window.location.origin + "/?p=0&m=" + uuidv4();
+      window.location = url;
+    }
+  }
+
+  getRematch() {
+    if(this.props.playerID) {
+      return ( 
+        <NavItem className="list-inline-item">
+          <Button size="sm" color="primary" onClick={this.onRematch}>Rematch</Button>
+        </NavItem>
+      );
+    }
+  }
+
+  onRematch() {
+    if(this.props.playerID) {
+      let opponent = this.props.playerID === "0" ? "1" : "0";
+      let url = window.location.origin + "/?p=" + opponent + "&m=" + this.props.G.next;
+      window.location = url;
+    }
   }
 
   getHeaderActive() {
@@ -706,13 +738,11 @@ class GameTable extends React.Component {
           </NavbarBrand>
           <Nav className="p-1 list-inline">
             { this.getPlayer() }
-            { this.getNext() }
             <NavItem className="list-inline-item">
               <Button size="sm" color="secondary" disabled>Player { playerWon } Won</Button>
             </NavItem>
-            <NavItem className="list-inline-item">
-              <Button size="sm" color="primary" onClick={this.onNewGame}>New Game</Button>
-            </NavItem>
+            { this.getNewGame() }
+            { this.getRematch() }
           </Nav>
           <Nav className="p-1 list-inline ml-auto">
             { this.getPlayerConnection() }
@@ -726,6 +756,12 @@ class GameTable extends React.Component {
     return (
       <div className="horizontal-warper">
         <div className="horizontal-section-content">
+          <div className="text-center">
+            <Badge>Board</Badge>
+          </div>
+          { this.getBoard() }
+        </div>
+        <div className="horizontal-section-content">
           <div className="p-1">
             { this.getArena() }
           </div>
@@ -737,12 +773,6 @@ class GameTable extends React.Component {
               { this.getAvatar() }
             </div>
           </div>
-        </div>
-        <div className="horizontal-section-content">
-          <div className="text-center">
-            <Badge>Board</Badge>
-          </div>
-          { this.getBoard() }
         </div>
         <div className="horizontal-section-content">
           <div className="text-center">

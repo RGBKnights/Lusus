@@ -75,6 +75,7 @@ export function getTargets(g, ctx, player, cubit) {
 
         //TODO: Check for other Cubits that would limit targeting (like: Condemn)
         let units = g.units
+          .filter(_ => _.location === LOCATIONS.Board) // This may seems like the worng location but unit never have a locaiton of units (at is the board)...
           .filter(_ => _.ownership === controller)
           .filter(_ => unitIsType(_, target.type))
           .filter(_ => _.cubits.length < _.slots)
