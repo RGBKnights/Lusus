@@ -2,21 +2,17 @@
 
 ### vNext Steps
 
-Bugs:
-- Double action crash the other player...?
 
-1. Come up with Process to figure out if there are any valid targets
-a. Add this to OnBeginPhase() => Move to determine if there are any moves if not that opppent wins game
-
-2. Implement a Removal Cubit
+1. Implement a Removal Cubit
 a. Needs to target the cubit
 b. Sends cubit to afterlife
 
-3. OnCheck() => Trap / Castle
+2. Arenas need a duration
 
-4. OnCapture not moving Cubits to Afterlife...
+3. Come up with Process to figure out if there are any valid targets
+a. Add this to OnBeginPhase() => Move to determine if there are any moves if not that opppent wins game
 
-3. Arenas need a duration
+4. OnCheck() => Trap / Castle
 
 ####  Phases
 

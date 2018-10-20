@@ -3,7 +3,6 @@ import {
   CLASSIFICATIONS,
   MOVEMENT_TYPES,
   MOVEMENT_CONSTRAINTS,
-  Movement,
   LOCATIONS,
 } from './common';
 
@@ -53,47 +52,104 @@ export class Unit {
 
 export class KingUnit extends Unit {
   constructor(ownership, file) {
-      super(UNIT_TYPES.King, "King", 1, ownership, UNIT_TYPES.Royal, file);
+      super(UNIT_TYPES.King, "King", 3, ownership, UNIT_TYPES.Royal, file);
 
-      this.classification.push(CLASSIFICATIONS.Unit);
-      this.movement.push(new Movement(MOVEMENT_TYPES.Orthogonal, MOVEMENT_CONSTRAINTS.Agressive, 1));
-      this.movement.push(new Movement(MOVEMENT_TYPES.Orthogonal, MOVEMENT_CONSTRAINTS.Passive, 1));
-      this.movement.push(new Movement(MOVEMENT_TYPES.Diagonal, MOVEMENT_CONSTRAINTS.Agressive, 1));
-      this.movement.push(new Movement(MOVEMENT_TYPES.Diagonal, MOVEMENT_CONSTRAINTS.Passive, 1));
+      this.classification.push(CLASSIFICATIONS.Units_King);
+      this.classification.push(CLASSIFICATIONS.Units_Royal);
 
-      this.movement.push(new Movement(MOVEMENT_TYPES.Castle, MOVEMENT_CONSTRAINTS.Passive, 1));
+      this.movement.push({
+        type: MOVEMENT_TYPES.Diagonal,
+        constraint: MOVEMENT_CONSTRAINTS.Agressive,
+        distance: 1
+      });
+      this.movement.push({
+        type: MOVEMENT_TYPES.Diagonal,
+        constraint: MOVEMENT_CONSTRAINTS.Passive,
+        distance: 1
+      });
+      this.movement.push({
+        type: MOVEMENT_TYPES.Orthogonal,
+        constraint: MOVEMENT_CONSTRAINTS.Agressive,
+        distance: 1
+      });
+      this.movement.push({
+        type: MOVEMENT_TYPES.Orthogonal,
+        constraint: MOVEMENT_CONSTRAINTS.Passive,
+        distance: 1
+      });
+
+      this.movement.push({
+        type: MOVEMENT_TYPES.Castle,
+        constraint: MOVEMENT_CONSTRAINTS.Passive
+      });
   }
 }
 
 export class QueenUnit extends Unit {
   constructor( ownership, file) {
-      super(UNIT_TYPES.Queen, "Queen", 2, ownership, UNIT_TYPES.Royal, file);
+      super(UNIT_TYPES.Queen, "Queen", 3, ownership, UNIT_TYPES.Royal, file);
 
-      this.classification.push(CLASSIFICATIONS.Unit);
-      this.movement.push(new Movement(MOVEMENT_TYPES.Orthogonal, MOVEMENT_CONSTRAINTS.Agressive, 8));
-      this.movement.push(new Movement(MOVEMENT_TYPES.Orthogonal, MOVEMENT_CONSTRAINTS.Passive, 8));
-      this.movement.push(new Movement(MOVEMENT_TYPES.Diagonal, MOVEMENT_CONSTRAINTS.Agressive, 8));
-      this.movement.push(new Movement(MOVEMENT_TYPES.Diagonal, MOVEMENT_CONSTRAINTS.Passive, 8));
+      this.classification.push(CLASSIFICATIONS.Units_Queen);
+      this.classification.push(CLASSIFICATIONS.Units_Royal);
+
+      this.movement.push({
+        type: MOVEMENT_TYPES.Diagonal,
+        constraint: MOVEMENT_CONSTRAINTS.Agressive,
+        distance: 8
+      });
+      this.movement.push({
+        type: MOVEMENT_TYPES.Diagonal,
+        constraint: MOVEMENT_CONSTRAINTS.Passive,
+        distance: 8
+      });
+      this.movement.push({
+        type: MOVEMENT_TYPES.Orthogonal,
+        constraint: MOVEMENT_CONSTRAINTS.Agressive,
+        distance: 8
+      });
+      this.movement.push({
+        type: MOVEMENT_TYPES.Orthogonal,
+        constraint: MOVEMENT_CONSTRAINTS.Passive,
+        distance: 8
+      });
   }
 }
 
 export class BishopUnit extends Unit {
   constructor(ownership, file) {
-      super(UNIT_TYPES.Bishop, "Bishop", 2, ownership, UNIT_TYPES.Royal, file);
+      super(UNIT_TYPES.Bishop, "Bishop", 3, ownership, UNIT_TYPES.Royal, file);
 
       this.classification.push(CLASSIFICATIONS.Unit);
-      this.movement.push(new Movement( MOVEMENT_TYPES.Diagonal, MOVEMENT_CONSTRAINTS.Agressive, 8));
-      this.movement.push(new Movement( MOVEMENT_TYPES.Diagonal, MOVEMENT_CONSTRAINTS.Passive, 8));
+
+      this.movement.push({
+        type: MOVEMENT_TYPES.Diagonal,
+        constraint: MOVEMENT_CONSTRAINTS.Agressive,
+        distance: 8
+      });
+      this.movement.push({
+        type: MOVEMENT_TYPES.Diagonal,
+        constraint: MOVEMENT_CONSTRAINTS.Passive,
+        distance: 8
+      });
   }
 }
 
 export class RookUnit extends Unit {
   constructor(ownership, file) {
-      super(UNIT_TYPES.Rook, "Rook", 2,  ownership, UNIT_TYPES.Royal, file);
+      super(UNIT_TYPES.Rook, "Rook", 3, ownership, UNIT_TYPES.Royal, file);
 
       this.classification.push(CLASSIFICATIONS.Unit);
-      this.movement.push(new Movement(MOVEMENT_TYPES.Orthogonal, MOVEMENT_CONSTRAINTS.Agressive, 8));
-      this.movement.push(new Movement(MOVEMENT_TYPES.Orthogonal, MOVEMENT_CONSTRAINTS.Passive, 8));
+
+      this.movement.push({
+        type: MOVEMENT_TYPES.Orthogonal,
+        constraint: MOVEMENT_CONSTRAINTS.Agressive,
+        distance: 8
+      });
+      this.movement.push({
+        type: MOVEMENT_TYPES.Orthogonal,
+        constraint: MOVEMENT_CONSTRAINTS.Passive,
+        distance: 8
+      });
   }
 }
 
@@ -102,18 +158,42 @@ export class KnightUnit extends Unit {
       super(UNIT_TYPES.Knight, "Knight", 3, ownership, UNIT_TYPES.Royal, file);
 
       this.classification.push(CLASSIFICATIONS.Unit);
-      this.movement.push(new Movement(MOVEMENT_TYPES.Jump, MOVEMENT_CONSTRAINTS.Agressive, null, [2,1]));
-      this.movement.push(new Movement(MOVEMENT_TYPES.Jump, MOVEMENT_CONSTRAINTS.Passive, null, [2,1]));
+
+      this.movement.push({
+        type: MOVEMENT_TYPES.Jump,
+        constraint: MOVEMENT_CONSTRAINTS.Agressive,
+        steps: [2,1],
+        jump: true
+      });
+      this.movement.push({
+        type: MOVEMENT_TYPES.Jump,
+        constraint: MOVEMENT_CONSTRAINTS.Passive,
+        steps: [2,1],
+        jump: true
+      });
   }
 }
 
 export class PawnUnit extends Unit {
   constructor(ownership, file) {
-      super(UNIT_TYPES.Pawn, "Pawn", 1, ownership, UNIT_TYPES.Common, file);
+      super(UNIT_TYPES.Pawn, "Pawn", 2, ownership, UNIT_TYPES.Common, file);
 
       this.classification.push(CLASSIFICATIONS.Unit);
-      this.movement.push(new Movement(MOVEMENT_TYPES.Forward, MOVEMENT_CONSTRAINTS.Passive, 1));
-      this.movement.push(new Movement(MOVEMENT_TYPES.Forward, MOVEMENT_CONSTRAINTS.Passive, 2));
-      this.movement.push(new Movement(MOVEMENT_TYPES.Fork, MOVEMENT_CONSTRAINTS.Agressive, 1));
+
+      this.movement.push({
+        type: MOVEMENT_TYPES.Forward,
+        constraint: MOVEMENT_CONSTRAINTS.Passive,
+        distance: 1
+      });
+      this.movement.push({
+        type: MOVEMENT_TYPES.Forward,
+        constraint: MOVEMENT_CONSTRAINTS.Passive,
+        distance: 2
+      });
+      this.movement.push({
+        type: MOVEMENT_TYPES.Fork,
+        constraint: MOVEMENT_CONSTRAINTS.Agressive,
+        distance: 1
+      });
   }
 }

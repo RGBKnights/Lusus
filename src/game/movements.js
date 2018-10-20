@@ -4,8 +4,7 @@ import {
   LOCATIONS,
   MOVEMENT_ACTIONS,
   MOVEMENT_TYPES,
-  MOVEMENT_CONSTRAINTS,
-  Move
+  MOVEMENT_CONSTRAINTS
 } from './common';
 
 function getUnit(g, x, y) {
@@ -65,14 +64,22 @@ function checkPosition(g, player, moves, movement, x, y, isAgressive, isPassive)
   let unit = getUnit(g, x, y);
   if(unit) {
     if(isAgressive && unit.ownership !== player) {
-      moves.push(new Move(MOVEMENT_ACTIONS.Capture, x, y, unit.id));
+      moves.push({
+        action: MOVEMENT_ACTIONS.Capture,
+        x: x, y: y,
+        unit: unit.id
+      });
       return true;  // Break Loop;
     } else {
       return true;  // Break Loop;
     }
   } else {
     if(isPassive) {
-      moves.push(new Move(MOVEMENT_ACTIONS.Passive, x, y));
+      moves.push({
+        action: MOVEMENT_ACTIONS.Passive,
+        x: x,
+        y: y
+      });
     }
 
     return false;
@@ -89,6 +96,15 @@ export function getMovements(g, ctx, player, origin, unit) {
   let forward = player === '0' ? +1 : -1;
   let bounds = { x: 0, y: 0, width: 8, height: 8 };
 
+  let movementDefault = {
+    type: MOVEMENT_TYPES.Unknown,
+    constraint: MOVEMENT_CONSTRAINTS.Unknown,
+    distance: 0,
+    steps: [],
+    jump: false,
+    phase: false
+  };
+
   let movements = [].concat(unit.movement);
   for (const id of unit.cubits) {
     const cubit = g.cubits.find(_ => _.id === id);
@@ -96,7 +112,7 @@ export function getMovements(g, ctx, player, origin, unit) {
   }
 
   for (let i = 0; i < movements.length; i++) {
-    const movement = movements[i];
+    let movement = {...movementDefault, ...movements[i]};
 
     let isPassive = movement.constraint === MOVEMENT_CONSTRAINTS.Passive;
     let isAgressive = movement.constraint === MOVEMENT_CONSTRAINTS.Agressive;
@@ -145,11 +161,6 @@ export function getMovements(g, ctx, player, origin, unit) {
         if(checkPosition(g, player, moves, movement, x, y, isAgressive, isPassive)) { break; }
       }
     } else if(movement.type === MOVEMENT_TYPES.Jump) {
-      // Change to distance
-      if(unitHasCubit(g, ctx, unit, CUBIT_TYPES.StickyFeet) || unitHasCubit(g, ctx, unit, CUBIT_TYPES.Encumber)) {
-        continue; // Goto: Next Movement
-      }
-
       let targeting = [];
       targeting.push({ x: origin.x + movement.steps[0], y: origin.y + movement.steps[1] });
       targeting.push({ x: origin.x + movement.steps[0], y: origin.y - movement.steps[1] });
@@ -173,7 +184,12 @@ export function getMovements(g, ctx, player, origin, unit) {
         const target = targeting[index];
         let u = getUnit(g, target.x, target.y);
         if(u && u.ownership !== player && isAgressive) {
-          moves.push(new Move(MOVEMENT_ACTIONS.Capture, target.x, target.y, u.id));
+          moves.push({
+            action: MOVEMENT_ACTIONS.Capture,
+            x: target.x,
+            y: target.y,
+            unit: u.id
+          });
         }
       }
     } else if(movement.type === MOVEMENT_TYPES.Forward) {
@@ -213,7 +229,12 @@ export function getMovements(g, ctx, player, origin, unit) {
 
         let u = getUnit(g, target.x, target.y);
         if(u) {
-          moves.push(new Move(MOVEMENT_ACTIONS.Swap, target.x, target.y, u.id));
+          moves.push({
+            action: MOVEMENT_ACTIONS.Swap,
+            x: target.x,
+            y: target.y,
+            unit: u.id
+          });
         }
       }
     } else if(movement.type === MOVEMENT_TYPES.Castle) {
@@ -250,7 +271,7 @@ export function getMovements(g, ctx, player, origin, unit) {
   for (const id of unit.cubits) {
     const cubit = g.cubits.find(_ => _.id === id);
     if(cubit.type === CUBIT_TYPES.Enrage) {
-        moves = moves.filter(_ => _.action === MOVEMENT_ACTIONS.Agressive);
+        moves = moves.filter(_ => _.action === MOVEMENT_ACTIONS.Capture);
     } else if(cubit.type === CUBIT_TYPES.Passify) {
         moves = moves.filter(_ => _.action === MOVEMENT_ACTIONS.Passive);
     }

@@ -49,55 +49,36 @@ export const CUBIT_TYPES = {
   // The unit gets -1 move for ever cubie on that unit
   Immunity: '8faf8b97-5e47-4ac2-a5f2-0616120a4adb',
   // This piece cannot be targeted by opponents, other cubies on this piece cannot be targeted by opponnents
-  
-  Removal: 'e3698666-2839-4167-b91a-14502bae30f7',
+  RemovalWeak: 'e3698666-2839-4167-b91a-14502bae30f7',
+  // Target any Cubit @ any location then move that cubit to the afterlife
+  // Dose not peirce Imunity
+  RemovalStrong: '9cb33198-6a84-4d8b-b532-349ce948c2a7',
   // Target any Cubit @ any location then move that cubit to the afterlife 
-  // units with imunity are still targets (not their other cubits, must imunity)
+  // Peirces Imunity
+
   BacktoBasics: '3b9d5f24-daaa-485c-810d-7efc969024de',
-  // All other cubies have no effect
+  // All attachment cubies have no effect
   AncientRevival: '10e38ff2-2954-43f5-9a06-b11fcc06fad9', 
-  // Trap
   // When this piece is captured, return it to the board to an unoccupied space, of your choice, in your back line after your opponnets next turn
-  // onCapture() => encapsulate Unit in Cubit (Revival); add Duration(turns, 0/1); move to Avator (if there is space in the []);
-  // onActivate() w / target => reveal Unit in Cubit and move to target exile Cubit
   BlinkDodge: 'a80cd286-9e00-4ea1-9356-744d663b9098',     
-  // Trap
   // When this piece would be taken instead move it to a random unoccupied adjacent space. If none, it is taken
-  // onCapture() => Move to random unoccupied adjacent space; if none move to afterlife
   CostofPower: '55168e9e-06f6-4cfe-bbdc-149a86173b5e',
-  // Avatar
   // Each player draws an additional card and loses a random cubie from the bag
-  // onDraw() => find Cubit; if exists remove random cubie;
-  // HOW: loses a random cubie from the bag...?
   DarkMagic: '19c2696e-d456-482c-bb5b-d2abd8c80486', 
-  // Trap 
   // On capture a cubie random Target Unit from the afterlife and put it on this piece
   ForgottenPast: '269a550a-ea97-46a4-890f-395f45d3c440',  
-  // Avatar
   // Exile everything in the afterlife
-  // onPlay() => find all cubits in the afterlife move them to exile
   Heirloom: '5f510368-b76e-4a9b-9f29-96ca821ba26b',
-  // Trap
   // When captured, put your cubies into bag instead of attached to piece in afterlife.
-  // onCapture() => move cubits from unit to bag
   ArenaHole: '7ee25860-b996-442d-95da-9bd0a447cff3',
-  // *NEEDS WORK*   
-  // Arena
+  // *NEEDS WORK*  
   // Randomly select [fix amount vs dyanmic based on turn number vs incrase / turn (needs end of turn logic)] unoccupied spaces not on the back lines, those are now Hole spaces.
-  // onPlay() => add this cubits X times to field at random locations;
-  // HOW:  You can move over but not land on a hole
   ArenaRock: 'e281b0bd-8a1f-4e9a-9db0-b1cdfe978151', 
   // *NEEDS WORK*  
-  // Arena
   // Randomly select X unoccupied spaces not on the back lines, those are now Rock spaces. 
-  // onPlay() => add this cubits X times to field at random locations;
-  // HOW: Blocks movement, cannot land on rock
   ArenaIce: '88f8c963-c40e-4205-b10d-a540d2186177',  
   // *NEEDS WORK* 
-  // Arena
   // Randomly select X spaces not on the back lines, those are now Ice spaces.
-  // onPlay() => add this cubits X times to field at random locations;
-  // HOW: Ice froces continus movement
   Jumper: '99d14233-f9c8-40d2-b4c6-6e3fe025829f',
   // Cardinal patern movement; distance = 2;
   Looter: '9a226a0f-4d19-41e7-852e-856275875f89',
@@ -112,13 +93,10 @@ export const CUBIT_TYPES = {
   // Remove a piece from the board marking its location. Duration 1; onDurrtionEnd() => [];
   Reckless: '6b6b78fa-d42c-4713-ad1d-e3672786005e',       
   // Once placed the player that reachs 2d6 pieces in the afterlife you win
-  // [Proxy] onCapture() => check afterlife for number of units if > 2d6 then you win the game
   Resourceful: '517c0bc3-1ed3-462e-ba23-018e61366005',   
   // Draw a new hand with one less card
-  // onActivated() => moves cubits in hand to bag; draws new hand; Consumable
   Revert: 'c647e8f2-3d4c-42cc-af90-9b0053617151',     
   // If unit is captured the move is reverted; Consumable
-  // onCapature() => remove this cubit from unit; [ShortCurit]
   RockThrow: '18301f0f-05e3-41f9-9f66-052a5485f0e1',    
   // Select 3 unoccupid spaces. Those spaces act as if they are occupied by a peice
   Sacrifice: 'b01a5d36-0f89-4264-a89a-a46554a1700a',  
@@ -146,9 +124,15 @@ export const UNIT_TYPES = {
 
 export const CLASSIFICATIONS = {
   Unknown: 0,
-  Movement: 1,
-  Encumbered: 2,
-  Immunity: 3,
+  Units_Common: 1,
+  Units_Royal: 2,
+  Units_King: 3,
+  Units_Queen: 4,
+  Units_Bishop: 5,
+  Units_Rook: 6,
+  Units_Knight: 7,
+  Units_Pawn: 8,
+  Cubit_Movement_Modifier: 9,
 };
 
 export const MOVEMENT_TYPES = {
@@ -177,25 +161,6 @@ export const MOVEMENT_CONSTRAINTS = {
   Passive: 2,
   Agressive: 3,
 };
-
-export class Movement {
-  constructor(type, constraint, distance = 0, steps = [], phased = false) {
-    this.type = type;
-    this.constraint = constraint;
-    this.distance = distance;
-    this.steps = steps;
-    this.phased = phased;
-  }
-}
-
-export class Move {
-  constructor(action, x, y, unit = null) {
-    this.action = action;
-    this.x = x;
-    this.y = y;
-    this.unit = unit;
-  }
-}
 
 export const UNIT_FILE = {
   Unknown: 0,
@@ -227,105 +192,16 @@ export const LOCATIONS = {
   Hand: 8,
 };
 
-export const TARGET_CONSTRAINTS = {
+export const TARGETING_TYPE = {
+  Unknown: 0,
+  AttachLocation: 1,
+  TargetLocation: 2,
+  TargetCubitAtLocation: 3,
+  TargetUnitAtLocation: 4,
+};
+
+export const TARGETING_CONSTRAINTS = {
   Unknown: 0,
   Self: 1,
   Opponent: 2,
 };
-
-export class Targeting {
-  constructor(location) {
-    // LOCATIONS
-    this.location = location;
-  }
-}
-
-export class ArenaTargeting extends Targeting {
-  constructor() {
-     super(LOCATIONS.Arena);
-  }
-}
-
-export class UnitTargeting extends Targeting {
-  constructor(constraint, targets = 1, type = UNIT_TYPES.All, attachment = true) {
-    super(LOCATIONS.Unit);
-
-    this.constraint = constraint;
-    this.targets = targets;
-    this.type = type;
-    this.attachment = attachment;
-  }
-}
-
-export class HandTargeting extends Targeting {
-  constructor(constraint) {
-    super(LOCATIONS.Hand);
-
-    this.constraint = constraint;
-  }
-}
-
-export class PlayerTargeting extends Targeting {
-  constructor(constraint, attachment = true) {
-    super(LOCATIONS.Player);
-
-    this.constraint = constraint;
-    this.attachment = attachment;
-  }
-}
-
-export class BoardTargeting extends Targeting {
-  constructor(targets = 1, occupied = false) {
-    super(LOCATIONS.Board);
-
-    this.targets = targets;
-    this.occupied = occupied;
-  }
-}
-
-export class Target {
-  constructor(location, targets = 1) {
-    // LOCATIONS
-    this.location = location;
-    this.targets = targets;
-  }
-}
-
-export class ArenaTarget extends Target {
-  constructor() {
-    super(LOCATIONS.Arena);
-  }
-}
-
-export class UnitTarget extends Target {
-  constructor(player, units, targets = 1) {
-    super(LOCATIONS.Unit, targets);
-
-    this.player = player; // "0" OR "1"
-    this.units = units;
-  }
-}
-
-export class HandTarget extends Targeting {
-  constructor(player) {
-    super(LOCATIONS.Hand);
-
-    this.player = player; // "0" OR "1"
-  }
-}
-
-export class PlayerTarget extends Target {
-  constructor(player) {
-    super(LOCATIONS.Player);
-
-    this.player = player;  // "0" OR "1"
-  }
-}
-
-export class BoardTarget extends Target {
-  constructor(positions, targets = 1) {
-    super(LOCATIONS.Board, targets);
-
-    this.positions = positions;
-  }
-}

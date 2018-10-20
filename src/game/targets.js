@@ -1,117 +1,190 @@
 import {
   CUBIT_TYPES,
-  UNIT_TYPES,
+  // UNIT_TYPES,
   LOCATIONS,
-  TARGET_CONSTRAINTS,
-  ArenaTarget,
-  UnitTarget,
-  HandTarget,
-  PlayerTarget,
-  BoardTarget,
+  TARGETING_TYPE,
+  TARGETING_CONSTRAINTS
 } from './common';
 
-function unitIsType(unit, type) {
-  if(type === UNIT_TYPES.All) {
-    return true;
-  } else if(type === UNIT_TYPES.Royal) {
-    return unit.rank === UNIT_TYPES.Royal;
-  } else if(type === UNIT_TYPES.Common) {
-    return unit.rank === UNIT_TYPES.Common;
-  } else if(type === unit.type) {
-    return true;
-  } else {
-    return false;
-  }
-}
-
-function unitHasCubit(g, ctx, unit, type) {
+function getTypes(g, ctx, unit) {
+  let types = [];
   for (const id of unit.cubits) {
     const cubit = g.cubits.find(_ => _.id === id);
-    if(cubit.type === type) {
-      return true;
-    }
+    types.push({ id: cubit.id, type: cubit.type });
   }
-  return false;
+  return types;
 }
 
 export function getTargets(g, ctx, player, cubit) {
   let opponent = player === "0" ? "1" : "0";
   let targeting = cubit.targeting;
 
+  let targetDefault = {
+    // TARGETING_TYPE
+    type: TARGETING_TYPE.Unknown,
+    // LOCATIONS
+    location: LOCATIONS.Unknown,
+     // TARGETING_CONSTRAINTS
+    constraint: TARGETING_CONSTRAINTS.Unknown,
+    pierces: false,
+    occupied: false
+  };
+
   let targets = [];
   for (let i = 0; i < targeting.length; i++) {
-    let target = targeting[i];
+    let target = {...targetDefault, ...targeting[i]};
 
     // Get Controller
     let controller = null;
-    if(target.constraint === TARGET_CONSTRAINTS.Self) {
+    if(target.constraint === TARGETING_CONSTRAINTS.Self) {
       controller = player;
-    } else if(target.constraint === TARGET_CONSTRAINTS.Opponent) {
+    } else if(target.constraint === TARGETING_CONSTRAINTS.Opponent) {
       controller = opponent;
     }
 
     // Test for Target
-    if (target.location === LOCATIONS.Arena) {     
-      
-      targets.push(new ArenaTarget());
-
-    } else if (target.location === LOCATIONS.Hand) {
-      
-      targets.push(new HandTarget(controller));
-
-    } else if (target.location === LOCATIONS.Player) {
-      if(target.attachment) {
-        // Make sure there is space on the player for new cubits
-        let avatar = g.cubits.filter(_ => _.location === LOCATIONS.Player && _.controller === controller);
-        if(avatar.length < 5) {
-          targets.push(new PlayerTarget(controller));
+    if (target.location === LOCATIONS.Arena) {
+      if(target.type === TARGETING_TYPE.TargetCubitAtLocation) {
+        let arena = g.cubits.filter(_ => _.location === LOCATIONS.Arena);
+        if(arena.length > 0) {
+          targets.push({ 
+            ...target
+          });
         }
+      } else if (target.type === TARGETING_TYPE.AttachLocation || target.type === TARGETING_TYPE.TargetLocation) {
+        targets.push({ 
+          ...target
+        });
       } else {
-        // TODO: Cubit Targeting...
-        // targets.push(new PlayerTarget(controller));
+        continue;
+      }
+    } else if (target.location === LOCATIONS.Player) {
+      let avatar = g.cubits.filter(_ => _.location === LOCATIONS.Player && _.controller === controller);
+
+      if(target.type === TARGETING_TYPE.AttachLocation) {
+        // Make sure there is space on the player for new cubits
+        if(avatar.length < 5) {
+          targets.push({ 
+            ...target, 
+            player: controller
+          });
+        }
+      } else if(target.type === TARGETING_TYPE.TargetCubitAtLocation) {
+        // Get the cubits on the player
+        for (const cubit of avatar) {
+          targets.push({ 
+            ...target,
+            player: controller,
+            cubit: cubit.id 
+          });
+        }
+      } else if(target.type === TARGETING_TYPE.TargetLocation) {
+        targets.push({ 
+          ...target,
+          player: controller 
+        });
+      } else {
+        continue;
       }
     } else if(target.location === LOCATIONS.Unit) {
-      if(target.attachment) {
-
-        //TODO: Check for other Cubits that would limit targeting (like: Condemn)
-        let units = g.units
+      let units = g.units
           .filter(_ => _.location === LOCATIONS.Board) // This may seems like the worng location but unit never have a locaiton of units (at is the board)...
           .filter(_ => _.ownership === controller)
-          .filter(_ => unitIsType(_, target.type))
-          .filter(_ => _.cubits.length < _.slots)
-          .filter(_ => unitHasCubit(g, ctx, _, CUBIT_TYPES.Condemn) === false)
-          .filter(_ => (unitHasCubit(g, ctx, _, CUBIT_TYPES.Immunity) && _.ownership === opponent) === false)
 
-          let indexes = units.map(_ => _.id);
-          targets.push(new UnitTarget(controller, indexes, target.targets));
+      if(target.type === TARGETING_TYPE.AttachLocation || target.type === TARGETING_TYPE.TargetUnitAtLocation) {
+        units = units.filter(_ => _.cubits.length < _.slots);
+
+        for (const unit of units) {
+          let types = getTypes(g, ctx, unit);
+          if(types.includes(CUBIT_TYPES.Condemn)) {
+            continue;
+          } else if(types.includes(CUBIT_TYPES.Immunity) && unit.ownership === opponent) {
+            if(target.pierces === false) {
+              continue;
+            }
+          }
+
+          targets.push({ 
+            ...target,
+            player: controller,
+            unit: unit.id
+          });
+        }
+
+      } else if(target.type === TARGETING_TYPE.TargetLocation) {
+        targets.push({ 
+          ...target,
+          player: controller
+        });
+      } else if(target.type === TARGETING_TYPE.TargetCubitAtLocation) {
+        for (const unit of units) {
+          let types = getTypes(g, ctx, unit);
+          if(types.includes(CUBIT_TYPES.Immunity) && unit.ownership === opponent) {
+            if(target.pierces === false) {
+              continue;
+            }
+          }
+          // If pass the checkes then vaild target...
+          for (const id of unit.cubits) {
+            targets.push({ 
+              ...target,
+              player: controller,
+              cubit: id
+            });
+          }
+        }
       } else {
-        // TODO: Cubit Targeting...
-      }
-    } else if (target.location === LOCATIONS.Board) {
-      let units = g.units
-        .filter(_ => _.location === LOCATIONS.Board)
-        .filter(_ => _.obstruction === true)
-        .filter(_ => _.position != null);
-
-      let cubits = g.cubits
-        .filter(_ => _.location === LOCATIONS.Board)
-        .filter(_ => _.obstruction === true)
-        .filter(_ => _.position != null);
-
-      let positions = [];
-      for (let x = 0; x < 8; x++) {
-        for (let y = 0; y < 8; y++) {
-          let hasUnits = units.filter(_ => _.position.x === x && _.position.y === y).length > 0;
-          let hasCubits = cubits.filter(_ => _.position.x === x && _.position.y === y).length > 0;
-          let occupied = hasUnits || hasCubits;
-          if(occupied === target.occupied) {
-            positions.push({x,y});
-          }              
+        for (const unit of units) {
+          targets.push({ 
+            ...target,
+            player: controller,
+            unit: unit.id
+          });
         }
       }
-      targets.push(new BoardTarget(positions, target.targets));
+    } else if (target.location === LOCATIONS.Board) {
+      if(target.type === TARGETING_TYPE.AttachLocation) {
+        let units = g.units
+          .filter(_ => _.location === LOCATIONS.Board)
+          .filter(_ => _.obstruction === true)
+          .filter(_ => _.position != null);
+
+        let cubits = g.cubits
+          .filter(_ => _.location === LOCATIONS.Board)
+          .filter(_ => _.obstruction === true)
+          .filter(_ => _.position != null);
+
+        for (let x = 0; x < 8; x++) {
+          for (let y = 0; y < 8; y++) {
+            let hasUnits = units.filter(_ => _.position.x === x && _.position.y === y).length > 0;
+            let hasCubits = cubits.filter(_ =>  _.position.x === x && _.position.y === y).length > 0;
+            let occupied = hasUnits || hasCubits;
+            if(occupied === target.occupied) {
+              targets.push({ 
+                ...target,
+                position: {x, y}
+              });
+            }              
+          }
+        }
+      } else if(target.type === TARGETING_TYPE.TargetCubitAtLocation) {
+        // rgbKNIGHTS: NEEDS WORK
+      } else if(target.type === TARGETING_TYPE.TargetUnitAtLocation) {
+        // rgbKNIGHTS: NEEDS WORK
+      } else if(target.type === TARGETING_TYPE.TargetLocation) {
+        // rgbKNIGHTS: NEEDS WORK
+      } else {
+        continue;
+      }
+    } else {
+      targets.push({ 
+        ...target,
+        player: controller
+      });
     }
   }
-  
+
+  console.log("Targets", targets);
+
   return targets;
 }

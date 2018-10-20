@@ -2,6 +2,7 @@ import { Game } from 'boardgame.io/core';
 import { 
     GAME_PHASES,
     LOCATIONS,
+    // TARGETING_TYPE,
     // UNIT_TYPES
 } from './common';
 
@@ -62,7 +63,7 @@ const GameCore = Game({
         g.players[ctx.currentPlayer].actions_left--;
         g.players[ctx.currentPlayer].actions_used++;
 
-        logic.onPlay(g, ctx, cubit);
+        logic.onAttach(g, ctx, cubit);
 
         return g;
       },
@@ -98,6 +99,7 @@ const GameCore = Game({
         // Update Cubit
         cubit.controller = unit.ownership;
         cubit.location = LOCATIONS.Unit;
+        cubit.unit = unit.id;
 
         // Add cuits to unit
         unit.cubits.push(cubit.id);
@@ -120,6 +122,26 @@ const GameCore = Game({
 
         g.players[ctx.currentPlayer].actions_left--;
         g.players[ctx.currentPlayer].actions_used++;
+
+        return g;
+      },
+      targetCubit(G, ctx, sourceId, targetId) {
+        const g = clone(G);
+
+        let source = g.cubits.find(_ => _.id === sourceId);
+        if(!source) {
+          return undefined;
+        }
+
+        let target = g.cubits.find(_ => _.id === targetId);
+        if(!target) {
+          return undefined;
+        }
+
+        g.players[ctx.currentPlayer].actions_left--;
+        g.players[ctx.currentPlayer].actions_used++;
+
+        logic.onTarget(g, ctx, source, target);
 
         return g;
       },
@@ -186,7 +208,8 @@ const GameCore = Game({
             'attachCubitToArena',
             'attachCubitToPlayer',
             'attachCubitToUnit',
-            'attachCubitToBroad'
+            'attachCubitToBroad',
+            'targetCubit'
           ],
           endPhaseIf: (G, ctx) => {
             let actions = logic.getActions(G, ctx, ctx.currentPlayer);

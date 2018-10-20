@@ -32,6 +32,8 @@ export class GameLogic {
       new Cubits.StickyFeetCubit(p),
       new Cubits.EncumberCubit(p),
       new Cubits.ImmunityCubit(p),
+      new Cubits.WeakRemovalCubit(p),
+      new Cubits.StrongRemovalCubit(p),
       /*
       new Cubits.AncientRevivalCubit(p),
       new Cubits.BacktoBasicsCubit(p),
@@ -145,7 +147,28 @@ export class GameLogic {
 
   // ACTIONS
 
-  onPlay(g, ctx, cubit) {  
+  onTarget(g, ctx, source, destination) {
+
+    switch (source.type) {
+      case CUBIT_TYPES.RemovalWeak:
+      case CUBIT_TYPES.RemovalStrong:
+      {
+        let unit = g.units.find(_ => _.id === destination.unit);
+        if(unit) {
+          unit.cubits = unit.cubits.filter(_ => _ !== destination.id);
+        }
+        
+        destination.location = LOCATIONS.Afterlife;
+        source.location = LOCATIONS.Afterlife;
+
+        break;
+      }
+      default:
+        break;
+    }
+  }
+
+  onAttach(g, ctx, cubit) {  
     switch (cubit.type) {
       case CUBIT_TYPES.KingOfHill:
       {
