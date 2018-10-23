@@ -403,9 +403,8 @@ class GameTable extends React.Component {
       this.setState({ selection: null, targets: [] });
     }
     if (targets.filter(_ => _.type === TARGETING_TYPE.TargetLocation).length > 0) {
-      alert("Call targetPlayer()");
-      // this.props.moves.attachCubitToPlayer(this.state.selection.id, this.state.player);
-      // this.setState({ selection: null, targets: [] });
+      this.props.moves.targetPlayer(this.state.selection.id, this.state.player);
+      this.setState({ selection: null, targets: [] });
     }
   }
 

@@ -400,10 +400,18 @@ export class CostofPowerCubit extends Cubit {
   constructor(ownership) {
       super(CUBIT_TYPES.CostofPower, "Cost of Power", ownership);
 
+      this.description = "Each player draws an additional card and loses a random cubie from the bag";
+
       this.targeting.push({
         type: TARGETING_TYPE.AttachLocation,
         location: LOCATIONS.Player,
         constraint: TARGETING_CONSTRAINTS.Self
+      });
+
+      this.targeting.push({
+        type: TARGETING_TYPE.AttachLocation,
+        location: LOCATIONS.Player,
+        constraint: TARGETING_CONSTRAINTS.Opponent
       });
   }
 }
@@ -509,11 +517,14 @@ export class ForgottenPastCubit extends Cubit {
   constructor(ownership) {
       super(CUBIT_TYPES.ForgottenPast, "Forgotten Past", ownership);
 
+      this.description = "Exile everything in the afterlife";
+
       this.targeting.push({
         type: TARGETING_TYPE.TargetLocation,
         location: LOCATIONS.Player,
         constraint: TARGETING_CONSTRAINTS.Self
       });
+      
       // TODO: Add Afterlife as a target; this will invole moving the aferlife from the menu to the table and combie into single row...
   }
 }
@@ -521,6 +532,8 @@ export class ForgottenPastCubit extends Cubit {
 export class HeirloomPastCubit extends Cubit {
   constructor(ownership) {
       super(CUBIT_TYPES.Heirloom, "Heirloom", ownership);
+
+      this.description = "When captured, put your cubies attached the unit into the bag";
       
       this.hidden = true;
 

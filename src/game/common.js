@@ -56,18 +56,13 @@ export const CUBIT_TYPES = {
   // Peirces Imunity
   BlinkDodge: 'a80cd286-9e00-4ea1-9356-744d663b9098',
   // When this piece would be taken instead move it to a random unoccupied adjacent space. If none, it is taken
-
-  AncientRevival: '10e38ff2-2954-43f5-9a06-b11fcc06fad9', 
-  // When this piece is captured, move it Exile for duration (1); [HOW]
-  // after your opponnets next turn return it to the board to an unoccupied space in your back line; 
   CostofPower: '55168e9e-06f6-4cfe-bbdc-149a86173b5e',
   // Each player draws an additional card and loses a random cubie from the bag
-  DarkMagic: '19c2696e-d456-482c-bb5b-d2abd8c80486', 
-  // On capture; place a random cubie with (Target:Unit) from the afterlife and put it on this piece
-  ForgottenPast: '269a550a-ea97-46a4-890f-395f45d3c440',  
+  ForgottenPast: '269a550a-ea97-46a4-890f-395f45d3c440',
   // Exile everything in the afterlife
   Heirloom: '5f510368-b76e-4a9b-9f29-96ca821ba26b',
   // When captured, put your cubies into bag instead of attached to piece in afterlife.
+  
   ArenaHole: '7ee25860-b996-442d-95da-9bd0a447cff3',
   // *NEEDS WORK*  
   // Randomly select [fix amount vs dyanmic based on turn number vs incrase / turn (needs end of turn logic)] unoccupied spaces not on the back lines, those are now Hole spaces.
@@ -107,6 +102,11 @@ export const CUBIT_TYPES = {
   // Start a 3 turn timer, count it down at end of each turn; at 0 detonate it destroying all pieces on that, and the sourrounding spaces
   BacktoBasics: '3b9d5f24-daaa-485c-810d-7efc969024de',
   // All attachment cubies have no effect
+  AncientRevival: '10e38ff2-2954-43f5-9a06-b11fcc06fad9', 
+  // When this piece is captured, move it Exile for duration (1); [HOW]
+  // after your opponnets next turn return it to the board to an unoccupied space in your back line; 
+  DarkMagic: '19c2696e-d456-482c-bb5b-d2abd8c80486',
+  // On capture; place a random cubie with (Target:Unit) from the afterlife and put it on this piece
 };
 
 export const UNIT_TYPES = {

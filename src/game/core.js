@@ -131,6 +131,21 @@ const GameCore = Game({
 
         return g;
       },
+      targetPlayer(G, ctx, sourceId, player) {
+        const g = clone(G);
+
+        let source = g.cubits.find(_ => _.id === sourceId);
+        if(!source) {
+          return undefined;
+        }
+
+        g.players[ctx.currentPlayer].actions_left--;
+        g.players[ctx.currentPlayer].actions_used++;
+
+        logic.onTargetPlayer(g, ctx, source, player);
+
+        return g;
+      },
       targetCubit(G, ctx, sourceId, targetId) {
         const g = clone(G);
 
@@ -147,7 +162,7 @@ const GameCore = Game({
         g.players[ctx.currentPlayer].actions_left--;
         g.players[ctx.currentPlayer].actions_used++;
 
-        logic.onTarget(g, ctx, source, target);
+        logic.onTargetCubit(g, ctx, source, target);
 
         return g;
       },
@@ -222,6 +237,7 @@ const GameCore = Game({
             'attachCubitToPlayer',
             'attachCubitToUnit',
             'attachCubitToBroad',
+            'targetPlayer',
             'targetCubit'
           ],
           endPhaseIf: (G, ctx) => {

@@ -4,11 +4,8 @@
 
 FEATURES:
 
-1. Check
-a. OnMove() => reslove effects AND set player.check = true; THEN at OnBeginPhase of 'Move' set player.check = true 
-2. Move - Castle
-a. simulate moves? or just jump it forward check for check & that each units move counter is 0
-3. More Cubits: 
+1. Change Classifications[] to Keywords[] and add some for Movement and Traps
+2. More Cubits: ...
 
 ### Components of Framework
 
