@@ -1,5 +1,5 @@
 import React from 'react';
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 
 // UI
 import { 
@@ -7,9 +7,7 @@ import {
   Grid
 } from 'boardgame.io/ui';
 
-import {
-  CubitText
-} from './cubits';
+import * as Cubits from './cubits';
 
 // Bootstrap
 import { 
@@ -22,16 +20,19 @@ import {
 import { IoMdHelp } from 'react-icons/io';
 
 import { GameLogic } from '../game/logic';
+import { CUBIT_TYPES } from '../game/common';
 
 export class Help extends React.Component {
   static propTypes = {
-    // color: PropTypes.string,
+    playerID: PropTypes.string,
   };
 
   constructor(props) {
     super(props);
 
     this.toggle = this.toggle.bind(this);
+
+    this.teamColors = {'0': 'w', '1': 'b'};
 
     this.logic = new GameLogic();
 
@@ -46,26 +47,62 @@ export class Help extends React.Component {
     });
   }
 
+  getCubitFromType(type) {
+    switch (type) {
+      case CUBIT_TYPES.MovementOrthogonal:
+        return Cubits.CubitOrthogonal;
+      case CUBIT_TYPES.MovementDiagonal:
+        return Cubits.CubitDiagonal;
+      case CUBIT_TYPES.MovementCardinal:
+        return Cubits.CubitCardinal;
+      case CUBIT_TYPES.MovementJump:
+        return Cubits.CubitPattern;
+      case CUBIT_TYPES.MovementSideStep:
+        return Cubits.CubitSidestep;
+      case CUBIT_TYPES.MovementSwap:
+        return Cubits.CubitSwap;
+      case CUBIT_TYPES.DrawPlusOne:
+        return Cubits.CubitDrawPlus;
+      case CUBIT_TYPES.DrawNegOne:
+        return Cubits.CubitDrawMinus;
+      case CUBIT_TYPES.DoubleAction:
+        return Cubits.CubitDoubleAction;
+      case CUBIT_TYPES.Condemn:
+        return Cubits.CubitCondemn;
+      case CUBIT_TYPES.Knowledge:
+        return Cubits.CubitKnowledge;
+      case CUBIT_TYPES.KingOfHill:
+        return Cubits.CubitKingOfHill;
+      default:
+        return Cubits.CubitText;
+    }
+  }
+
   render() {
-    let cubits = this.logic.getCubits("0");
+    let playerID = this.props.playerID ? this.props.playerID : "0";
+    let cubits = this.logic.getCubits(playerID);
     let collection = [];
     for (const cubit of cubits) {
 
-      let element = React.createElement(CubitText, { name: cubit.name, value: cubit.name, team: 'b', color: null });
+      let team = this.teamColors[cubit.ownership];
+      let type = this.getCubitFromType(cubit.type);
+      let element = React.createElement(type, { name: cubit.name, value: cubit.name, team: team, color: null, });
       let icon = React.createElement(Token, {key: cubit.id, x: 0, y: 0}, element);
+      let colorMap = {};
+      colorMap['0,0'] = '#817F7F';
 
       let item = (
         <Media key={cubit.type}>
           <Media left href="#">
-            <Grid rows={1} cols={1} style={{ width: 50, strokeWidth: 0.05, stroke: '#000000' }}>
+            <Grid rows={1} cols={1} colorMap={colorMap} style={{ width: 50, strokeWidth: 0.05, stroke: '#000000' }}>
               { icon }
             </Grid>
           </Media>
-          <Media body>
+          <Media body className="p-1">
             <Media heading style={{ height: 50 }}>
               { cubit.name }
             </Media>
-            Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
+            { cubit.description }
           </Media>
         </Media>
       );

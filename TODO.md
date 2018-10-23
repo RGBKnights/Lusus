@@ -2,43 +2,13 @@
 
 ### vNext Steps
 
+FEATURES:
 
-1. Implement a Removal Cubit
-a. Needs to target the cubit
-b. Sends cubit to afterlife
-
-2. Arenas need a duration
-
-3. Come up with Process to figure out if there are any valid targets
-a. Add this to OnBeginPhase() => Move to determine if there are any moves if not that opppent wins game
-
-4. OnCheck() => Trap / Castle
-
-####  Phases
-
-**Play**
-* Actions--
-* Optional
-
-**Activations**
-* Actions--
-* Optional
-
-**Movement**
-* Moves--
-* Required
-
-**Draw**
-* Draws--
-* Required
-
-**Effects**
-* Actions: 1 + cubits
-* Moves: 1 + cubits
-* Draws: 3 + cubits
-* Basics: bool
-* Enrage: bool
-* Passive: bool
+1. Check
+a. OnMove() => reslove effects AND set player.check = true; THEN at OnBeginPhase of 'Move' set player.check = true 
+2. Move - Castle
+a. simulate moves? or just jump it forward check for check & that each units move counter is 0
+3. More Cubits: 
 
 ### Components of Framework
 
@@ -178,53 +148,4 @@ allowedMoves: (G, ctx) => [],
 
 // List of moves that are undoable.
 undoableMoves: [],
-```
-
-Game State
-
-```
-// Chessboard
-board: [],
-
-// Environmental Effects
-arena: null,
-
-// Shared afterlife for Units of Cubits
-afterlife: {
-  cubits: [],
-  units: []
-},
-
-// Bag
-bag: [],
-
-// Hand
-hand: [],
-
-// Avatar
-avatar: [],
-
-// Global or player effects
-effects: {
-  basics: [false, false], 
-},
-
-// Draw limits
-draws: {
-  total: [3,3]
-},
-
-// Action Limits
-actions: {
-  total: [1,1],
-  count: [1,1],
-},
-
-// Movmement Limits
-movement: {
-  passify: [false, false],
-  enraged: [false, false]
-  total: [1,1],
-  count: [1,1],
-},
 ```

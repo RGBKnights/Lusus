@@ -36,7 +36,7 @@ export const CUBIT_TYPES = {
   Knowledge: '0994b86a-4709-f096-63c9-07c6e1008bfd',
   // Reveral the oppents hand
   Condemn: 'b0dca050-b7d4-f83a-554f-4cfc4f2c7854',
-  // Attach
+  // No additional cubits can be placed on this unit
   KingOfHill: '99d4a12e-e368-7700-5cd0-46548040fced',
   // When King moves on to this cubit on the field then that play wins the game
   Enrage: '765857db-7109-4b3a-b12f-2657ac4cc3cd',
@@ -51,21 +51,19 @@ export const CUBIT_TYPES = {
   // This piece cannot be targeted by opponents, other cubies on this piece cannot be targeted by opponnents
   RemovalWeak: 'e3698666-2839-4167-b91a-14502bae30f7',
   // Target any Cubit @ any location then move that cubit to the afterlife
-  // Dose not peirce Imunity
   RemovalStrong: '9cb33198-6a84-4d8b-b532-349ce948c2a7',
   // Target any Cubit @ any location then move that cubit to the afterlife 
   // Peirces Imunity
-
-  BacktoBasics: '3b9d5f24-daaa-485c-810d-7efc969024de',
-  // All attachment cubies have no effect
-  AncientRevival: '10e38ff2-2954-43f5-9a06-b11fcc06fad9', 
-  // When this piece is captured, return it to the board to an unoccupied space, of your choice, in your back line after your opponnets next turn
-  BlinkDodge: 'a80cd286-9e00-4ea1-9356-744d663b9098',     
+  BlinkDodge: 'a80cd286-9e00-4ea1-9356-744d663b9098',
   // When this piece would be taken instead move it to a random unoccupied adjacent space. If none, it is taken
+
+  AncientRevival: '10e38ff2-2954-43f5-9a06-b11fcc06fad9', 
+  // When this piece is captured, move it Exile for duration (1); [HOW]
+  // after your opponnets next turn return it to the board to an unoccupied space in your back line; 
   CostofPower: '55168e9e-06f6-4cfe-bbdc-149a86173b5e',
   // Each player draws an additional card and loses a random cubie from the bag
   DarkMagic: '19c2696e-d456-482c-bb5b-d2abd8c80486', 
-  // On capture a cubie random Target Unit from the afterlife and put it on this piece
+  // On capture; place a random cubie with (Target:Unit) from the afterlife and put it on this piece
   ForgottenPast: '269a550a-ea97-46a4-890f-395f45d3c440',  
   // Exile everything in the afterlife
   Heirloom: '5f510368-b76e-4a9b-9f29-96ca821ba26b',
@@ -77,7 +75,7 @@ export const CUBIT_TYPES = {
   // *NEEDS WORK*  
   // Randomly select X unoccupied spaces not on the back lines, those are now Rock spaces. 
   ArenaIce: '88f8c963-c40e-4205-b10d-a540d2186177',  
-  // *NEEDS WORK* 
+  // *NEEDS WORK*
   // Randomly select X spaces not on the back lines, those are now Ice spaces.
   Jumper: '99d14233-f9c8-40d2-b4c6-6e3fe025829f',
   // Cardinal patern movement; distance = 2;
@@ -107,6 +105,8 @@ export const CUBIT_TYPES = {
   // You cannot make passive moves if a capture is available
   Timebomb: '259d4841-a8a9-483b-ab78-bfb024184400', 
   // Start a 3 turn timer, count it down at end of each turn; at 0 detonate it destroying all pieces on that, and the sourrounding spaces
+  BacktoBasics: '3b9d5f24-daaa-485c-810d-7efc969024de',
+  // All attachment cubies have no effect
 };
 
 export const UNIT_TYPES = {

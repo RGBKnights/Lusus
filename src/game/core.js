@@ -2,11 +2,12 @@ import { Game } from 'boardgame.io/core';
 import { 
     GAME_PHASES,
     LOCATIONS,
-    // TARGETING_TYPE,
-    // UNIT_TYPES
+    MOVEMENT_ACTIONS,
+    UNIT_TYPES
 } from './common';
 
 import { GameLogic } from './logic';
+import { getMovements } from '../game/movements';
 
 var clone = require('clone');
 let logic = new GameLogic();
@@ -54,7 +55,6 @@ const GameCore = Game({
 
         let orginal = g.cubits.find(_ => _.location === LOCATIONS.Arena);
         if(orginal) {
-          orginal.location = LOCATIONS.Afterlife;
           logic.onRemoved(g, ctx, orginal);
         }
 
@@ -80,6 +80,8 @@ const GameCore = Game({
 
         g.players[ctx.currentPlayer].actions_left--;
         g.players[ctx.currentPlayer].actions_used++;
+
+        logic.onAttach(g, ctx, cubit);
 
         return g;
       },
@@ -107,6 +109,8 @@ const GameCore = Game({
         g.players[ctx.currentPlayer].actions_left--;
         g.players[ctx.currentPlayer].actions_used++;
 
+        logic.onAttach(g, ctx, cubit);
+
         return g;
       },
       attachCubitToBroad: (G, ctx, cubitId, x, y) => {
@@ -122,6 +126,8 @@ const GameCore = Game({
 
         g.players[ctx.currentPlayer].actions_left--;
         g.players[ctx.currentPlayer].actions_used++;
+
+        logic.onAttach(g, ctx, cubit);
 
         return g;
       },
@@ -157,7 +163,7 @@ const GameCore = Game({
       },
       moveCapture(G, ctx, sourceId, destinationId) {
         const g = clone(G);
-
+        
         let result = logic.onCapture(g, ctx, sourceId, destinationId);
         if(result) {
           return g;
@@ -175,15 +181,22 @@ const GameCore = Game({
           return undefined;
         }
       },
+      moveCastle(G, ctx, sourceId, destinationId) {
+        const g = clone(G);
+
+        let result = logic.onCastle(g, ctx, sourceId, destinationId);
+        if(result) {
+          return g;
+        } else {
+          return undefined;
+        }
+      },
       // Draw new Hand
       drawCubits: (G, ctx) => {
         const g = clone(G);
 
-        // logic.onEndTurn()
-        // Reset Action Counter to Activity Count
-        g.players[ctx.currentPlayer].actions_used = 0;
-        g.players[ctx.currentPlayer].actions_left = logic.getActivities(g, ctx, ctx.currentPlayer);
-        g.players[ctx.currentPlayer].moves = 1;
+        // Resovle End of Turn effects
+        logic.onEndTurn(g, ctx);
 
         // Draw
         let result = logic.onDraw(g, ctx);
@@ -222,8 +235,43 @@ const GameCore = Game({
             'skipMovement',
             'movePassive',
             'moveCapture',
-            'moveSwap'
+            'moveSwap',
+            'moveCastle'
           ],
+          onPhaseBegin: (G, ctx) => {
+            const g = clone(G);
+            g.players[ctx.currentPlayer].check = false;
+
+            // Check for valid moves
+            let validMoves = 0;
+            let units = g.units.filter(_ => _.location === LOCATIONS.Board);
+            for (const unit of units) {
+              if(unit.ownership === ctx.currentPlayer)  {
+                // Check for valid move and update counter
+                let moves = getMovements(g, ctx, unit);
+                validMoves += moves.length;
+              } else {
+                // Check for check
+                let moves = getMovements(g, ctx, unit);
+                for (const move of moves) {
+                  if(move.action === MOVEMENT_ACTIONS.Capture) {
+                    let u = g.units.find(_ => _.id === move.unit);
+                    if(u.type === UNIT_TYPES.King) {
+                      g.players[ctx.currentPlayer].check = true;
+                    }
+                  }
+                }
+              }
+            }
+
+            if(validMoves === 0) {
+              // Game Over
+              let opponent = ctx.currentPlayer === "0" ? "1" : "0";
+              ctx.events.endGame(opponent);
+            }
+            
+            return g;
+          },
           endPhaseIf: (G, ctx) => {
             let moves = logic.getMoves(G, ctx, ctx.currentPlayer);
             return moves === 0 ? GAME_PHASES.Draw : false;

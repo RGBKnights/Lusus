@@ -2,9 +2,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 export class CubitLogo extends React.Component {
+  static propTypes = {
+    team: PropTypes.string,
+    color: PropTypes.string,
+    name: PropTypes.string,
+  };
+
   render() {
-    let style = { fill: '#000000', fillOpacity: 1 };
-    
+    let teamColor = this.props.team === 'b' ? '#000000' : '#FFFFFF';
+    let style = { fill: teamColor, fillOpacity: 1 };
+
     return (
       <g transform="scale(0.0018,0.0018) translate(20,20)">
         <path 
@@ -121,9 +128,8 @@ export class CubitCardinal extends React.Component {
 
   render() {
     let teamColor = this.props.team === 'b' ? '#000000' : '#FFFFFF';
-    let altColor = this.props.team === 'b' ? '#FFFFFF' : '#000000';
-    let style1 = { fill: altColor, fillOpacity: 1 };
-    let style2 = { fill: teamColor, fillOpacity: 1 };
+    // let altColor = this.props.team === 'b' ? '#FFFFFF' : '#000000';
+    let style1 = { fill: teamColor, fillOpacity: 1 };
 
     return (
       <g transform=" scale(0.0018,0.0018) translate(20,20)">
@@ -131,11 +137,11 @@ export class CubitCardinal extends React.Component {
         <path 
            d="M256 34.47l-90.51 90.51h67.883v108.393H124.98V165.49L34.47 256l90.51 90.51v-67.883h108.393V387.02H165.49L256 477.53l90.51-90.51h-67.883V278.627H387.02v67.883L477.53 256l-90.51-90.51v67.883H278.627V124.98h67.883L256 34.47z"
           style={style1}
-          transform="translate(0, 0) scale(1, 1) rotate(-315, 256, 256)" />
+          transform="scale(1, 1) translate(0, 0) rotate(45, 256, 256) " />
         <path 
            d="M256 34.47l-90.51 90.51h67.883v108.393H124.98V165.49L34.47 256l90.51 90.51v-67.883h108.393V387.02H165.49L256 477.53l90.51-90.51h-67.883V278.627H387.02v67.883L477.53 256l-90.51-90.51v67.883H278.627V124.98h67.883L256 34.47z"
-          style={style2}
-          transform="translate(0, 0) scale(1, 1) rotate(-360, 256, 256)" />
+          style={style1}
+          transform="scale(1, 1) translate(0, 0)" />
       </g>
     );
   }
@@ -161,10 +167,10 @@ export class CubitPattern extends React.Component {
         <path 
           d="M150.5 83.5C145.253 83.5 141 87.753 141 93L141 189C141 194.247 145.253 198.5 150.5 198.5C145.253 198.5 141 202.753 141 208L141 304C141 309.247 145.253 313.5 150.5 313.5C145.253 313.5 141 317.753 141 323L141 419C141 424.247 145.253 428.5 150.5 428.5L246.5 428.5C251.747 428.5 256 424.247 256 419C256 424.247 260.253 428.5 265.5 428.5L361.5 428.5C366.747 428.5 371 424.247 371 419L371 323C371 317.753 366.747 313.5 361.5 313.5L265.5 313.5C260.253 313.5 256 317.753 256 323C256 317.753 251.747 313.5 246.5 313.5C251.747 313.5 256 309.247 256 304L256 208C256 202.753 251.747 198.5 246.5 198.5C251.747 198.5 256 194.247 256 189L256 93C256 87.753 251.747 83.5 246.5 83.5L150.5 83.5Z" 
           style={mainStyle}></path>
-        <path d="M160 102.5L237 102.5L237 179.5L160 179.5L160 102.5Z" style={altStyle}></path>
+        <path d="M160 102.5L237 102.5L237 179.5L160 179.5L160 102.5Z" style={endStyle}></path>
         <path d="M160 217.5L237 217.5L237 294.5L160 294.5L160 217.5Z" style={altStyle}></path>
         <path d="M160 332.5L237 332.5L237 409.5L160 409.5L160 332.5Z" style={altStyle}></path>
-        <path d="M275 332.5L352 332.5L352 409.5L275 409.5L275 332.5Z" style={endStyle}></path>
+        <path d="M275 332.5L352 332.5L352 409.5L275 409.5L275 332.5Z" style={altStyle}></path>
       </g>
     );
   }

@@ -10,7 +10,7 @@ function getTypes(g, ctx, unit) {
   let types = [];
   for (const id of unit.cubits) {
     const cubit = g.cubits.find(_ => _.id === id);
-    types.push({ id: cubit.id, type: cubit.type });
+    types.push(cubit.type);
   }
   return types;
 }
@@ -118,8 +118,9 @@ export function getTargets(g, ctx, player, cubit) {
         });
       } else if(target.type === TARGETING_TYPE.TargetCubitAtLocation) {
         for (const unit of units) {
+        
           let types = getTypes(g, ctx, unit);
-          if(types.includes(CUBIT_TYPES.Immunity) && unit.ownership === opponent) {
+          if(types.includes(CUBIT_TYPES.Immunity)) { //  && unit.ownership === opponent
             if(target.pierces === false) {
               continue;
             }
@@ -183,8 +184,6 @@ export function getTargets(g, ctx, player, cubit) {
       });
     }
   }
-
-  console.log("Targets", targets);
-
+  
   return targets;
 }

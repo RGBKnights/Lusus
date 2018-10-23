@@ -63,14 +63,17 @@ class GameTable extends React.Component {
 
     this.logic = new GameLogic();
 
-    this.onShare =  this.onShare.bind(this);
     this.onArenaClickGrid = this.onArenaClickGrid.bind(this);
     this.onHandClickGrid = this.onHandClickGrid.bind(this);
     this.onAvatarClickGrid = this.onAvatarClickGrid.bind(this);
     this.onBoardClickGrid = this.onBoardClickGrid.bind(this);
     this.onCommonClickGrid = this.onCommonClickGrid.bind(this);
     this.onRoyalsClickGrid = this.onRoyalsClickGrid.bind(this);
-
+    this.onNext = this.onNext.bind(this);
+    this.onShare = this.onShare.bind(this);
+    this.onNewGame = this.onNewGame.bind(this);
+    this.onRematch = this.onRematch.bind(this);
+    
     this.teamColors = {'0': 'w', '1': 'b'};
 
     this.unitColors = {};
@@ -87,7 +90,7 @@ class GameTable extends React.Component {
     this.unitsMap[UNIT_TYPES.Common] = {};
     this.unitsMap[UNIT_TYPES.Royal] = {};
 
-    // 
+    this.avatarMap = {};
 
     let p = this.props.playerID == null ? "0" : this.props.playerID;
     this.state = {
@@ -110,6 +113,9 @@ class GameTable extends React.Component {
   componentDidUpdate(props) {
     if (this.props.isActive && this.props.ctx.phase === "Play" && props.ctx.phase !== "Play") {
       toast("Your Turn!");
+    }
+    if(this.props.G.players[this.props.playerID].check === true && props.G.players[this.props.playerID].check === false) {
+      toast("Check!");
     }
     if (this.props.isActive && this.props.ctx.phase === "Draw" && props.ctx.phase !== "Draw") {
       this.props.moves.drawCubits();
@@ -139,8 +145,36 @@ class GameTable extends React.Component {
     }
   }
 
-  getCubitFromType(type) {
-    switch (type) {
+  getCubitFromType(cubit) {
+    if(cubit.hidden === true && this.state.player !== this.props.playerID) {
+      return Cubits.CubitLogo;
+    }
+
+    switch (cubit.type) {
+      case CUBIT_TYPES.MovementOrthogonal:
+        return Cubits.CubitOrthogonal;
+      case CUBIT_TYPES.MovementDiagonal:
+        return Cubits.CubitDiagonal;
+      case CUBIT_TYPES.MovementCardinal:
+        return Cubits.CubitCardinal;
+      case CUBIT_TYPES.MovementJump:
+        return Cubits.CubitPattern;
+      case CUBIT_TYPES.MovementSideStep:
+        return Cubits.CubitSidestep;
+      case CUBIT_TYPES.MovementSwap:
+        return Cubits.CubitSwap;
+      case CUBIT_TYPES.DrawPlusOne:
+        return Cubits.CubitDrawPlus;
+      case CUBIT_TYPES.DrawNegOne:
+        return Cubits.CubitDrawMinus;
+      case CUBIT_TYPES.DoubleAction:
+        return Cubits.CubitDoubleAction;
+      case CUBIT_TYPES.Condemn:
+        return Cubits.CubitCondemn;
+      case CUBIT_TYPES.Knowledge:
+        return Cubits.CubitKnowledge;
+      case CUBIT_TYPES.KingOfHill:
+        return Cubits.CubitKingOfHill;
       default:
         return Cubits.CubitText;
     }
@@ -204,7 +238,7 @@ class GameTable extends React.Component {
       const cubit = cubits[i];
 
       let team =  this.teamColors[cubit.ownership];
-      let type = this.getCubitFromType(cubit.type);
+      let type = this.getCubitFromType(cubit);
       let element = React.createElement(type, { name: cubit.name, value: cubit.name, team: team, color: null });
       let token = React.createElement(Token, {key: cubit.id, x: 0, y: i}, element);
       tokens.push(token);
@@ -252,9 +286,8 @@ class GameTable extends React.Component {
         return;
       }
     
-      alert("Filler");
-      // this.props.moves.targetCubit(this.state.selection.id, cubit.id);
-      // this.setState({ selection: null, targets: [] });
+      this.props.moves.targetCubit(this.state.selection.id, cubit.id);
+      this.setState({ selection: null, targets: [] });
     }
   }
 
@@ -271,7 +304,7 @@ class GameTable extends React.Component {
         const cubit = cubits[i];
 
         let team =  this.teamColors[cubit.ownership];
-        let type = this.getCubitFromType(cubit.type);
+        let type = this.getCubitFromType(cubit);
         let element = React.createElement(type, { name: cubit.name, value: cubit.name, team: team, color: null });
         let token = React.createElement(Token, {key: cubit.id, x: 0, y: i}, element);
         tokens.push(token);
@@ -322,6 +355,7 @@ class GameTable extends React.Component {
   }
 
   getAvatar() {
+    this.avatarMap = {};
     let tokens = [];
 
     let targets = this.state.targets
@@ -336,6 +370,8 @@ class GameTable extends React.Component {
     for (let i = 0; i < cubits.length; i++) {
       const cubit = cubits[i];
 
+      this.avatarMap[i] = cubit.id;
+
       for (const target of targets.filter(_ => _.type === TARGETING_TYPE.TargetCubitAtLocation)) {
         if(target.cubit === cubit.id) {
           params.colorMap[`${0},${i}`] = '#28A745';
@@ -343,7 +379,7 @@ class GameTable extends React.Component {
       }
 
       let team =  this.teamColors[cubit.ownership];
-      let type = this.getCubitFromType(cubit.type);
+      let type = this.getCubitFromType(cubit);
       let element = React.createElement(type, { name: cubit.name, value: cubit.name, team: team, color: null });
       let token = React.createElement(Token, {key: cubit.id, x: 0, y: i}, element);
       tokens.push(token);
@@ -380,7 +416,7 @@ class GameTable extends React.Component {
 
     let targets = this.state.targets.filter(_ => _.location === LOCATIONS.Player).filter(_ => _.player === this.state.player);
     if (targets.filter(_ => _.type === TARGETING_TYPE.TargetCubitAtLocation).length > 0) {
-      let cubitId = 0;
+      let cubitId = this.avatarMap[y];
       this.props.moves.targetCubit(this.state.selection.id, cubitId);
       this.setState({ selection: null, targets: [] });
     }
@@ -394,7 +430,7 @@ class GameTable extends React.Component {
       const item = cubits[i];
 
       let team =  this.teamColors[item.ownership];
-      let type = this.getCubitFromType(item.type);
+      let type = this.getCubitFromType(item);
       let element =  React.createElement(type, { name: item.name, value: item.name, team: team, color: '' });
       let token = React.createElement(Token, {key: item.id, x: item.position.x, y: item.position.y}, element);
       tokens.push(token);
@@ -463,6 +499,9 @@ class GameTable extends React.Component {
               } else if(move.action === MOVEMENT_ACTIONS.Swap) {
                 this.props.moves.moveSwap(this.state.selection.id, move.unit);
                 this.setState({ selection: null, movements: [] });
+              } else if(move.action === MOVEMENT_ACTIONS.Castle) {
+                this.props.moves.moveCastle(this.state.selection.id, move.unit);
+                this.setState({ selection: null, movements: [] });
               } else {
                 alert("Move", `${x},${y}`);
               }
@@ -471,8 +510,12 @@ class GameTable extends React.Component {
 
           this.setState({ selection: null, movements: [] });
         } else {
-          let unit = this.props.G.units.filter(_ => _.location === LOCATIONS.Board).find(_ => _.position.x === x && _.position.y === y);
-          let movements = unit == null ? [] : getMovements(this.props.G, this.props.ctx, this.state.player, {x,y}, unit);
+          let unit = this.props.G.units
+            .filter(_ => _.ownership === this.props.playerID)
+            .filter(_ => _.location === LOCATIONS.Board)
+            .find(_ => _.position.x === x && _.position.y === y);
+            
+          let movements = unit == null ? [] : getMovements(this.props.G, this.props.ctx, unit);
           this.setState({ selection: unit, movements: movements });
         }
       }
@@ -551,7 +594,7 @@ class GameTable extends React.Component {
         if(cubit.location === LOCATIONS.Unit)
         {
           let team = this.teamColors[unit.ownership];
-          let cubitType = this.getCubitFromType(cubit.type);
+          let cubitType = this.getCubitFromType(cubit);
           let element = React.createElement(cubitType, { name: cubit.name, value: cubit.name, team: team, color: '' });
           let token = React.createElement(Token, {key: cubit.id, x: offset, y: y}, element);
           tokens.push(token);
@@ -571,6 +614,8 @@ class GameTable extends React.Component {
         params.colorMap[`${x},${y}`] = '#000000';
       }
     }
+
+    // TODO: use player to flip the x values base on black and white (white needs to be fliped)
 
     let grid = React.createElement(Grid, params, tokens);
     return grid;
@@ -750,6 +795,7 @@ class GameTable extends React.Component {
   }
 
   onNewGame() {
+    debugger;
     if(this.props.playerID) {
       let url = window.location.origin + "/?p=0&m=" + uuidv4();
       window.location = url;
@@ -767,6 +813,7 @@ class GameTable extends React.Component {
   }
 
   onRematch() {
+    console.log("onRematch");
     if(this.props.playerID) {
       let opponent = this.props.playerID === "0" ? "1" : "0";
       let url = window.location.origin + "/?p=" + opponent + "&m=" + this.props.G.next;
@@ -790,7 +837,7 @@ class GameTable extends React.Component {
             { this.getNext() }
           </Nav>
           <Nav className="p-1 list-inline ml-auto">
-            <Help />
+            <Help playerID={this.props.playerID} />
             { this.getShare() }
             { this.getPlayerConnection() }
           </Nav>
@@ -831,15 +878,15 @@ class GameTable extends React.Component {
         <div className="horizontal-warper">
           <div className="horizontal-section-content">
             <div className="text-center">
-              <Badge>Commons</Badge>
-            </div>
-            { this.getUnitsField(UNIT_TYPES.Common) }
-          </div>
-          <div className="horizontal-section-content">
-            <div className="text-center">
               <Badge>Royals</Badge>
             </div>
             { this.getUnitsField(UNIT_TYPES.Royal) }
+          </div>
+          <div className="horizontal-section-content">
+            <div className="text-center">
+              <Badge>Commons</Badge>
+            </div>
+            { this.getUnitsField(UNIT_TYPES.Common) }
           </div>
           <div className="horizontal-section-content">
             <div className="p-1">

@@ -1,5 +1,6 @@
 import { 
   UNIT_TYPES,
+  UNIT_FILE,
   CUBIT_TYPES,
   LOCATIONS,
   MOVEMENT_ACTIONS,
@@ -66,7 +67,8 @@ function checkPosition(g, player, moves, movement, x, y, isAgressive, isPassive)
     if(isAgressive && unit.ownership !== player) {
       moves.push({
         action: MOVEMENT_ACTIONS.Capture,
-        x: x, y: y,
+        x: x, 
+        y: y,
         unit: unit.id
       });
       return true;  // Break Loop;
@@ -86,13 +88,11 @@ function checkPosition(g, player, moves, movement, x, y, isAgressive, isPassive)
   }
 }
 
-export function getMovements(g, ctx, player, origin, unit) {
+export function getMovements(g, ctx, unit) {
   let moves = [];
 
-  if(unit.ownership !== player) {
-    return moves;
-  }
-
+  let player = unit.ownership 
+  let origin = {x: unit.position.x, y: unit.position.y };
   let forward = player === '0' ? +1 : -1;
   let bounds = { x: 0, y: 0, width: 8, height: 8 };
 
@@ -238,32 +238,59 @@ export function getMovements(g, ctx, player, origin, unit) {
         }
       }
     } else if(movement.type === MOVEMENT_TYPES.Castle) {
+      // Has King Moved...
       if(unit.moves > 0) {
         continue;
       }
 
+      // is King in check
+      if(g.players[player].check === true) {
+        continue;
+      }
+
+      // Has Rooks moved...
       let rooks = g.units
         .filter(_ => _.location === LOCATIONS.Board)
         .filter(_ => _.type === UNIT_TYPES.Rook)
-        .filter(_ => _.ownership === unit.ownership)
+        .filter(_ => _.ownership === player)
         .filter(_ => _.moves === 0);
 
-      for (let index = 0; index < rooks.length; index++) {
-        const rook = rooks[index];
-        let y = rook.y;
-        let x = rook.x;
-        let walker = rook.y === 0 ? -1 : 1;
+      if(rooks.length === 0) {
+        continue;
+      }
+      
+      let ranks = {};
+      ranks['0'] = 0;
+      ranks['1'] = 7;
 
-        while(y !== unit.y) {
-          y = y + walker;
-          let u = getUnit(g, x, y);
-          if(u) {
-            continue;
+      for (const rook of rooks) {
+        if(rook.file === UNIT_FILE.A) {
+          let units = g.units
+            .filter(_ => _.location === LOCATIONS.Board)
+            .filter(_ => _.position.x === ranks[player])
+            .filter(_ => _.position.y === 1 || _.position.y === 2 || _.position.y === 3);
+          if(units.length === 0) {
+            moves.push({
+              action: MOVEMENT_ACTIONS.Castle,
+              x: rook.position.x,
+              y: rook.position.y,
+              unit: rook.id
+            });
+          }
+        } else if(rook.file === UNIT_FILE.H) {
+          let units = g.units
+            .filter(_ => _.location === LOCATIONS.Board)
+            .filter(_ => _.position.x === ranks[player])
+            .filter(_ => _.position.y === 5 || _.position.y === 6);
+          if(units.length === 0) {
+            moves.push({
+              action: MOVEMENT_ACTIONS.Castle,
+              x: rook.position.x,
+              y: rook.position.y,
+              unit: rook.id
+            });
           }
         }
-
-        // TODO: finish it by split out 2 moves left and right castle
-        // moves.push(new Move(MOVEMENT_ACTIONS.Castle, x, y));
       }
     }
   }

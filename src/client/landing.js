@@ -53,13 +53,33 @@ class Landing extends React.Component {
           <Col>
             <div className="card">
               <div className="card-header text-center">
-              <h5 className="p-1">Welcome</h5>
+              <h5 className="p-1">The Basics</h5>
               </div>
               <ul className="list-group list-group-flush ">
                 <li className="list-group-item text-center">
-                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras pretium dictum sem, et scelerisque nisi rutrum vitae. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Sed feugiat vulputate nulla. Donec non magna a ligula rhoncus fringilla. Integer dictum ligula quis tellus feugiat accumsan. Integer facilisis mi libero, et sodales lectus iaculis vel. Etiam consectetur ex a lorem bibendum, ac viverra mauris feugiat. Duis cursus suscipit lectus, sit amet efficitur metus aliquet semper. Proin fringilla odio mauris, faucibus commodo elit congue ut. Duis sit amet sem vitae augue cursus commodo ac sed mi. Phasellus at tempor ipsum.</p>
-                  <p>Pellentesque vel lacus bibendum, consequat leo ac, consectetur tortor. Donec ut sapien suscipit ante tristique interdum at ut ante. Aliquam metus risus, venenatis non luctus eu, venenatis vel dolor. Aliquam erat volutpat. Donec in nisi mattis felis placerat commodo. Aliquam erat volutpat. Cras imperdiet scelerisque vestibulum. Nam ullamcorper, diam eu aliquet ornare, orci odio convallis enim, quis cursus lectus metus at tortor.</p>
-                  <p>Suspendisse potenti. Suspendisse auctor pharetra facilisis. In hac habitasse platea dictumst. Nullam nec risus ut nisl pulvinar auctor quis at felis. Vestibulum pharetra tellus ut fermentum rutrum. Quisque mollis lectus ante, quis congue metus auctor non. Sed et turpis accumsan, pharetra turpis quis, condimentum orci. Integer sodales accumsan neque a venenatis.</p>
+                  <p>
+                    Hello!  Welcome to Lusus.  
+                    The game that is like chess but with even more rules!  
+                    To begin both you and your opponent will need to be on this screen on different devices.  
+                    Then select the appropriate button to the right, if you are player 1 then click Start Match if you are player 2 select Join Match.  
+                    Player one will need to send player 2 the game code, it will be added to your clipboard by selecting the share icon in the upper right hand corner.</p>
+                  <p>
+                    The game works in phases. 
+                    First is the Play Phase.  
+                    During this phase you can use your actions to play cubies from your hand and activate certain cubies’ abilities.  
+                    Then it is the Move Phase where you will move a unit on the board.  
+                    Then the Draw Phase will automatically happen, where you will get a new hand and some abilities will resolve and turn counters will increase. 
+                    That will end your turn and it will be the next player.
+                  </p>
+                  <p>
+                    Unlike chess this game has numerous win / lose conditions. 
+                    You can still win the game by capturing the opponent's king but unlike chess there is no idea of checkmate. 
+                    The act of capture is needed to claim victory (This is important because of things like traps). 
+                    A number of cubies also have alternate win conditions that are specific to when the cubie is active. 
+                    Also there are a number of lose conditions as well.
+                    Frist you can lose if you do not have enough cubies left to draw a full hand (so in a sense your bag size is like you health). 
+                    Second, you can also lose if you have no valid moves to make on your movement phase.
+                  </p>
                 </li>
               </ul>
             </div>
@@ -71,6 +91,7 @@ class Landing extends React.Component {
               </div>
               <ul className="list-group list-group-flush ">
                 <li className="list-group-item  text-center">
+                  <p>Start a new match as player 1 (White)</p>
                   <Button onClick={this.onNewMatch} color="primary">Start Match</Button>
                 </li>
               </ul>
@@ -82,6 +103,7 @@ class Landing extends React.Component {
               </div>
               <ul className="list-group list-group-flush ">
                 <li className="list-group-item text-center">
+                  <p>Join a match as player 2 (Black)</p>
                   <Input type="text" name="code" id="matchCode" placeholder="Code" value={this.state.code} onChange={this.onInputChange} />
                   <br />
                   <Button onClick={this.onJoinMatch} color="primary">Join Match</Button>

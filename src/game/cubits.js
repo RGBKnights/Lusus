@@ -57,13 +57,14 @@ export class Cubit {
 
       // Cubits that create other cubits are childern...
       this.children = [];
-      
   }
 }
 
 export class OrthogonalCubit extends Cubit {
   constructor(ownership) {
       super(CUBIT_TYPES.MovementOrthogonal, "Orthogonal", ownership);
+
+      this.description = "adds orthogonal movement to unit";
 
       this.classification.push(CLASSIFICATIONS.Cubit_Movement_Modifier);
 
@@ -90,6 +91,8 @@ export class DiagonalCubit extends Cubit {
   constructor(ownership) {
       super(CUBIT_TYPES.MovementDiagonal, "Diagonal", ownership);
 
+      this.description = "adds diagonal movement to unit";
+
       this.classification.push(CLASSIFICATIONS.Cubit_Movement_Modifier);
 
       this.movement.push({
@@ -114,6 +117,8 @@ export class DiagonalCubit extends Cubit {
 export class CardinalCubit extends Cubit {
   constructor(ownership) {
       super(CUBIT_TYPES.MovementCardinal, "Cardinal", ownership);
+
+      this.description = "adds orthogonal & diagonal movement to unit";
 
       this.classification.push(CLASSIFICATIONS.Cubit_Movement_Modifier);
 
@@ -150,6 +155,8 @@ export class JumpCubit extends Cubit {
   constructor(ownership) {
       super(CUBIT_TYPES.MovementJump, "Jump", ownership);
 
+      this.description = "adds jump pattern (2,1) movement to unit";
+
       this.classification.push(CLASSIFICATIONS.Cubit_Movement_Modifier);
 
       this.movement.push({
@@ -177,6 +184,8 @@ export class SideStepCubit extends Cubit {
   constructor(ownership) {
       super(CUBIT_TYPES.MovementSideStep, "Side Step", ownership);
 
+      this.description = "adds side step 1 movement to unit";
+
       this.classification.push(CLASSIFICATIONS.Cubit_Movement_Modifier);
 
       this.movement.push({
@@ -202,6 +211,8 @@ export class SwapCubit extends Cubit {
   constructor(ownership) {
       super(CUBIT_TYPES.MovementSwap, "Swap", ownership);
 
+      this.description = "adds swap movement to unit";
+
       this.classification.push(CLASSIFICATIONS.Cubit_Movement_Modifier);
 
       this.movement.push({
@@ -222,6 +233,8 @@ export class DrawNegOneCubit extends Cubit {
   constructor(ownership) {
       super(CUBIT_TYPES.DrawNegOne, "Draw -1", ownership);
 
+      this.description = "-1 to players's draw";
+
       this.targeting.push({
         type: TARGETING_TYPE.AttachLocation,
         location: LOCATIONS.Player,
@@ -233,6 +246,8 @@ export class DrawNegOneCubit extends Cubit {
 export class DrawPlusOneCubit extends Cubit {
   constructor(ownership) {
       super(CUBIT_TYPES.DrawPlusOne, "Draw +1", ownership);
+
+      this.description = "+1 to players's draw";
 
       this.targeting.push({
         type: TARGETING_TYPE.AttachLocation,
@@ -246,6 +261,8 @@ export class DoubleActionCubit extends Cubit {
   constructor(ownership) {
       super(CUBIT_TYPES.DoubleAction, "Double Action", ownership);
 
+      this.description = "+1 action to the player";
+
       this.targeting.push({
         type: TARGETING_TYPE.AttachLocation,
         location: LOCATIONS.Player,
@@ -257,6 +274,8 @@ export class DoubleActionCubit extends Cubit {
 export class KnowledgeCubit extends Cubit {
   constructor(ownership) {
       super(CUBIT_TYPES.Knowledge, "Knowledge", ownership);
+
+      this.description = "Reveral the oppents hand";
 
       this.targeting.push({
         type: TARGETING_TYPE.AttachLocation,
@@ -270,6 +289,8 @@ export class CondemnCubit extends Cubit {
   constructor(ownership) {
       super(CUBIT_TYPES.Condemn, "Condemn", ownership);
 
+      this.description = "No additional cubits can be placed on this unit";
+
       this.targeting.push({
         type: TARGETING_TYPE.AttachLocation,
         location: LOCATIONS.Unit,
@@ -282,6 +303,8 @@ export class KingOfHillCubit extends Cubit {
   constructor(ownership) {
       super(CUBIT_TYPES.KingOfHill, "King Of Hill", ownership);
 
+      this.description = "Marks a space in the middle of the board as The Hill. When your King unit is on this space you win the game";
+
       this.targeting.push({
         type: TARGETING_TYPE.AttachLocation,
         location: LOCATIONS.Arena,
@@ -289,7 +312,7 @@ export class KingOfHillCubit extends Cubit {
       
       this.duration = {
         type: DURATION_TYPES.Turn,
-        amount: 10,
+        amount: 1,
       };
   }
 }
@@ -297,6 +320,8 @@ export class KingOfHillCubit extends Cubit {
 export class EnrageCubit extends Cubit {
   constructor(ownership) {
       super(CUBIT_TYPES.Enrage, "Enrage", ownership);
+
+      this.description = "The unit cannot move unless it will capture another unit";
 
       this.targeting.push({
         type: TARGETING_TYPE.AttachLocation,
@@ -309,6 +334,8 @@ export class EnrageCubit extends Cubit {
 export class PassifyCubit extends Cubit {
   constructor(ownership) {
       super(CUBIT_TYPES.Passify, "Passify", ownership);
+
+      this.description = "The unit cannot make a move that will capture another unit";
 
       this.targeting.push({
         type: TARGETING_TYPE.AttachLocation,
@@ -323,6 +350,8 @@ export class AncientRevivalCubit extends Cubit {
   constructor(ownership) {
       super(CUBIT_TYPES.AncientRevival, "Ancient Revival", ownership);
 
+      this.description = "";
+
       this.hidden = true;
 
       this.targeting.push({
@@ -336,6 +365,8 @@ export class AncientRevivalCubit extends Cubit {
 export class BacktoBasicsCubit extends Cubit {
   constructor(ownership) {
       super(CUBIT_TYPES.BacktoBasics, "Back to Basics", ownership);
+
+      this.description = "";
 
       this.targeting.push({
         type: TARGETING_TYPE.AttachLocation,
@@ -352,6 +383,8 @@ export class BacktoBasicsCubit extends Cubit {
 export class BlinkDodgeCubit extends Cubit {
   constructor(ownership) {
       super(CUBIT_TYPES.BlinkDodge, "Blink Dodge", ownership);
+
+      this.description = "When this piece would be taken instead move it to a random unoccupied adjacent space. If none, it is taken";
 
       this.hidden = true;
 
@@ -393,6 +426,8 @@ export class EncumberCubit extends Cubit {
   constructor(ownership) {
       super(CUBIT_TYPES.Encumber, "Encumber", ownership);
 
+      this.description = "The unit gets -1 move for ever cubie on that unit";
+
       this.targeting.push({
         type: TARGETING_TYPE.AttachLocation,
         location: LOCATIONS.Unit,
@@ -401,10 +436,11 @@ export class EncumberCubit extends Cubit {
   }
 }
 
-
 export class WeakRemovalCubit extends Cubit {
   constructor(ownership) {
       super(CUBIT_TYPES.RemovalWeak, "Weak Removal", ownership);
+
+      this.description = "Remove a cubie on the board";
 
       this.targeting.push({
         type: TARGETING_TYPE.TargetCubitAtLocation,
@@ -438,6 +474,8 @@ export class StrongRemovalCubit extends Cubit {
   constructor(ownership) {
       super(CUBIT_TYPES.RemovalStrong, "Strong Removal", ownership);
 
+      this.description = "Remove a cubie on the board, pierces immunity";
+
       this.targeting.push({
         type: TARGETING_TYPE.TargetCubitAtLocation,
         location: LOCATIONS.Arena
@@ -467,7 +505,6 @@ export class StrongRemovalCubit extends Cubit {
   }
 }
 
-
 export class ForgottenPastCubit extends Cubit {
   constructor(ownership) {
       super(CUBIT_TYPES.ForgottenPast, "Forgotten Past", ownership);
@@ -478,6 +515,20 @@ export class ForgottenPastCubit extends Cubit {
         constraint: TARGETING_CONSTRAINTS.Self
       });
       // TODO: Add Afterlife as a target; this will invole moving the aferlife from the menu to the table and combie into single row...
+  }
+}
+
+export class HeirloomPastCubit extends Cubit {
+  constructor(ownership) {
+      super(CUBIT_TYPES.Heirloom, "Heirloom", ownership);
+      
+      this.hidden = true;
+
+      this.targeting.push({
+        type: TARGETING_TYPE.AttachLocation,
+        location: LOCATIONS.Unit,
+        constraint: TARGETING_CONSTRAINTS.Self
+      });
   }
 }
 
@@ -533,6 +584,19 @@ export class ImmunityCubit extends Cubit {
   constructor(ownership) {
       super(CUBIT_TYPES.Immunity, "Immunity", ownership);
 
+      //TODO: this cubit will have bugs forever because of the all the 
+      // other checks that are needed for the 'targeted by opponent effects' 
+      // for things like Traps. Currently Targeting (in the design of the game)
+      // is limited to playing a cubit.
+
+      // Option 1: Explore a effect flag placed on the unit (& all cubits or just lookup unit?)
+      // that can be used to test for a units Immunity if the unit is Immunity then all 
+      // trageting / reaction actions will have no effect (unless states)
+      
+      // Option 2: Get @Chicken to define options for valid targets in context of the games actions
+
+      this.description = "This piece cannot be targeted by opponent effects, other cubies on this piece cannot be targeted by opponent effects";
+      
       this.targeting.push({
         type: TARGETING_TYPE.AttachLocation,
         location: LOCATIONS.Unit,
@@ -707,6 +771,8 @@ export class SacrificeCubit extends Cubit {
 export class StickyFeetCubit extends Cubit {
   constructor(ownership) {
       super(CUBIT_TYPES.StickyFeet, "Sticky Feet", ownership);
+
+      this.description = "";
 
       this.targeting.push({
         type: TARGETING_TYPE.AttachLocation,
