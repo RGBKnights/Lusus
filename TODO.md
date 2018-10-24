@@ -2,6 +2,12 @@
 
 ### vNext Steps
 
+TALKS:
+
+Priority of OnCaptured() 
+-> not just destination then source 
+-> but internaly to destination/source
+
 FEATURES:
 
 1. Change Classifications[] to Keywords[] and add some for Movement and Traps

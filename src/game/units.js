@@ -1,6 +1,5 @@
 import { 
   UNIT_TYPES,
-  CLASSIFICATIONS,
   MOVEMENT_TYPES,
   MOVEMENT_CONSTRAINTS,
   LOCATIONS,
@@ -54,9 +53,6 @@ export class KingUnit extends Unit {
   constructor(ownership, file) {
       super(UNIT_TYPES.King, "King", 3, ownership, UNIT_TYPES.Royal, file);
 
-      this.classification.push(CLASSIFICATIONS.Units_King);
-      this.classification.push(CLASSIFICATIONS.Units_Royal);
-
       this.movement.push({
         type: MOVEMENT_TYPES.Diagonal,
         constraint: MOVEMENT_CONSTRAINTS.Agressive,
@@ -89,8 +85,6 @@ export class QueenUnit extends Unit {
   constructor( ownership, file) {
       super(UNIT_TYPES.Queen, "Queen", 3, ownership, UNIT_TYPES.Royal, file);
 
-      this.classification.push(CLASSIFICATIONS.Units_Queen);
-      this.classification.push(CLASSIFICATIONS.Units_Royal);
 
       this.movement.push({
         type: MOVEMENT_TYPES.Diagonal,
@@ -119,8 +113,6 @@ export class BishopUnit extends Unit {
   constructor(ownership, file) {
       super(UNIT_TYPES.Bishop, "Bishop", 3, ownership, UNIT_TYPES.Royal, file);
 
-      this.classification.push(CLASSIFICATIONS.Unit);
-
       this.movement.push({
         type: MOVEMENT_TYPES.Diagonal,
         constraint: MOVEMENT_CONSTRAINTS.Agressive,
@@ -138,8 +130,6 @@ export class RookUnit extends Unit {
   constructor(ownership, file) {
       super(UNIT_TYPES.Rook, "Rook", 3, ownership, UNIT_TYPES.Royal, file);
 
-      this.classification.push(CLASSIFICATIONS.Unit);
-
       this.movement.push({
         type: MOVEMENT_TYPES.Orthogonal,
         constraint: MOVEMENT_CONSTRAINTS.Agressive,
@@ -156,8 +146,6 @@ export class RookUnit extends Unit {
 export class KnightUnit extends Unit {
   constructor(ownership, file) {
       super(UNIT_TYPES.Knight, "Knight", 3, ownership, UNIT_TYPES.Royal, file);
-
-      this.classification.push(CLASSIFICATIONS.Unit);
 
       this.movement.push({
         type: MOVEMENT_TYPES.Jump,
@@ -177,8 +165,6 @@ export class KnightUnit extends Unit {
 export class PawnUnit extends Unit {
   constructor(ownership, file) {
       super(UNIT_TYPES.Pawn, "Pawn", 2, ownership, UNIT_TYPES.Common, file);
-
-      this.classification.push(CLASSIFICATIONS.Unit);
 
       this.movement.push({
         type: MOVEMENT_TYPES.Forward,

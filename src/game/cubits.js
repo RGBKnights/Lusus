@@ -1,7 +1,7 @@
 import { 
   CUBIT_TYPES,
   // UNIT_TYPES,
-  CLASSIFICATIONS,
+  KEYWORDS,
   MOVEMENT_TYPES,
   MOVEMENT_CONSTRAINTS,
   LOCATIONS,
@@ -19,7 +19,7 @@ export class Cubit {
 
       // own owns the cubit
       this.ownership = ownership;
-      this.controller = null;
+      this.controller = ownership;
 
       // type of the cubit
       this.type = type;
@@ -31,7 +31,7 @@ export class Cubit {
       this.description = "";
 
       // for filtering
-      this.classification = [];  
+      this.keywords = [];  
 
       // isTrap?
       this.hidden = false;
@@ -66,7 +66,7 @@ export class OrthogonalCubit extends Cubit {
 
       this.description = "adds orthogonal movement to unit";
 
-      this.classification.push(CLASSIFICATIONS.Cubit_Movement_Modifier);
+      this.keywords.push(KEYWORDS.Movement);
 
       this.movement.push({
         type: MOVEMENT_TYPES.Orthogonal,
@@ -93,7 +93,7 @@ export class DiagonalCubit extends Cubit {
 
       this.description = "adds diagonal movement to unit";
 
-      this.classification.push(CLASSIFICATIONS.Cubit_Movement_Modifier);
+      this.keywords.push(KEYWORDS.Movement);
 
       this.movement.push({
         type: MOVEMENT_TYPES.Diagonal,
@@ -120,7 +120,7 @@ export class CardinalCubit extends Cubit {
 
       this.description = "adds orthogonal & diagonal movement to unit";
 
-      this.classification.push(CLASSIFICATIONS.Cubit_Movement_Modifier);
+      this.keywords.push(KEYWORDS.Movement);
 
       this.movement.push({
         type: MOVEMENT_TYPES.Diagonal,
@@ -157,7 +157,7 @@ export class JumpCubit extends Cubit {
 
       this.description = "adds jump pattern (2,1) movement to unit";
 
-      this.classification.push(CLASSIFICATIONS.Cubit_Movement_Modifier);
+      this.keywords.push(KEYWORDS.Movement);
 
       this.movement.push({
         type: MOVEMENT_TYPES.Jump,
@@ -186,7 +186,7 @@ export class SideStepCubit extends Cubit {
 
       this.description = "adds side step 1 movement to unit";
 
-      this.classification.push(CLASSIFICATIONS.Cubit_Movement_Modifier);
+      this.keywords.push(KEYWORDS.Movement);
 
       this.movement.push({
         type: MOVEMENT_TYPES.Sidestep,
@@ -213,7 +213,7 @@ export class SwapCubit extends Cubit {
 
       this.description = "adds swap movement to unit";
 
-      this.classification.push(CLASSIFICATIONS.Cubit_Movement_Modifier);
+      this.keywords.push(KEYWORDS.Movement);
 
       this.movement.push({
         type: MOVEMENT_TYPES.Swap,
@@ -305,6 +305,8 @@ export class KingOfHillCubit extends Cubit {
 
       this.description = "Marks a space in the middle of the board as The Hill. When your King unit is on this space you win the game";
 
+      this.keywords.push(KEYWORDS.Arena);
+
       this.targeting.push({
         type: TARGETING_TYPE.AttachLocation,
         location: LOCATIONS.Arena,
@@ -354,6 +356,8 @@ export class AncientRevivalCubit extends Cubit {
 
       this.hidden = true;
 
+      this.keywords.push(KEYWORDS.Trap);
+
       this.targeting.push({
         type: TARGETING_TYPE.AttachLocation,
         location: LOCATIONS.Unit,
@@ -388,6 +392,8 @@ export class BlinkDodgeCubit extends Cubit {
 
       this.hidden = true;
 
+      this.keywords.push(KEYWORDS.Trap);
+
       this.targeting.push({
         type: TARGETING_TYPE.AttachLocation,
         location: LOCATIONS.Unit,
@@ -421,6 +427,8 @@ export class DarkMagicCubit extends Cubit {
       super(CUBIT_TYPES.DarkMagic, "Dark Magic", ownership);
 
       this.hidden = true;
+
+      this.keywords.push(KEYWORDS.Trap);
 
       this.targeting.push({
         type: TARGETING_TYPE.AttachLocation,
@@ -537,6 +545,8 @@ export class HeirloomPastCubit extends Cubit {
       
       this.hidden = true;
 
+      this.keywords.push(KEYWORDS.Trap);
+
       this.targeting.push({
         type: TARGETING_TYPE.AttachLocation,
         location: LOCATIONS.Unit,
@@ -622,7 +632,7 @@ export class JumperCubit extends Cubit {
   constructor(ownership) {
       super(CUBIT_TYPES.Jumper, "Jumper", ownership);
 
-      this.classification.push(CLASSIFICATIONS.Cubit_Movement_Modifier);
+      this.keywords.push(KEYWORDS.Movement);
 
       this.movement.push({
         type: MOVEMENT_TYPES.Diagonal,
@@ -661,6 +671,8 @@ export class LooterCubit extends Cubit {
   constructor(ownership) {
       super(CUBIT_TYPES.Looter, "Looter", ownership);
 
+      this.description = "On capture, put a random cubit into your bag instead of attached to piece in afterlife";
+
       this.targeting.push({
         type: TARGETING_TYPE.AttachLocation,
         location: LOCATIONS.Unit,
@@ -673,8 +685,10 @@ export class MulliganCubit extends Cubit {
   constructor(ownership) {
       super(CUBIT_TYPES.Mulligan, "Mulligan", ownership);
 
+      this.description = "You shuffle your hand back in and draw a new one, you get one additional action this turn";
+
       this.targeting.push({
-        type: TARGETING_TYPE.AttachLocation,
+        type: TARGETING_TYPE.TargetLocation,
         location: LOCATIONS.Player,
         constraint: TARGETING_CONSTRAINTS.Self
       });
@@ -684,6 +698,8 @@ export class MulliganCubit extends Cubit {
 export class NabCubit extends Cubit {
   constructor(ownership) {
       super(CUBIT_TYPES.Nab, "Nab", ownership);
+
+      this.description = "Look at your opponents hand, you may play one of their cubies";
 
       this.targeting.push({
         type: TARGETING_TYPE.TargetLocation,
@@ -750,6 +766,8 @@ export class RevertCubit extends Cubit {
       super(CUBIT_TYPES.Revert, "Revert", ownership);
       
       this.hidden = true;
+
+      this.keywords.push(KEYWORDS.Trap);
 
       this.targeting.push({
         type: TARGETING_TYPE.AttachLocation,

@@ -99,6 +99,7 @@ class GameTable extends React.Component {
       selection: null,
       targets: [],
       movements: [],
+      nab: false,
     };
   }
 
@@ -125,6 +126,10 @@ class GameTable extends React.Component {
   updateDimensions = () => {
     this.forceUpdate();
   };
+
+  resetState() {
+    this.setState({ selection: null, targets: [], movements: [], nab: false });
+  }
 
   getUnitFromType(type) {
     switch (type) {
@@ -200,36 +205,7 @@ class GameTable extends React.Component {
     };
     return params;
   }
-
-  /*
-  getPlayerStats() {
-    // let playerView = this.state.player === "0" ? "White" : this.state.player === "1" ? "Black" : "";
-    let bag = this.logic.getBagSize(this.props.G, this.props.ctx, this.state.player);
-    let actions = this.logic.getActions(this.props.G, this.props.ctx, this.state.player);
-    let alUnits = this.logic.getAfterlifeUnits(this.props.G, this.props.ctx, this.state.player);
-    let alCubits = this.logic.getAfterlifeCubits(this.props.G, this.props.ctx, this.state.player);
-
-    return [
-      <Row key="bag">
-        <Col><Badge color="secondary">Bag</Badge></Col>
-        <Col><div className="text-right">{ bag }</div></Col>
-      </Row>,
-      <Row key="actions">
-        <Col><Badge color="secondary">Actions</Badge></Col>
-        <Col><div className="text-right">{ actions }</div></Col>
-      </Row>,
-      <Row key="afterlife">
-        <Col><Badge color="secondary">Afterlife</Badge></Col>
-        <Col><div className="text-right">{ alUnits }</div></Col>
-      </Row>,
-      <Row key="graveyard">
-        <Col><Badge color="secondary">Graveyard</Badge></Col>
-        <Col><div className="text-right">{ alCubits }</div></Col>
-      </Row>
-    ];
-  }
-  */
-
+  
   getArena() {
     let tokens = [];
 
@@ -270,7 +246,7 @@ class GameTable extends React.Component {
     let targets = this.state.targets.filter(_ => _.location === LOCATIONS.Arena);
     if(targets.filter(_ => _.type === TARGETING_TYPE.AttachLocation).length > 0) {
       this.props.moves.attachCubitToArena(this.state.selection.id);
-      this.setState({ selection: null, targets: [] });
+      this.this.resetState();
     }
   }
 
@@ -287,7 +263,7 @@ class GameTable extends React.Component {
       }
     
       this.props.moves.targetCubit(this.state.selection.id, cubit.id);
-      this.setState({ selection: null, targets: [] });
+      this.resetState();
     }
   }
 
@@ -296,10 +272,10 @@ class GameTable extends React.Component {
 
     let cubits = this.props.G.cubits.filter(_ => _.location === LOCATIONS.Hand && _.controller === this.state.player);
 
+    let isNab = this.state.nab;
     let hasKnowledge = this.logic.hasCubit(this.props.G, this.props.ctx, CUBIT_TYPES.Knowledge, LOCATIONS.Player, this.props.playerID);
     let isCurrentPlayer = this.state.player === this.props.playerID;
-    if(isCurrentPlayer || hasKnowledge) { 
-      
+    if(isCurrentPlayer || hasKnowledge || isNab) {
       for (let i = 0; i < cubits.length; i++) {
         const cubit = cubits[i];
 
@@ -308,7 +284,7 @@ class GameTable extends React.Component {
         let element = React.createElement(type, { name: cubit.name, value: cubit.name, team: team, color: null });
         let token = React.createElement(Token, {key: cubit.id, x: 0, y: i}, element);
         tokens.push(token);
-      }    
+      }
     }
    
     let targets = this.state.targets.filter(_ => _.location === LOCATIONS.Hand).filter(_ => _.player === this.state.player);
@@ -325,17 +301,15 @@ class GameTable extends React.Component {
 
   onHandClickHeader = () => {
     if(this.props.isActive) {
-      // target.TargetLocation
-
-      // let p = this.state.player;
-      // alert('Hand: ' + p);
+      if(this.state.selection && this.state.selection.type === CUBIT_TYPES.Nab) {
+        this.setState({ nab: true, selection: null, targets: [] });
+      }
     }
   }
 
   onHandClickGrid = ({x, y}) => {
     if(this.props.isActive) {
-      let active = this.props.ctx.phase === GAME_PHASES.Play && this.props.playerID === this.state.player;
-      if(!active) {
+      if(this.props.ctx.phase !== GAME_PHASES.Play) {
         return;
       }
 
@@ -346,9 +320,10 @@ class GameTable extends React.Component {
       }
 
       if(this.state.selection && this.state.selection.id === cubit.id) {
-        this.setState({ selection: null, targets: [] });
+        this.resetState();
       } else {
-        let targets = getTargets(this.props.G, this.props.ctx, this.state.player, cubit);
+        let player = this.state.nab ? this.props.playerID : this.state.player;
+        let targets = getTargets(this.props.G, this.props.ctx, player, cubit);
         this.setState({ selection: cubit, targets: targets });
       }
     }
@@ -400,11 +375,11 @@ class GameTable extends React.Component {
     let targets = this.state.targets.filter(_ => _.location === LOCATIONS.Player).filter(_ => _.player === this.state.player);
     if (targets.filter(_ => _.type === TARGETING_TYPE.AttachLocation).length > 0) {
       this.props.moves.attachCubitToPlayer(this.state.selection.id, this.state.player);
-      this.setState({ selection: null, targets: [] });
+      this.resetState();
     }
     if (targets.filter(_ => _.type === TARGETING_TYPE.TargetLocation).length > 0) {
       this.props.moves.targetPlayer(this.state.selection.id, this.state.player);
-      this.setState({ selection: null, targets: [] });
+      this.resetState();
     }
   }
 
@@ -417,7 +392,7 @@ class GameTable extends React.Component {
     if (targets.filter(_ => _.type === TARGETING_TYPE.TargetCubitAtLocation).length > 0) {
       let cubitId = this.avatarMap[y];
       this.props.moves.targetCubit(this.state.selection.id, cubitId);
-      this.setState({ selection: null, targets: [] });
+      this.resetState();
     }
   }
 
@@ -479,7 +454,7 @@ class GameTable extends React.Component {
           const pos = target.positions;
           if(pos.x === x && pos.y === y) {
             this.props.moves.attachCubitToBroad(this.state.selection.id, x, y);
-            this.setState({ selection: null, targets: [] });
+            this.resetState();
           }
         }
       } else if(this.props.ctx.phase === GAME_PHASES.Move) {
@@ -489,25 +464,23 @@ class GameTable extends React.Component {
             if(move.x === x && move.y === y) {
               if(move.action === MOVEMENT_ACTIONS.Passive) {
                 this.props.moves.movePassive(this.state.selection.id, x, y);
-                this.setState({ selection: null, movements: [] });
-                return;
+                break;
               } else if(move.action === MOVEMENT_ACTIONS.Capture) {
                 this.props.moves.moveCapture(this.state.selection.id, move.unit);
-                this.setState({ selection: null, movements: [] });
-                return;
+                break;
               } else if(move.action === MOVEMENT_ACTIONS.Swap) {
                 this.props.moves.moveSwap(this.state.selection.id, move.unit);
-                this.setState({ selection: null, movements: [] });
+                break;
               } else if(move.action === MOVEMENT_ACTIONS.Castle) {
                 this.props.moves.moveCastle(this.state.selection.id, move.unit);
-                this.setState({ selection: null, movements: [] });
+                break;
               } else {
                 alert("Move", `${x},${y}`);
               }
             }
           }
 
-          this.setState({ selection: null, movements: [] });
+          this.resetState();
         } else {
           let unit = this.props.G.units
             .filter(_ => _.ownership === this.props.playerID)
@@ -592,7 +565,7 @@ class GameTable extends React.Component {
 
         if(cubit.location === LOCATIONS.Unit)
         {
-          let team = this.teamColors[unit.ownership];
+          let team = this.teamColors[cubit.controller];
           let cubitType = this.getCubitFromType(cubit);
           let element = React.createElement(cubitType, { name: cubit.name, value: cubit.name, team: team, color: '' });
           let token = React.createElement(Token, {key: cubit.id, x: offset, y: y}, element);
@@ -629,13 +602,13 @@ class GameTable extends React.Component {
       let unitId = this.unitsMap[UNIT_TYPES.Common][`${x},${y}`];
       if(unitId) {
         this.props.moves.attachCubitToUnit(this.state.selection.id, unitId);
-        this.setState({ selection: null, targets: [] });
+        this.resetState();
       }
     } else {
       let cuitId = this.unitsMap[UNIT_TYPES.Common][`${x},${y}`];
       if(cuitId) {
         this.props.moves.targetCubit(this.state.selection.id, cuitId);
-        this.setState({ selection: null, targets: [] });
+        this.resetState();
       }
     }
   }
@@ -649,13 +622,13 @@ class GameTable extends React.Component {
       let unitId = this.unitsMap[UNIT_TYPES.Royal][`${x},${y}`];
       if(unitId) {
         this.props.moves.attachCubitToUnit(this.state.selection.id, unitId);
-        this.setState({ selection: null, targets: [] });
+        this.resetState();
       }
     } else {
       let cuitId = this.unitsMap[UNIT_TYPES.Royal][`${x},${y}`];
       if(cuitId) {
         this.props.moves.targetCubit(this.state.selection.id, cuitId);
-        this.setState({ selection: null, targets: [] });
+        this.resetState();
       }
     }
   }

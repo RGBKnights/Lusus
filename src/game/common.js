@@ -62,22 +62,11 @@ export const CUBIT_TYPES = {
   // Exile everything in the afterlife
   Heirloom: '5f510368-b76e-4a9b-9f29-96ca821ba26b',
   // When captured, put your cubies into bag instead of attached to piece in afterlife.
-  
-  ArenaHole: '7ee25860-b996-442d-95da-9bd0a447cff3',
-  // *NEEDS WORK*  
-  // Randomly select [fix amount vs dyanmic based on turn number vs incrase / turn (needs end of turn logic)] unoccupied spaces not on the back lines, those are now Hole spaces.
-  ArenaRock: 'e281b0bd-8a1f-4e9a-9db0-b1cdfe978151', 
-  // *NEEDS WORK*  
-  // Randomly select X unoccupied spaces not on the back lines, those are now Rock spaces. 
-  ArenaIce: '88f8c963-c40e-4205-b10d-a540d2186177',  
-  // *NEEDS WORK*
-  // Randomly select X spaces not on the back lines, those are now Ice spaces.
-  Jumper: '99d14233-f9c8-40d2-b4c6-6e3fe025829f',
-  // Cardinal patern movement; distance = 2;
   Looter: '9a226a0f-4d19-41e7-852e-856275875f89',
   // On capture, put a random cubit into your bag instead of attached to piece in afterlife.
   Mulligan: '664882e5-df52-4396-b90c-77b84956342e',     
   // You shuffle your hand back in and draw a new one, you get one additional action this turn
+  
   Nab: 'e07970c5-a967-4c4a-903a-4b2502b2a9b1',
   // Look at your opponents hand, you may play one of their cubies
   Poisoned: 'abbc5454-2714-4e80-aa2e-674a4a19cc99',
@@ -107,6 +96,17 @@ export const CUBIT_TYPES = {
   // after your opponnets next turn return it to the board to an unoccupied space in your back line; 
   DarkMagic: '19c2696e-d456-482c-bb5b-d2abd8c80486',
   // On capture; place a random cubie with (Target:Unit) from the afterlife and put it on this piece
+  Jumper: '99d14233-f9c8-40d2-b4c6-6e3fe025829f',
+  // Cardinal patern movement; distance = 2;
+  ArenaHole: '7ee25860-b996-442d-95da-9bd0a447cff3',
+  // Randomly select [fix amount vs dyanmic based on turn number vs incrase / turn (needs end of turn logic)] unoccupied spaces not on the back lines, those are now Hole spaces.
+  // Hole: can't land on it, but can move over it
+  ArenaRock: 'e281b0bd-8a1f-4e9a-9db0-b1cdfe978151',
+  // Randomly select X unoccupied spaces not on the back lines, those are now Rock spaces. 
+  // Rock: cannot me moved through. Can be patterned over. Cannot land on this space
+  ArenaIce: '88f8c963-c40e-4205-b10d-a540d2186177',
+  // Randomly select X spaces not on the back lines, those are now Ice spaces.
+  // Ice: if you land on it as a pattern, nothing. If you land on it otherwise keep moving the same direct until off the ice
 };
 
 export const UNIT_TYPES = {
@@ -122,17 +122,11 @@ export const UNIT_TYPES = {
   Pawn: 9
 };
 
-export const CLASSIFICATIONS = {
+export const KEYWORDS = {
   Unknown: 0,
-  Units_Common: 1,
-  Units_Royal: 2,
-  Units_King: 3,
-  Units_Queen: 4,
-  Units_Bishop: 5,
-  Units_Rook: 6,
-  Units_Knight: 7,
-  Units_Pawn: 8,
-  Cubit_Movement_Modifier: 9,
+  Movement: 1,
+  Arena: 2,
+  Trap: 3,
 };
 
 export const MOVEMENT_TYPES = {
