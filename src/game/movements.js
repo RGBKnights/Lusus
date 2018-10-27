@@ -51,7 +51,7 @@ function outsideBounds(x, y) {
     return false;
 }
 
-function checkPosition(g, player, moves, movement, x, y, isAgressive, isPassive) {
+function checkPosition(g, player, moves, movement, x, y, isAggressive, isPassive) {
   if(outsideBounds(x, y)) {
     return false;
   }
@@ -65,7 +65,7 @@ function checkPosition(g, player, moves, movement, x, y, isAgressive, isPassive)
 
   let unit = getUnit(g, x, y);
   if(unit) {
-    if(isAgressive && unit.ownership !== player) {
+    if(isAggressive && unit.ownership !== player) {
       moves.push({
         action: MOVEMENT_ACTIONS.Capture,
         x: x, 
@@ -116,7 +116,7 @@ export function getMovements(g, ctx, unit) {
     let movement = {...movementDefault, ...movements[i]};
 
     let isPassive = movement.constraint === MOVEMENT_CONSTRAINTS.Passive;
-    let isAgressive = movement.constraint === MOVEMENT_CONSTRAINTS.Agressive;
+    let isAggressive = movement.constraint === MOVEMENT_CONSTRAINTS.Aggressive;
 
     let distance =  movement.distance;
     if(unitHasCubit(g, ctx, unit, CUBIT_TYPES.StickyFeet)) {
@@ -129,37 +129,37 @@ export function getMovements(g, ctx, unit) {
       let steps,x,y;
 
       for (x = origin.x - 1, steps = 0; x >= bounds.x && steps < distance; x--, steps++) {
-        if(checkPosition(g, player, moves, movement, x, origin.y, isAgressive, isPassive)) { break; }
+        if(checkPosition(g, player, moves, movement, x, origin.y, isAggressive, isPassive)) { break; }
       }
 
       for (x = origin.x + 1, steps = 0; x < bounds.width && steps < distance; x++, steps++) {
-        if(checkPosition(g, player, moves, movement, x, origin.y, isAgressive, isPassive)) { break; }
+        if(checkPosition(g, player, moves, movement, x, origin.y, isAggressive, isPassive)) { break; }
       }
       
       for (y = origin.y - 1, steps = 0; y >= bounds.y && steps < distance; y--, steps++) {
-        if(checkPosition(g, player, moves, movement, origin.x, y, isAgressive, isPassive)) { break; }
+        if(checkPosition(g, player, moves, movement, origin.x, y, isAggressive, isPassive)) { break; }
       }
 
       for (y = origin.y + 1, steps = 0; y < bounds.height && steps < distance; y++, steps++) {
-        if(checkPosition(g, player, moves, movement, origin.x, y, isAgressive, isPassive)) { break; }
+        if(checkPosition(g, player, moves, movement, origin.x, y, isAggressive, isPassive)) { break; }
       }
     } else if(movement.type === MOVEMENT_TYPES.Diagonal) {
       let steps,x,y;
 
       for (x = origin.x + 1, y = origin.y + 1, steps = 0; x < bounds.width && y < bounds.height && steps < distance; x++, y++, steps++) {
-        if(checkPosition(g, player, moves, movement, x, y, isAgressive, isPassive)) { break; }
+        if(checkPosition(g, player, moves, movement, x, y, isAggressive, isPassive)) { break; }
       }
 
       for (x = origin.x - 1, y = origin.y - 1, steps = 0; x >= bounds.x && y >= bounds.y && steps < distance; x--, y--, steps++) {
-        if(checkPosition(g, player, moves, movement, x, y, isAgressive, isPassive)) { break; }
+        if(checkPosition(g, player, moves, movement, x, y, isAggressive, isPassive)) { break; }
       }
 
       for (x = origin.x - 1, y = origin.y +1, steps = 0; x >= 0 && y < bounds.height && steps < distance; x--, y++, steps++) {
-        if(checkPosition(g, player, moves, movement, x, y, isAgressive, isPassive)) { break; }
+        if(checkPosition(g, player, moves, movement, x, y, isAggressive, isPassive)) { break; }
       }
 
       for (x = origin.x + 1, y = origin.y - 1, steps = 0; x < bounds.width && y >= 0 && steps < distance; x++, y--, steps++) {
-        if(checkPosition(g, player, moves, movement, x, y, isAgressive, isPassive)) { break; }
+        if(checkPosition(g, player, moves, movement, x, y, isAggressive, isPassive)) { break; }
       }
     } else if(movement.type === MOVEMENT_TYPES.Jump) {
       let targeting = [];
@@ -174,7 +174,7 @@ export function getMovements(g, ctx, unit) {
 
       for (let index = 0; index < targeting.length; index++) {
         const target = targeting[index];
-        checkPosition(g, player, moves, movement, target.x, target.y, isAgressive, isPassive);
+        checkPosition(g, player, moves, movement, target.x, target.y, isAggressive, isPassive);
       }
     } else if(movement.type === MOVEMENT_TYPES.Fork) {
       let targeting = [];
@@ -184,7 +184,7 @@ export function getMovements(g, ctx, unit) {
       for (let index = 0; index < targeting.length; index++) {
         const target = targeting[index];
         let u = getUnit(g, target.x, target.y);
-        if(u && u.ownership !== player && isAgressive) {
+        if(u && u.ownership !== player && isAggressive) {
           moves.push({
             action: MOVEMENT_ACTIONS.Capture,
             x: target.x,
@@ -196,20 +196,20 @@ export function getMovements(g, ctx, unit) {
     } else if(movement.type === MOVEMENT_TYPES.Forward) {
       let steps,x;
       for (x = origin.x + forward, steps = 0; x < bounds.width && steps < distance; x += forward, steps++) {                 
-        if(checkPosition(g, player, moves, movement, x, origin.y, isAgressive, isPassive)) { break; }
+        if(checkPosition(g, player, moves, movement, x, origin.y, isAggressive, isPassive)) { break; }
       }
     } else if(movement.type === MOVEMENT_TYPES.Backwards) {
       let steps,x;
       for (x = origin.x - forward, steps = 0; x < bounds.width && steps < distance; x -= forward, steps++) {
-        if(checkPosition(g, player, moves, movement, x, origin.y, isAgressive, isPassive)) { break; }
+        if(checkPosition(g, player, moves, movement, x, origin.y, isAggressive, isPassive)) { break; }
       }
     } else if(movement.type === MOVEMENT_TYPES.Sidestep) {
       if(distance < 1) {
         continue; // Goto: Next Movement
       }
 
-      checkPosition(g, player, moves, movement, origin.x, origin.y - 1, isAgressive, isPassive);
-      checkPosition(g, player, moves, movement, origin.x, origin.y + 1, isAgressive, isPassive);
+      checkPosition(g, player, moves, movement, origin.x, origin.y - 1, isAggressive, isPassive);
+      checkPosition(g, player, moves, movement, origin.x, origin.y + 1, isAggressive, isPassive);
     } else if(movement.type === MOVEMENT_TYPES.Swap) {
       if(distance < 1) {
         continue; // Goto: Next Movement
@@ -302,6 +302,12 @@ export function getMovements(g, ctx, unit) {
         moves = moves.filter(_ => _.action === MOVEMENT_ACTIONS.Capture);
     } else if(cubit.type === CUBIT_TYPES.Passify) {
         moves = moves.filter(_ => _.action === MOVEMENT_ACTIONS.Passive);
+    }
+  }
+
+  if(false) {
+    if(moves.filter(_ => _.action === MOVEMENT_ACTIONS.Capture).length > 0) {
+      moves = moves.filter(_ => _.action === MOVEMENT_ACTIONS.Capture);
     }
   }
 

@@ -87,14 +87,31 @@ export class Help extends React.Component {
         return "Movement";
       case KEYWORDS.Trap:
         return "Trap";
+      case KEYWORDS.Activation:
+        return "Activation";
       default:
         return keyword;
     }
   }
 
+  sortByName(a, b) {
+    var nameA = a.name.toUpperCase(); // ignore upper and lowercase
+    var nameB = b.name.toUpperCase(); // ignore upper and lowercase
+    if (nameA < nameB) {
+      return -1;
+    }
+    if (nameA > nameB) {
+      return 1;
+    }
+  
+    // names must be equal
+    return 0;
+  }
+
   render() {
     let playerID = this.props.playerID ? this.props.playerID : "0";
     let cubits = this.logic.getCubits(playerID);
+    cubits.sort(this.sortByName);
     let collection = [];
     for (const cubit of cubits) {
 

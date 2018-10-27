@@ -30,7 +30,7 @@ export class Cubit {
       // the name of the type
       this.name = name;
 
-      // english words for the Help (convert to transltions keys later)
+      // english words for the Help (convert to translations keys later)
       this.description = "";
 
       // for filtering
@@ -43,10 +43,10 @@ export class Cubit {
       this.moves = 0;
       this.turns = 0;
 
-      // targeting paramters for playing cubits
+      // targeting paramter for playing cubits
       this.targeting = [];
 
-      // adictional movement options
+      // additional movement options
       this.location = LOCATIONS.Unknown;
       this.position = null; // (x,y) or Self/Opponent
       this.movement = [];
@@ -55,13 +55,14 @@ export class Cubit {
       // automatic removal duration options
       this.duration = null;
 
-      // The parrent if there is one...
+      // The parent if there is one...
       this.unit = null;
 
-      // Cubits that create other cubits are childern...
+      // Cubits that create other cubits are children...
       this.children = [];
 
       this.activation = false;
+      this.consumed = false;
   }
 }
 
@@ -744,7 +745,7 @@ export class RecklessCubit extends Cubit {
   constructor(ownership) {
       super(CUBIT_TYPES.Reckless, "Reckless", ownership);
 
-      this.description = "Once placed the player that reachs 2d6 pieces in the afterlife you win";
+      this.description = "Once placed 2d6 dice is rolled; after that attached player reaches that number of units in the afterlife you win";
 
       this.targeting.push({
         type: TARGETING_TYPE.AttachLocation,
@@ -764,6 +765,8 @@ export class ResourcefulCubit extends Cubit {
 
       this.description = " Draw a new hand with one less card";
 
+      this.keywords.push(KEYWORDS.Activation);
+
       this.activation = true;
 
       this.targeting.push({
@@ -777,6 +780,8 @@ export class ResourcefulCubit extends Cubit {
 export class RevertCubit extends Cubit {
   constructor(ownership) {
       super(CUBIT_TYPES.Revert, "Revert", ownership);
+
+      this.description = "If unit is captured the move is reverted";
       
       this.hidden = true;
 
@@ -804,6 +809,10 @@ export class RockThrowCubit extends Cubit {
 export class SacrificeCubit extends Cubit {
   constructor(ownership) {
       super(CUBIT_TYPES.Sacrifice, "Sacrifice", ownership);
+
+      this.description = "Remove a random cubit from this unit; if there are none then move unit to afterlife";
+
+      this.obstruction = false;
 
       this.targeting.push({
         type: TARGETING_TYPE.AttachLocation,

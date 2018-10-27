@@ -397,7 +397,8 @@ class GameTable extends React.Component {
 
     if(this.state.selection === null) {
       if(this.logic.canActivate(this.props.G, this.props.ctx, this.props.playerID, cubit)) {
-        alert("Activation", cubit.name);
+        this.props.moves.activateCubit(cubit.id);
+        this.resetState();
       }
     } else {
       let target = this.state.targets
@@ -469,7 +470,7 @@ class GameTable extends React.Component {
       if(this.props.ctx.phase === GAME_PHASES.Play && this.state.selection != null) {
         let targets = this.state.targets.filter(_ => _.location === LOCATIONS.Board);
         for (const target of targets) {
-          const pos = target.positions;
+          const pos = target.position;
           if(pos.x === x && pos.y === y) {
             this.props.moves.attachCubitToBroad(this.state.selection.id, x, y);
             this.resetState();
@@ -612,7 +613,8 @@ class GameTable extends React.Component {
 
     if(this.state.selection === null) {
       if(this.logic.canActivate(this.props.G, this.props.ctx, this.props.playerID, obj)) {
-        alert("Activation", obj.name);
+        this.props.moves.activateCubit(obj.id);
+        this.resetState();
       }
     } else {
       let hasAttachmentTarget = this.state.targets
@@ -649,7 +651,8 @@ class GameTable extends React.Component {
 
     if(this.state.selection === null) {
       if(this.logic.canActivate(this.props.G, this.props.ctx, this.props.playerID, obj)) {
-        alert("Activation", obj.name);
+        this.props.moves.activateCubit(obj.id);
+        this.resetState();
       }
     } else {
       let hasAttachmentTarget = this.state.targets
@@ -808,7 +811,6 @@ class GameTable extends React.Component {
   }
 
   onNewGame() {
-    debugger;
     if(this.props.playerID) {
       let url = window.location.origin + "/?p=0&m=" + uuidv4();
       window.location = url;

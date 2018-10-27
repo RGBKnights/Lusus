@@ -71,27 +71,26 @@ export const CUBIT_TYPES = {
   Poisoned: 'abbc5454-2714-4e80-aa2e-674a4a19cc99',
   // After this piece makes 3 moves it is removed
   Reckless: '6b6b78fa-d42c-4713-ad1d-e3672786005e',       
-  // Once placed the player that reachs 2d6 pieces in the afterlife you win
+  // Once placed 2d6 dice is rolled; after that attached player reaches that number of units in the afterlife you win
   Resourceful: '517c0bc3-1ed3-462e-ba23-018e61366005',   
-  // Activation: Draw a new hand with one less card
-  
+  // [Activation] Draw a new hand with one less card
   Revert: 'c647e8f2-3d4c-42cc-af90-9b0053617151',     
   // If unit is captured the move is reverted
-  RockThrow: '18301f0f-05e3-41f9-9f66-052a5485f0e1',    
-  // Select 3 unoccupid spaces. Those spaces act as if they are occupied by a peice
   Sacrifice: 'b01a5d36-0f89-4264-a89a-a46554a1700a',  
-  // afterMove() => remove a random cubit from this unit; if cubits.length == 0 then move unit to afterlife
-  Taunt: 'c2b27e7d-343e-416d-bac3-149fe48da9eb',       
-  // If the opposing team can take this piece as their move, they must do so, single target only
+  // [onMove] remove a random cubit from this unit; if cubits.length == 0 then move unit to afterlife
+  
   ThunderDome: 'dea9abe7-230f-4448-a1c0-ecd37fb393aa',    
   // You cannot make passive moves if a capture is available
+
   Timebomb: '259d4841-a8a9-483b-ab78-bfb024184400', 
-  // Start a 3 turn timer, count it down at end of each turn; at 0 detonate it destroying all pieces on that, and the sourrounding spaces
+  // Start a 3 turn timer, count it down at end of each turn; at 0 detonate it destroying all pieces on that, and the surrounding spaces 
+  Taunt: 'c2b27e7d-343e-416d-bac3-149fe48da9eb',       
+  // If the opposing team can take this piece as their move, they must do so, single target only 
   BacktoBasics: '3b9d5f24-daaa-485c-810d-7efc969024de',
   // All attachment cubies have no effect
   AncientRevival: '10e38ff2-2954-43f5-9a06-b11fcc06fad9', 
   // When this piece is captured, move it Exile for duration (1); [HOW]
-  // after your opponnets next turn return it to the board to an unoccupied space in your back line; 
+  // after your opponents next turn return it to the board to an unoccupied space in your back line; 
   DarkMagic: '19c2696e-d456-482c-bb5b-d2abd8c80486',
   // On capture; place a random cubie with (Target:Unit) from the afterlife and put it on this piece
   Jumper: '99d14233-f9c8-40d2-b4c6-6e3fe025829f',
@@ -107,6 +106,8 @@ export const CUBIT_TYPES = {
   // Ice: if you land on it as a pattern, nothing. If you land on it otherwise keep moving the same direct until off the ice
   Poof: '319017f3-f943-4c41-b465-15ceea4b9059',
   // Remove a piece from the board marking its location. Duration 1; onDurrtionEnd() => [];
+  RockThrow: '18301f0f-05e3-41f9-9f66-052a5485f0e1',    
+  // Select 3 unoccupied spaces. Those spaces act as if they are occupied by a unit
 };
 
 export const UNIT_TYPES = {
@@ -127,6 +128,7 @@ export const KEYWORDS = {
   Movement: 1,
   Arena: 2,
   Trap: 3,
+  Activation: 4,
 };
 
 export const MOVEMENT_TYPES = {
@@ -153,7 +155,7 @@ export const MOVEMENT_ACTIONS = {
 export const MOVEMENT_CONSTRAINTS = {
   Unknown: 0,
   Passive: 2,
-  Agressive: 3,
+  Aggressive: 3,
 };
 
 export const UNIT_FILE = {

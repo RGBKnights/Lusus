@@ -6,7 +6,7 @@ TALKS:
 
 Priority of OnCaptured() 
 -> not just destination then source 
--> but internaly to destination/source
+-> but internally to destination/source
 
 FEATURES:
 

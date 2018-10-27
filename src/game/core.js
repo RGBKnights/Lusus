@@ -3,7 +3,8 @@ import {
     GAME_PHASES,
     LOCATIONS,
     MOVEMENT_ACTIONS,
-    UNIT_TYPES
+    UNIT_TYPES,
+    // CUBIT_TYPES
 } from './common';
 
 import { GameLogic } from './logic';
@@ -36,6 +37,26 @@ const GameCore = Game({
 
         return g;
       },
+      // Activation / Consumption
+      activateCubit: (G, ctx, cubitId) => {
+        const g = clone(G);
+        
+        let cubit = g.cubits.find(_ => _.id === cubitId);
+        if(!cubit) {
+          return undefined;
+        }
+
+        if(cubit.activation === false) {
+          return undefined;
+        }
+
+        logic.activateCubit(g, ctx, cubit);
+
+        g.players[ctx.currentPlayer].actions_left--;
+        g.players[ctx.currentPlayer].actions_used++;
+
+        return g;
+      },
       // Attach Cubit to Location
       attachCubitToArena: (G, ctx, cubitId) => {
         const g = clone(G);
@@ -45,9 +66,9 @@ const GameCore = Game({
           return undefined;
         }
 
-        let orginal = g.cubits.find(_ => _.location === LOCATIONS.Arena);
-        if(orginal) {
-          logic.killCubit(g, ctx, orginal);
+        let original = g.cubits.find(_ => _.location === LOCATIONS.Arena);
+        if(original) {
+          logic.killCubit(g, ctx, original);
         }
 
         cubit.location = LOCATIONS.Arena;
@@ -94,7 +115,7 @@ const GameCore = Game({
         cubit.location = LOCATIONS.Unit;
         cubit.unit = unit.id;
 
-        // Add cuits to unit
+        // Add cubits to unit
         unit.cubits.push(cubit.id);
 
         logic.attachToLocation(g, ctx, cubit);
@@ -165,8 +186,6 @@ const GameCore = Game({
           return undefined;
         }
 
-        unit.position = {x,y};
-
         logic.movePassive(g, ctx, unit, x, y);
         
         g.players[ctx.currentPlayer].moves--;
@@ -187,11 +206,7 @@ const GameCore = Game({
         }
         
         logic.moveCapture(g, ctx, source, destination);
-
-        if(destination.type === UNIT_TYPES.King) {
-          ctx.events.endGame(ctx.currentPlayer); // GameOver
-        }
-
+        
         g.players[ctx.currentPlayer].moves--;
 
         return g;
@@ -241,7 +256,7 @@ const GameCore = Game({
         // Draw
         logic.draw(g, ctx);
 
-        // Resovle End of Turn effects
+        // Resolve End of Turn effects
         logic.resolveTurn(g, ctx);
 
         return g;
@@ -258,6 +273,7 @@ const GameCore = Game({
           allowedMoves: (G, ctx) => 
           [
             'skipPlay',
+            'activateCubit',
             'attachCubitToArena',
             'attachCubitToPlayer',
             'attachCubitToUnit',
