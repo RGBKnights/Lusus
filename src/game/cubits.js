@@ -17,6 +17,9 @@ export class Cubit {
       // unique identifier
       this.id = uuidv4();
 
+      // for the transient and the unknown
+      this.data = {};
+
       // own owns the cubit
       this.ownership = ownership;
       this.controller = ownership;
@@ -57,6 +60,8 @@ export class Cubit {
 
       // Cubits that create other cubits are childern...
       this.children = [];
+
+      this.activation = false;
   }
 }
 
@@ -713,6 +718,8 @@ export class PoisonedCubit extends Cubit {
   constructor(ownership) {
       super(CUBIT_TYPES.Poisoned, "Poisoned", ownership);
 
+      this.description = "After this piece makes 3 moves it is sent to the afterlife";
+
       this.targeting.push({
         type: TARGETING_TYPE.AttachLocation,
         location: LOCATIONS.Unit,
@@ -737,6 +744,8 @@ export class RecklessCubit extends Cubit {
   constructor(ownership) {
       super(CUBIT_TYPES.Reckless, "Reckless", ownership);
 
+      this.description = "Once placed the player that reachs 2d6 pieces in the afterlife you win";
+
       this.targeting.push({
         type: TARGETING_TYPE.AttachLocation,
         location: LOCATIONS.Arena,
@@ -752,6 +761,10 @@ export class RecklessCubit extends Cubit {
 export class ResourcefulCubit extends Cubit {
   constructor(ownership) {
       super(CUBIT_TYPES.Resourceful, "Resourceful", ownership);
+
+      this.description = " Draw a new hand with one less card";
+
+      this.activation = true;
 
       this.targeting.push({
         type: TARGETING_TYPE.AttachLocation,

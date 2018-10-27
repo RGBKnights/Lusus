@@ -3,7 +3,7 @@ import {
   UNIT_TYPES,
   UNIT_FILE,
   DURATION_TYPES,
-  MOVEMENT_TYPES,
+  // MOVEMENT_TYPES,
   MOVEMENT_ACTIONS,
   LOCATIONS,
 } from './common';
@@ -12,17 +12,19 @@ import * as Units from './units';
 import * as Cubits from './cubits';
 import { getMovements } from '../game/movements';
 
-// var clone = require('clone');
+var clone = require('clone');
 const uuidv4 = require('uuid/v4');
 
 export class GameLogic {
 
   getCubits(p) {
     const cubits = [
+      new Cubits.ResourcefulCubit(p),
       new Cubits.OrthogonalCubit(p),
       new Cubits.DiagonalCubit(p),
       new Cubits.CardinalCubit(p),
       new Cubits.JumpCubit(p),
+      /*
       new Cubits.SideStepCubit(p),
       new Cubits.SwapCubit(p),
       new Cubits.DrawNegOneCubit(p),
@@ -45,12 +47,11 @@ export class GameLogic {
       new Cubits.LooterCubit(p),
       new Cubits.MulliganCubit(p),
       new Cubits.NabCubit(p),
+      new Cubits.PoisonedCubit(p),
       /*
       // ####################################
-      new Cubits.PoisonedCubit(p),
       new Cubits.PoofCubit(p),
       new Cubits.RecklessCubit(p),
-      new Cubits.ResourcefulCubit(p),
       new Cubits.RevertCubit(p),
       new Cubits.RockThrowCubit(p),
       new Cubits.SacrificeCubit(p),
@@ -281,6 +282,12 @@ export class GameLogic {
         g.players[ctx.currentPlayer].actions_left++;
         break;
       }
+      case CUBIT_TYPES.Reckless:
+      {
+        let dice = ctx.random.D6(2);
+        cubit.data.amount = dice;
+        break;
+      }
       default:
         break;
     }
@@ -397,28 +404,36 @@ export class GameLogic {
     this.onMove(g, ctx, destination);
   }
 
+  resloveCubits(g, ctx) {
+    for (const cubit of g.cubits) {
+      if(cubit.type === CUBIT_TYPES.CostofPower && cubit.location === LOCATIONS.Player) {
+        let bag = g.cubits
+          .filter(_ => _.location === LOCATIONS.Bag)
+          .filter(_ => _.ownership === ctx.currentPlayer);
+
+        if(bag.length > 0) {
+          bag[0].location = LOCATIONS.Afterlife;
+        }
+      } else if(cubit.type === CUBIT_TYPES.Reckless && cubit.location === LOCATIONS.Player) {
+        let p = cubit.controller;
+        let o = p === "0" ? "1" : "0";
+        let afterlife = g.units
+          .filter(_ => _.location === LOCATIONS.Afterlife)
+          .filter(_ => _.ownership === o);
+
+        if(afterlife.length > cubit.data.amount) {
+          ctx.events.endGame(p);
+          return;
+        }
+      }
+    }
+  }
+
   resolveTurn(g, ctx) {
     // Reset Action Counter to Activity Count
     g.players[ctx.currentPlayer].actions_used = 0;
     g.players[ctx.currentPlayer].actions_left = this.getActivities(g, ctx, ctx.currentPlayer);
     g.players[ctx.currentPlayer].moves = 1;
-
-    // Reslove Cubits
-    if(this.hasCubit(g, ctx, CUBIT_TYPES.CostofPower, LOCATIONS.Player)) {
-      let bag = g.cubits
-        .filter(_ => _.location === LOCATIONS.Bag)
-        .filter(_ => _.ownership === ctx.currentPlayer);
-      if(bag.length > 0) {
-        bag[0].location = LOCATIONS.Afterlife;
-      }
-    }
-
-    // Handle duration
-    for (const cubit of g.cubits) {
-      if(cubit.duration && cubit.duration.type === DURATION_TYPES.Turn && cubit.turns >= cubit.duration.amount) {
-        this.killCubit(g, ctx, cubit);
-      }
-    }
 
     // Increments Turns
     let activeCubits = g.cubits
@@ -433,6 +448,15 @@ export class GameLogic {
     let activeUnits = g.units.filter(_ => _.location === LOCATIONS.Board);
     for (const unit of activeUnits) {
       unit.turns++;
+    }
+
+    this.resloveCubits(g, ctx);
+
+    // Handle duration
+    for (const cubit of g.cubits) {
+      if(cubit.duration && cubit.duration.type === DURATION_TYPES.Turn && cubit.turns >= cubit.duration.amount) {
+        this.killCubit(g, ctx, cubit);
+      }
     }
 
     // End turn frist and end phase reseting to 'Play'
@@ -474,7 +498,7 @@ export class GameLogic {
       case UNIT_TYPES.Pawn:
       {
         // Remove DoubleStep
-        unit.movement = unit.movement.filter(_ => (_.type === MOVEMENT_TYPES.Forward && _.distance === 2) === false); 
+        unit.movement = unit.movement.filter(_ => _.temporary === true); 
         break;
       }
       case UNIT_TYPES.King:
@@ -491,26 +515,32 @@ export class GameLogic {
         }
 
         // Remove Castle
-        unit.movement = unit.movement.filter(_ => (_.type === MOVEMENT_TYPES.Castle) === false); 
+        unit.movement = unit.movement.filter(_ => _.temporary === true); 
         break; 
       }
       default:
         break;
     }
 
-    for (const id of unit.cubits) {
+    let cubits = clone(unit.cubits);
+    for (const id of cubits) {
       let cubit = g.cubits.find(_ => _.id === id);
+      cubit.moves++;
 
       // Handle Duration
       if(cubit.duration && cubit.duration.type === DURATION_TYPES.Move && cubit.moves >= cubit.duration.amount) {
         this.killCubit(g, ctx, cubit);
       }
 
-      cubit.moves++;
-
       switch (cubit.type) {
         case CUBIT_TYPES.Poisoned:
+        {
+          if(cubit.moves >= 3) {
+            this.killCubit(g, ctx, cubit);
+            this.killUnit(g, ctx, unit);
+          }
           break;
+        }
         default:
           break;
       }
@@ -605,6 +635,15 @@ export class GameLogic {
 
   getActions(g, ctx, player) {
     return g.players[player].actions_left;
+  }
+
+  canActivate(g, ctx, player, obj) {
+    let actions = this.logic.getActions(g, ctx, player);
+    if(obj.activation === true && actions > 0) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   getMoves(g, ctx, player) {

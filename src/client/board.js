@@ -255,13 +255,13 @@ class GameTable extends React.Component {
       return;
     }
 
+    let cubit = this.props.G.cubits.find(_ => _.location === LOCATIONS.Arena);
+    if(!cubit) {
+      return;
+    }
+
     let targets = this.state.targets.filter(_ => _.location === LOCATIONS.Arena);
     if(targets.filter(_ => _.type === TARGETING_TYPE.TargetCubitAtLocation).length > 0) {
-      let cubit = this.props.G.cubits.find(_ => _.location === LOCATIONS.Arena);
-      if(!cubit) {
-        return;
-      }
-    
       this.props.moves.targetCubit(this.state.selection.id, cubit.id);
       this.resetState();
     }
@@ -308,24 +308,26 @@ class GameTable extends React.Component {
   }
 
   onHandClickGrid = ({x, y}) => {
-    if(this.props.isActive) {
-      if(this.props.ctx.phase !== GAME_PHASES.Play) {
-        return;
-      }
+    if(!this.props.isActive) {
+      return;
+    }
 
-      let cubits = this.props.G.cubits.filter(_ => _.location === LOCATIONS.Hand && _.controller === this.state.player);
-      let cubit = cubits[y];
-      if(!cubit) {
-        return;
-      }
+    if(this.props.ctx.phase !== GAME_PHASES.Play) {
+      return;
+    }
 
-      if(this.state.selection && this.state.selection.id === cubit.id) {
-        this.resetState();
-      } else {
-        let player = this.state.nab ? this.props.playerID : this.state.player;
-        let targets = getTargets(this.props.G, this.props.ctx, player, cubit);
-        this.setState({ selection: cubit, targets: targets });
-      }
+    let cubits = this.props.G.cubits.filter(_ => _.location === LOCATIONS.Hand && _.controller === this.state.player);
+    let cubit = cubits[y];
+    if(!cubit) {
+      return;
+    }
+
+    if(this.state.selection && this.state.selection.id === cubit.id) {
+      this.resetState();
+    } else {
+      let player = this.state.nab ? this.props.playerID : this.state.player;
+      let targets = getTargets(this.props.G, this.props.ctx, player, cubit);
+      this.setState({ selection: cubit, targets: targets });
     }
   }
 
@@ -345,7 +347,7 @@ class GameTable extends React.Component {
     for (let i = 0; i < cubits.length; i++) {
       const cubit = cubits[i];
 
-      this.avatarMap[i] = cubit.id;
+      this.avatarMap[i] = cubit;
 
       for (const target of targets.filter(_ => _.type === TARGETING_TYPE.TargetCubitAtLocation)) {
         if(target.cubit === cubit.id) {
@@ -384,15 +386,30 @@ class GameTable extends React.Component {
   }
 
   onAvatarClickGrid = ({x, y}) => {
-    if(!this.props.isActive) {
+    if (!this.props.isActive) {
       return;
     }
 
-    let targets = this.state.targets.filter(_ => _.location === LOCATIONS.Player).filter(_ => _.player === this.state.player);
-    if (targets.filter(_ => _.type === TARGETING_TYPE.TargetCubitAtLocation).length > 0) {
-      let cubitId = this.avatarMap[y];
-      this.props.moves.targetCubit(this.state.selection.id, cubitId);
-      this.resetState();
+    let cubit = this.avatarMap[y];
+    if (!cubit) {
+      return;
+    }
+
+    if(this.state.selection === null) {
+      if(this.logic.canActivate(this.props.G, this.props.ctx, this.props.playerID, cubit)) {
+        alert("Activation", cubit.name);
+      }
+    } else {
+      let target = this.state.targets
+        .filter(_ => _.location === LOCATIONS.Player)
+        .filter(_ => _.player === this.state.player)
+        .filter(_ => _.type === TARGETING_TYPE.TargetCubitAtLocation)
+        .find(_ => _.cubit === cubit.id);
+
+      if (target) {
+        this.props.moves.targetCubit(this.state.selection.id, cubit.id);
+        this.resetState();
+      }
     }
   }
 
@@ -448,6 +465,7 @@ class GameTable extends React.Component {
 
   onBoardClickGrid = ({x, y}) => {
     if(this.props.isActive) {
+
       if(this.props.ctx.phase === GAME_PHASES.Play && this.state.selection != null) {
         let targets = this.state.targets.filter(_ => _.location === LOCATIONS.Board);
         for (const target of targets) {
@@ -543,19 +561,8 @@ class GameTable extends React.Component {
         .filter(_ => _.unit === unit.id);
       if(hasAttachmentTarget.length > 0) {
         params.colorMap[`${0},${y}`] = '#28a745';
-        this.unitsMap[type][`${0},${y}`] = unit.id;
+        this.unitsMap[type][`${0},${y}`] = unit;
       }
-
-      /*
-      let hasAttachmentTarget = this.state.targets
-        .filter(_ => _.type === TARGETING_TYPE.TargetUnitAtLocation)
-        .filter(_ => _.location === LOCATIONS.Unit)
-        .filter(_ => _.unit === unit.id);
-      if(hasAttachmentTarget.length > 0) {
-        params.colorMap[`${0},${y}`] = '#28a745';
-        this.unitsMap[type][`${0},${y}`] = unit.id;
-      }
-      */
 
       // Cubits
       for (let x = 0; x < unit.cubits.length; x++) {
@@ -578,7 +585,7 @@ class GameTable extends React.Component {
           .filter(_ => _.cubit === cubit.id);
         if(hasCubitTarget.length > 0) {
           params.colorMap[`${offset},${y}`] = '#28a745';
-          this.unitsMap[type][`${offset},${y}`] = cubit.id;
+          this.unitsMap[type][`${offset},${y}`] = cubit;
         }
       }
 
@@ -598,16 +605,33 @@ class GameTable extends React.Component {
       return;
     }
 
-    if(x === 0) {
-      let unitId = this.unitsMap[UNIT_TYPES.Common][`${x},${y}`];
-      if(unitId) {
-        this.props.moves.attachCubitToUnit(this.state.selection.id, unitId);
-        this.resetState();
+    let obj = this.unitsMap[UNIT_TYPES.Common][`${x},${y}`];
+    if(!obj) {
+      return;
+    }
+
+    if(this.state.selection === null) {
+      if(this.logic.canActivate(this.props.G, this.props.ctx, this.props.playerID, obj)) {
+        alert("Activation", obj.name);
       }
     } else {
-      let cuitId = this.unitsMap[UNIT_TYPES.Common][`${x},${y}`];
-      if(cuitId) {
-        this.props.moves.targetCubit(this.state.selection.id, cuitId);
+      let hasAttachmentTarget = this.state.targets
+        .filter(_ => _.type === TARGETING_TYPE.AttachLocation)
+        .filter(_ => _.location === LOCATIONS.Unit)
+        .filter(_ => _.unit === obj.id);
+
+      if(x === 0 && hasAttachmentTarget.length > 0) {
+        this.props.moves.attachCubitToUnit(this.state.selection.id, obj.id);
+        this.resetState();
+      }
+
+      let hasCubitTarget = this.state.targets
+        .filter(_ => _.type === TARGETING_TYPE.TargetCubitAtLocation)
+        .filter(_ => _.location === LOCATIONS.Unit)
+        .filter(_ => _.cubit === obj.id);
+
+      if(x > 0 && hasCubitTarget.length > 0) {
+        this.props.moves.targetCubit(this.state.selection.id, obj.id);
         this.resetState();
       }
     }
@@ -618,16 +642,33 @@ class GameTable extends React.Component {
       return;
     }
 
-    if(x === 0) {
-      let unitId = this.unitsMap[UNIT_TYPES.Royal][`${x},${y}`];
-      if(unitId) {
-        this.props.moves.attachCubitToUnit(this.state.selection.id, unitId);
-        this.resetState();
+    let obj = this.unitsMap[UNIT_TYPES.Royal][`${x},${y}`];
+    if(!obj) {
+      return;
+    }
+
+    if(this.state.selection === null) {
+      if(this.logic.canActivate(this.props.G, this.props.ctx, this.props.playerID, obj)) {
+        alert("Activation", obj.name);
       }
     } else {
-      let cuitId = this.unitsMap[UNIT_TYPES.Royal][`${x},${y}`];
-      if(cuitId) {
-        this.props.moves.targetCubit(this.state.selection.id, cuitId);
+      let hasAttachmentTarget = this.state.targets
+        .filter(_ => _.type === TARGETING_TYPE.AttachLocation)
+        .filter(_ => _.location === LOCATIONS.Unit)
+        .filter(_ => _.unit === obj.id);
+
+      if(x === 0 && hasAttachmentTarget.length > 0) {
+        this.props.moves.attachCubitToUnit(this.state.selection.id, obj.id);
+        this.resetState();
+      }
+
+      let hasCubitTarget = this.state.targets
+        .filter(_ => _.type === TARGETING_TYPE.TargetCubitAtLocation)
+        .filter(_ => _.location === LOCATIONS.Unit)
+        .filter(_ => _.cubit === obj.id);
+
+      if(x > 0 && hasCubitTarget.length > 0) {
+        this.props.moves.targetCubit(this.state.selection.id, obj.id);
         this.resetState();
       }
     }

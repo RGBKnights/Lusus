@@ -66,19 +66,17 @@ export const CUBIT_TYPES = {
   // On capture, put a random cubit into your bag instead of attached to piece in afterlife.
   Mulligan: '664882e5-df52-4396-b90c-77b84956342e',     
   // You shuffle your hand back in and draw a new one, you get one additional action this turn
-  
   Nab: 'e07970c5-a967-4c4a-903a-4b2502b2a9b1',
   // Look at your opponents hand, you may play one of their cubies
   Poisoned: 'abbc5454-2714-4e80-aa2e-674a4a19cc99',
   // After this piece makes 3 moves it is removed
-  Poof: '319017f3-f943-4c41-b465-15ceea4b9059',
-  // Remove a piece from the board marking its location. Duration 1; onDurrtionEnd() => [];
   Reckless: '6b6b78fa-d42c-4713-ad1d-e3672786005e',       
   // Once placed the player that reachs 2d6 pieces in the afterlife you win
   Resourceful: '517c0bc3-1ed3-462e-ba23-018e61366005',   
-  // Draw a new hand with one less card
+  // Activation: Draw a new hand with one less card
+  
   Revert: 'c647e8f2-3d4c-42cc-af90-9b0053617151',     
-  // If unit is captured the move is reverted; Consumable
+  // If unit is captured the move is reverted
   RockThrow: '18301f0f-05e3-41f9-9f66-052a5485f0e1',    
   // Select 3 unoccupid spaces. Those spaces act as if they are occupied by a peice
   Sacrifice: 'b01a5d36-0f89-4264-a89a-a46554a1700a',  
@@ -107,6 +105,8 @@ export const CUBIT_TYPES = {
   ArenaIce: '88f8c963-c40e-4205-b10d-a540d2186177',
   // Randomly select X spaces not on the back lines, those are now Ice spaces.
   // Ice: if you land on it as a pattern, nothing. If you land on it otherwise keep moving the same direct until off the ice
+  Poof: '319017f3-f943-4c41-b465-15ceea4b9059',
+  // Remove a piece from the board marking its location. Duration 1; onDurrtionEnd() => [];
 };
 
 export const UNIT_TYPES = {

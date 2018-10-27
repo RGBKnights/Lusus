@@ -76,7 +76,8 @@ export class KingUnit extends Unit {
 
       this.movement.push({
         type: MOVEMENT_TYPES.Castle,
-        constraint: MOVEMENT_CONSTRAINTS.Passive
+        constraint: MOVEMENT_CONSTRAINTS.Passive,
+        temporary: true,
       });
   }
 }
@@ -174,7 +175,8 @@ export class PawnUnit extends Unit {
       this.movement.push({
         type: MOVEMENT_TYPES.Forward,
         constraint: MOVEMENT_CONSTRAINTS.Passive,
-        distance: 2
+        distance: 2,
+        temporary: true,
       });
       this.movement.push({
         type: MOVEMENT_TYPES.Fork,
