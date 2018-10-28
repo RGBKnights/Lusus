@@ -81,7 +81,7 @@ export class OrthogonalCubit extends Cubit {
       });
       this.movement.push({
         type: MOVEMENT_TYPES.Orthogonal,
-        constraint: MOVEMENT_CONSTRAINTS.Agressive,
+        constraint: MOVEMENT_CONSTRAINTS.Aggressive,
         distance: 8
       });
 
@@ -108,7 +108,7 @@ export class DiagonalCubit extends Cubit {
       });
       this.movement.push({
         type: MOVEMENT_TYPES.Diagonal,
-        constraint: MOVEMENT_CONSTRAINTS.Agressive,
+        constraint: MOVEMENT_CONSTRAINTS.Aggressive,
         distance: 8
       });
 
@@ -135,7 +135,7 @@ export class CardinalCubit extends Cubit {
       });
       this.movement.push({
         type: MOVEMENT_TYPES.Diagonal,
-        constraint: MOVEMENT_CONSTRAINTS.Agressive,
+        constraint: MOVEMENT_CONSTRAINTS.Aggressive,
         distance: 8
       });
       this.movement.push({
@@ -145,7 +145,7 @@ export class CardinalCubit extends Cubit {
       });
       this.movement.push({
         type: MOVEMENT_TYPES.Orthogonal,
-        constraint: MOVEMENT_CONSTRAINTS.Agressive,
+        constraint: MOVEMENT_CONSTRAINTS.Aggressive,
         distance: 8
       });
 
@@ -167,7 +167,7 @@ export class JumpCubit extends Cubit {
 
       this.movement.push({
         type: MOVEMENT_TYPES.Jump,
-        constraint: MOVEMENT_CONSTRAINTS.Agressive,
+        constraint: MOVEMENT_CONSTRAINTS.Aggressive,
         steps: [2,1],
         jump: true
       });
@@ -431,6 +431,8 @@ export class CostofPowerCubit extends Cubit {
 export class DarkMagicCubit extends Cubit {
   constructor(ownership) {
       super(CUBIT_TYPES.DarkMagic, "Dark Magic", ownership);
+      
+      this.description = "On capture place a random cubie from the afterlife on this piece (must be a valid target)";
 
       this.hidden = true;
 
@@ -642,7 +644,7 @@ export class JumperCubit extends Cubit {
 
       this.movement.push({
         type: MOVEMENT_TYPES.Diagonal,
-        constraint: MOVEMENT_CONSTRAINTS.Agressive,
+        constraint: MOVEMENT_CONSTRAINTS.Aggressive,
         distance: 2,
         jump: true,
       });
@@ -654,7 +656,7 @@ export class JumperCubit extends Cubit {
       });
       this.movement.push({
         type: MOVEMENT_TYPES.Orthogonal,
-        constraint: MOVEMENT_CONSTRAINTS.Agressive,
+        constraint: MOVEMENT_CONSTRAINTS.Aggressive,
         distance: 2,
         jump: true,
       });
@@ -850,6 +852,8 @@ export class TauntCubit extends Cubit {
 export class ThunderDomeCubit extends Cubit {
   constructor(ownership) {
       super(CUBIT_TYPES.ThunderDome, "Thunder Dome", ownership);
+
+      this.description = "You cannot make passive moves if a capture is available";
 
       this.targeting.push({
         type: TARGETING_TYPE.AttachLocation,

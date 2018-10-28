@@ -55,7 +55,7 @@ export class KingUnit extends Unit {
 
       this.movement.push({
         type: MOVEMENT_TYPES.Diagonal,
-        constraint: MOVEMENT_CONSTRAINTS.Agressive,
+        constraint: MOVEMENT_CONSTRAINTS.Aggressive,
         distance: 1
       });
       this.movement.push({
@@ -65,7 +65,7 @@ export class KingUnit extends Unit {
       });
       this.movement.push({
         type: MOVEMENT_TYPES.Orthogonal,
-        constraint: MOVEMENT_CONSTRAINTS.Agressive,
+        constraint: MOVEMENT_CONSTRAINTS.Aggressive,
         distance: 1
       });
       this.movement.push({
@@ -89,7 +89,7 @@ export class QueenUnit extends Unit {
 
       this.movement.push({
         type: MOVEMENT_TYPES.Diagonal,
-        constraint: MOVEMENT_CONSTRAINTS.Agressive,
+        constraint: MOVEMENT_CONSTRAINTS.Aggressive,
         distance: 8
       });
       this.movement.push({
@@ -99,7 +99,7 @@ export class QueenUnit extends Unit {
       });
       this.movement.push({
         type: MOVEMENT_TYPES.Orthogonal,
-        constraint: MOVEMENT_CONSTRAINTS.Agressive,
+        constraint: MOVEMENT_CONSTRAINTS.Aggressive,
         distance: 8
       });
       this.movement.push({
@@ -116,7 +116,7 @@ export class BishopUnit extends Unit {
 
       this.movement.push({
         type: MOVEMENT_TYPES.Diagonal,
-        constraint: MOVEMENT_CONSTRAINTS.Agressive,
+        constraint: MOVEMENT_CONSTRAINTS.Aggressive,
         distance: 8
       });
       this.movement.push({
@@ -133,7 +133,7 @@ export class RookUnit extends Unit {
 
       this.movement.push({
         type: MOVEMENT_TYPES.Orthogonal,
-        constraint: MOVEMENT_CONSTRAINTS.Agressive,
+        constraint: MOVEMENT_CONSTRAINTS.Aggressive,
         distance: 8
       });
       this.movement.push({
@@ -150,7 +150,7 @@ export class KnightUnit extends Unit {
 
       this.movement.push({
         type: MOVEMENT_TYPES.Jump,
-        constraint: MOVEMENT_CONSTRAINTS.Agressive,
+        constraint: MOVEMENT_CONSTRAINTS.Aggressive,
         steps: [2,1],
         jump: true
       });
@@ -180,7 +180,7 @@ export class PawnUnit extends Unit {
       });
       this.movement.push({
         type: MOVEMENT_TYPES.Fork,
-        constraint: MOVEMENT_CONSTRAINTS.Agressive,
+        constraint: MOVEMENT_CONSTRAINTS.Aggressive,
         distance: 1
       });
   }

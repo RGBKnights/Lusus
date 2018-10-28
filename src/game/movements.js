@@ -305,8 +305,12 @@ export function getMovements(g, ctx, unit) {
     }
   }
 
-  if(false) {
-    if(moves.filter(_ => _.action === MOVEMENT_ACTIONS.Capture).length > 0) {
+  let hasThunderDome = g.cubits
+    .filter(_ => _.location === LOCATIONS.Arena)
+    .filter(_ => _.type === CUBIT_TYPES.ThunderDome);
+  if(hasThunderDome.length > 0) {
+    let hasCapture = moves.filter(_ => _.action === MOVEMENT_ACTIONS.Capture);
+    if(hasCapture.length > 0) {
       moves = moves.filter(_ => _.action === MOVEMENT_ACTIONS.Capture);
     }
   }

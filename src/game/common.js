@@ -78,21 +78,24 @@ export const CUBIT_TYPES = {
   // If unit is captured the move is reverted
   Sacrifice: 'b01a5d36-0f89-4264-a89a-a46554a1700a',  
   // [onMove] remove a random cubit from this unit; if cubits.length == 0 then move unit to afterlife
-  
   ThunderDome: 'dea9abe7-230f-4448-a1c0-ecd37fb393aa',    
   // You cannot make passive moves if a capture is available
+  DarkMagic: '19c2696e-d456-482c-bb5b-d2abd8c80486',
+  // On capture; place a random cubie with (Target:Unit) from the afterlife and put it on this piece
 
-  Timebomb: '259d4841-a8a9-483b-ab78-bfb024184400', 
-  // Start a 3 turn timer, count it down at end of each turn; at 0 detonate it destroying all pieces on that, and the surrounding spaces 
-  Taunt: 'c2b27e7d-343e-416d-bac3-149fe48da9eb',       
-  // If the opposing team can take this piece as their move, they must do so, single target only 
   BacktoBasics: '3b9d5f24-daaa-485c-810d-7efc969024de',
   // All attachment cubies have no effect
+  
+  Timebomb: '259d4841-a8a9-483b-ab78-bfb024184400', 
+  // ? How to show counter
+  // Start a 3 turn timer, count it down at end of each turn; at 0 detonate it destroying all pieces on that, and the surrounding spaces 
+  Taunt: 'c2b27e7d-343e-416d-bac3-149fe48da9eb',
+  // ? Cubits that limit movement like this could/will trigger the movement win condition
+  // If the opposing team can take this piece as their move, they must do so, single target only 
+  
   AncientRevival: '10e38ff2-2954-43f5-9a06-b11fcc06fad9', 
   // When this piece is captured, move it Exile for duration (1); [HOW]
   // after your opponents next turn return it to the board to an unoccupied space in your back line; 
-  DarkMagic: '19c2696e-d456-482c-bb5b-d2abd8c80486',
-  // On capture; place a random cubie with (Target:Unit) from the afterlife and put it on this piece
   Jumper: '99d14233-f9c8-40d2-b4c6-6e3fe025829f',
   // Cardinal patern movement; distance = 2;
   ArenaHole: '7ee25860-b996-442d-95da-9bd0a447cff3',
@@ -154,8 +157,8 @@ export const MOVEMENT_ACTIONS = {
 
 export const MOVEMENT_CONSTRAINTS = {
   Unknown: 0,
-  Passive: 2,
-  Aggressive: 3,
+  Passive: 1,
+  Aggressive: 2,
 };
 
 export const UNIT_FILE = {

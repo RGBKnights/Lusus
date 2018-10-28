@@ -18,15 +18,13 @@ const uuidv4 = require('uuid/v4');
 export class GameLogic {
 
   getCubits(p) {
-    const cubits = [
-      new Cubits.SacrificeCubit(p),
+    const cubits = [          
       new Cubits.OrthogonalCubit(p),
       new Cubits.DiagonalCubit(p),
       new Cubits.CardinalCubit(p),
       new Cubits.JumpCubit(p),
       new Cubits.SideStepCubit(p),
       new Cubits.SwapCubit(p),
-      /*
       new Cubits.DrawNegOneCubit(p),
       new Cubits.DrawPlusOneCubit(p),
       new Cubits.DoubleActionCubit(p),
@@ -51,15 +49,16 @@ export class GameLogic {
       new Cubits.ResourcefulCubit(p),    
       new Cubits.RecklessCubit(p),  
       new Cubits.RevertCubit(p),
+      new Cubits.SacrificeCubit(p),
+      new Cubits.ThunderDomeCubit(p),
+      new Cubits.DarkMagicCubit(p),
       /*
       // ####################################
       new Cubits.PoofCubit(p),
-      new Cubits.RockThrowCubit(p),      
+      new Cubits.RockThrowCubit(p),
       new Cubits.TauntCubit(p),
-      new Cubits.ThunderDomeCubit(p),
       new Cubits.TimebombCubit(p),
       new Cubits.AncientRevivalCubit(p),
-      new Cubits.DarkMagicCubit(p),
       new Cubits.ArenaHoleCubit(p),
       new Cubits.ArenaRockCubit(p),
       new Cubits.ArenaIceCubit(p),
@@ -389,9 +388,24 @@ export class GameLogic {
 
           if(destination.cubits.length > 0) {
             destination.cubits = ctx.random.Shuffle(destination.cubits);
-            let cubit = destination.cubits.pop();
+            let id = destination.cubits.pop();
+            let cubit = g.cubtits.find(_ => _.id === id);
             cubit.location = LOCATIONS.Bag;
             this.swapController(cubit);
+          }
+
+          break;
+        }
+        case CUBIT_TYPES.DarkMagic:
+        {
+          this.killCubit(g, ctx, cubit);
+
+          if(destination.cubits.length > 0) {
+            destination.cubits = ctx.random.Shuffle(destination.cubits);
+            let id = destination.cubits.pop();
+            let cubit = g.cubits.find(_ => _.id === id);
+            this.swapController(cubit);
+            source.cubits.push(cubit.id);
           }
 
           break;

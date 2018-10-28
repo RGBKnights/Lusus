@@ -45,6 +45,8 @@ import { getMovements } from '../game/movements';
 
 const uuidv4 = require('uuid/v4');
 
+
+
 class GameTable extends React.Component {
   static propTypes = {
     G: PropTypes.any.isRequired,
@@ -91,6 +93,8 @@ class GameTable extends React.Component {
     this.unitsMap[UNIT_TYPES.Royal] = {};
 
     this.avatarMap = {};
+
+    this.deferredPrompt = null;
 
     let p = this.props.playerID == null ? "0" : this.props.playerID;
     this.state = {
@@ -246,7 +250,7 @@ class GameTable extends React.Component {
     let targets = this.state.targets.filter(_ => _.location === LOCATIONS.Arena);
     if(targets.filter(_ => _.type === TARGETING_TYPE.AttachLocation).length > 0) {
       this.props.moves.attachCubitToArena(this.state.selection.id);
-      this.this.resetState();
+      this.resetState();
     }
   }
 
