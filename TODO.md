@@ -4,6 +4,10 @@
 
 TALKS:
 
+Event Log
+-> a log that can be looked up
+-> a serise of events for popups
+
 Priority of OnCaptured() 
 -> not just destination then source 
 -> but internally to destination/source

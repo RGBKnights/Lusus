@@ -154,39 +154,174 @@ class GameTable extends React.Component {
     }
   }
 
-  getCubitFromType(cubit) {
+  getCubitElement(cubit) {
+    let team =  this.teamColors[cubit.ownership];
+
     if(cubit.hidden === true && this.state.player !== this.props.playerID) {
-      return Cubits.CubitLogo;
+      return React.createElement(Cubits.CubitLogo, { name: "Hidden", team: team });
     }
+
+    let type = Cubits.CubitText;
+    let params = { name: cubit.name, team: team };
 
     switch (cubit.type) {
       case CUBIT_TYPES.MovementOrthogonal:
-        return Cubits.CubitOrthogonal;
+      {
+        type =  Cubits.CubitOrthogonal;
+        break;
+      }
       case CUBIT_TYPES.MovementDiagonal:
-        return Cubits.CubitDiagonal;
+      {
+        type =  Cubits.CubitDiagonal;
+        break;
+      }
       case CUBIT_TYPES.MovementCardinal:
-        return Cubits.CubitCardinal;
+      {
+        type =  Cubits.CubitCardinal;
+        break;
+      }
       case CUBIT_TYPES.MovementJump:
-        return Cubits.CubitPattern;
+      {
+        type =  Cubits.CubitPattern;
+        break;
+      }
       case CUBIT_TYPES.MovementSideStep:
-        return Cubits.CubitSidestep;
+      {
+        type =  Cubits.CubitSidestep;
+        break;
+      }
       case CUBIT_TYPES.MovementSwap:
-        return Cubits.CubitSwap;
+      {
+        type =  Cubits.CubitSwap;
+        break;
+      }
       case CUBIT_TYPES.DrawPlusOne:
-        return Cubits.CubitDrawPlus;
+      {
+        type =  Cubits.CubitDrawPlus;
+        break;
+      }
       case CUBIT_TYPES.DrawNegOne:
-        return Cubits.CubitDrawMinus;
+      {
+        type =  Cubits.CubitDrawMinus;
+        break;
+      }
       case CUBIT_TYPES.DoubleAction:
-        return Cubits.CubitDoubleAction;
+      {
+        type =  Cubits.CubitDoubleAction;
+        break;
+      }
       case CUBIT_TYPES.Condemn:
-        return Cubits.CubitCondemn;
-      case CUBIT_TYPES.Knowledge:
-        return Cubits.CubitKnowledge;
+      {
+        type =  Cubits.CubitCondemn;
+        break;
+      }
       case CUBIT_TYPES.KingOfHill:
-        return Cubits.CubitKingOfHill;
+      {
+        type =  Cubits.CubitKingOfHill;
+        break;
+      }
+      case CUBIT_TYPES.KingsFlag:
+      {
+        type =  Cubits.CubitKingOfHill;
+        break;
+      }
+      case CUBIT_TYPES.Timebomb:
+      {
+        type =  Cubits.CubitTimebomb;
+        params.value = cubit.data.amount;
+        break;
+      }
+      case CUBIT_TYPES.Reckless:
+      {
+        type =  Cubits.CubitReckless;
+        params.value = cubit.data.amount;
+        break;
+      }
+      case CUBIT_TYPES.BlinkDodge:
+      {
+        type =  Cubits.CubitBlinkDodge;
+        break;
+      }
+      case CUBIT_TYPES.CostofPower:
+      {
+        type =  Cubits.CubitCostofPower;
+        break;
+      }
+      case CUBIT_TYPES.Encumber:
+      {
+        type =  Cubits.CubitEncumber;
+        break;
+      }
+      case CUBIT_TYPES.Enrage:
+      {
+        type =  Cubits.CubitEnrage;
+        break;
+      }
+      case CUBIT_TYPES.ForgottenPast:
+      {
+        type =  Cubits.CubitForgottenPast;
+        break;
+      }
+      case CUBIT_TYPES.Heirloom:
+      {
+        type =  Cubits.CubitHeirloom;
+        break;
+      }
+      case CUBIT_TYPES.Immunity:
+      {
+        type =  Cubits.CubitImmunity;
+        break;
+      }
+      case CUBIT_TYPES.Knowledge:
+      {
+        type =  Cubits.CubitKnowledge;
+        break;
+      }
+      case CUBIT_TYPES.Looter:
+      {
+        type =  Cubits.CubitLooter;
+        break;
+      }
+      case CUBIT_TYPES.Nab:
+      {
+        type =  Cubits.CubitNab;
+        break;
+      }
+      case CUBIT_TYPES.Passify:
+      {
+        type =  Cubits.CubitPassify;
+        break;
+      }
+      case CUBIT_TYPES.Poisoned:
+      {
+        type =  Cubits.CubitPoisoned;
+        break;
+      }
+      case CUBIT_TYPES.Sacrifice:
+      {
+        type =  Cubits.CubitSacrifice;
+        break;
+      }
+      case CUBIT_TYPES.StickyFeet:
+      {
+        type =  Cubits.CubitStickyFeet;
+        break;
+      }
+      case CUBIT_TYPES.RemovalStrong:
+      {
+        type =  Cubits.CubitRemovalStrong;
+        break;
+      }
+      case CUBIT_TYPES.RemovalWeak:
+      {
+        type =  Cubits.CubitRemovalWeak;
+        break;
+      }
       default:
-        return Cubits.CubitText;
+        break;
     }
+
+    return React.createElement(type, params);
   }
 
   getGridParams(width, height) {
@@ -217,9 +352,9 @@ class GameTable extends React.Component {
     for (let i = 0; i < cubits.length; i++) {
       const cubit = cubits[i];
 
-      let team =  this.teamColors[cubit.ownership];
-      let type = this.getCubitFromType(cubit);
-      let element = React.createElement(type, { name: cubit.name, value: cubit.name, team: team, color: null });
+      //let team =  this.teamColors[cubit.ownership];
+      //let type = this.getCubitFromType(cubit);
+      let element = this.getCubitElement(cubit); // React.createElement(type, { name: cubit.name, team: team, color: null });
       let token = React.createElement(Token, {key: cubit.id, x: 0, y: i}, element);
       tokens.push(token);
     }
@@ -283,9 +418,9 @@ class GameTable extends React.Component {
       for (let i = 0; i < cubits.length; i++) {
         const cubit = cubits[i];
 
-        let team =  this.teamColors[cubit.ownership];
-        let type = this.getCubitFromType(cubit);
-        let element = React.createElement(type, { name: cubit.name, value: cubit.name, team: team, color: null });
+        // let team =  this.teamColors[cubit.ownership];
+        // let type = this.getCubitFromType(cubit);
+        let element = this.getCubitElement(cubit); // React.createElement(type, { name: cubit.name, team: team, color: null });
         let token = React.createElement(Token, {key: cubit.id, x: 0, y: i}, element);
         tokens.push(token);
       }
@@ -359,9 +494,9 @@ class GameTable extends React.Component {
         }
       }
 
-      let team =  this.teamColors[cubit.ownership];
-      let type = this.getCubitFromType(cubit);
-      let element = React.createElement(type, { name: cubit.name, value: cubit.name, team: team, color: null });
+      // let team =  this.teamColors[cubit.ownership];
+      // let type = this.getCubitFromType(cubit);
+      let element = this.getCubitElement(cubit); // let element = React.createElement(type, { name: cubit.name, team: team, color: null });
       let token = React.createElement(Token, {key: cubit.id, x: 0, y: i}, element);
       tokens.push(token);
     }
@@ -425,9 +560,9 @@ class GameTable extends React.Component {
     for (let i = 0; i < cubits.length; i++) {
       const item = cubits[i];
 
-      let team =  this.teamColors[item.ownership];
-      let type = this.getCubitFromType(item);
-      let element =  React.createElement(type, { name: item.name, value: item.name, team: team, color: '' });
+      // let team =  this.teamColors[item.ownership];
+      // let type = this.getCubitFromType(item);
+      let element = this.getCubitElement(item); // let element =  React.createElement(type, { name: item.name,  team: team, color: '' });
       let token = React.createElement(Token, {key: item.id, x: item.position.x, y: item.position.y}, element);
       tokens.push(token);
     }
@@ -469,50 +604,51 @@ class GameTable extends React.Component {
   }
 
   onBoardClickGrid = ({x, y}) => {
-    if(this.props.isActive) {
+    if(!this.props.isActive) {
+      return;
+    }
 
-      if(this.props.ctx.phase === GAME_PHASES.Play && this.state.selection != null) {
-        let targets = this.state.targets.filter(_ => _.location === LOCATIONS.Board);
-        for (const target of targets) {
-          const pos = target.position;
-          if(pos.x === x && pos.y === y) {
-            this.props.moves.attachCubitToBroad(this.state.selection.id, x, y);
-            this.resetState();
-          }
+    if(this.props.ctx.phase === GAME_PHASES.Play && this.state.selection != null) {
+      let targets = this.state.targets.filter(_ => _.location === LOCATIONS.Board);
+      for (const target of targets) {
+        const pos = target.position;
+        if(pos.x === x && pos.y === y) {
+          this.props.moves.attachCubitToBroad(this.state.selection.id, x, y);
+          this.resetState();
         }
-      } else if(this.props.ctx.phase === GAME_PHASES.Move) {
-        if(this.state.selection != null) {
-          let movements = this.state.movements;
-          for (const move of movements) {
-            if(move.x === x && move.y === y) {
-              if(move.action === MOVEMENT_ACTIONS.Passive) {
-                this.props.moves.movePassive(this.state.selection.id, x, y);
-                break;
-              } else if(move.action === MOVEMENT_ACTIONS.Capture) {
-                this.props.moves.moveCapture(this.state.selection.id, move.unit);
-                break;
-              } else if(move.action === MOVEMENT_ACTIONS.Swap) {
-                this.props.moves.moveSwap(this.state.selection.id, move.unit);
-                break;
-              } else if(move.action === MOVEMENT_ACTIONS.Castle) {
-                this.props.moves.moveCastle(this.state.selection.id, move.unit);
-                break;
-              } else {
-                alert("Move", `${x},${y}`);
-              }
+      }
+    } else if(this.props.ctx.phase === GAME_PHASES.Move) {
+      if(this.state.selection != null) {
+        let movements = this.state.movements;
+        for (const move of movements) {
+          if(move.x === x && move.y === y) {
+            if(move.action === MOVEMENT_ACTIONS.Passive) {
+              this.props.moves.movePassive(this.state.selection.id, x, y);
+              break;
+            } else if(move.action === MOVEMENT_ACTIONS.Capture) {
+              this.props.moves.moveCapture(this.state.selection.id, move.unit);
+              break;
+            } else if(move.action === MOVEMENT_ACTIONS.Swap) {
+              this.props.moves.moveSwap(this.state.selection.id, move.unit);
+              break;
+            } else if(move.action === MOVEMENT_ACTIONS.Castle) {
+              this.props.moves.moveCastle(this.state.selection.id, move.unit);
+              break;
+            } else {
+              alert("Move", `${x},${y}`);
             }
           }
-
-          this.resetState();
-        } else {
-          let unit = this.props.G.units
-            .filter(_ => _.ownership === this.props.playerID)
-            .filter(_ => _.location === LOCATIONS.Board)
-            .find(_ => _.position.x === x && _.position.y === y);
-            
-          let movements = unit == null ? [] : getMovements(this.props.G, this.props.ctx, unit);
-          this.setState({ selection: unit, movements: movements });
         }
+
+        this.resetState();
+      } else {
+        let unit = this.props.G.units
+          .filter(_ => _.ownership === this.props.playerID)
+          .filter(_ => _.location === LOCATIONS.Board)
+          .find(_ => _.position.x === x && _.position.y === y);
+          
+        let movements = unit == null ? [] : getMovements(this.props.G, this.props.ctx, unit);
+        this.setState({ selection: unit, movements: movements });
       }
     }
   }
@@ -577,9 +713,9 @@ class GameTable extends React.Component {
 
         if(cubit.location === LOCATIONS.Unit)
         {
-          let team = this.teamColors[cubit.controller];
-          let cubitType = this.getCubitFromType(cubit);
-          let element = React.createElement(cubitType, { name: cubit.name, value: cubit.name, team: team, color: '' });
+          // let team = this.teamColors[cubit.controller];
+          // let cubitType = this.getCubitFromType(cubit);
+          let element = this.getCubitElement(cubit); // let element = React.createElement(cubitType, { name: cubit.name, team: team, color: '' });
           let token = React.createElement(Token, {key: cubit.id, x: offset, y: y}, element);
           tokens.push(token);
         }

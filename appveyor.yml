@@ -1,0 +1,54 @@
+version: 1.0.{build}
+image: Visual Studio 2017
+environment:
+  nodejs_version: 10
+install:
+- ps: >-
+    # Get the latest stable version of Node.js or io.js
+
+    Install-Product node $env:nodejs_version
+
+    # install modules
+
+    npm --loglevel=error install
+build_script:
+- ps: >-
+    npm run build-client
+
+    npm run build-server
+artifacts:
+- path: /build
+  name: build
+- path: /host
+  name: host
+- path: /package.json
+  name: package
+deploy:
+- provider: FTP
+  host: lusus.ftp.evennode.com
+  protocol: ftp
+  username: lusus_235ea
+  password:
+    secure: KVJS0NMoXCyfzFeslXq0Lg==
+  folder: build
+  application: build
+  beta: true
+  debug: false
+- provider: FTP
+  host: lusus.ftp.evennode.com
+  protocol: ftp
+  username: lusus_235ea
+  password:
+    secure: KVJS0NMoXCyfzFeslXq0Lg==
+  folder: host
+  application: host
+  beta: true
+  debug: false
+- provider: FTP
+  host: lusus.ftp.evennode.com
+  protocol: ftp
+  username: lusus_235ea
+  password:
+    secure: KVJS0NMoXCyfzFeslXq0Lg==
+  artifact: package
+  beta: true

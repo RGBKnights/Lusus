@@ -18,13 +18,14 @@ const uuidv4 = require('uuid/v4');
 export class GameLogic {
 
   getCubits(p) {
-    const cubits = [          
+    const cubits = [
       new Cubits.OrthogonalCubit(p),
       new Cubits.DiagonalCubit(p),
       new Cubits.CardinalCubit(p),
       new Cubits.JumpCubit(p),
       new Cubits.SideStepCubit(p),
       new Cubits.SwapCubit(p),
+      new Cubits.JumperCubit(p),
       new Cubits.DrawNegOneCubit(p),
       new Cubits.DrawPlusOneCubit(p),
       new Cubits.DoubleActionCubit(p),
@@ -38,7 +39,7 @@ export class GameLogic {
       new Cubits.ImmunityCubit(p),
       new Cubits.WeakRemovalCubit(p),
       new Cubits.StrongRemovalCubit(p),
-      new Cubits.BlinkDodgeCubit(p),
+      new Cubits.BlinkDodgeCubit(p), 
       new Cubits.CostofPowerCubit(p),
       new Cubits.ForgottenPastCubit(p),
       new Cubits.HeirloomPastCubit(p),
@@ -52,17 +53,17 @@ export class GameLogic {
       new Cubits.SacrificeCubit(p),
       new Cubits.ThunderDomeCubit(p),
       new Cubits.DarkMagicCubit(p),
+      new Cubits.BacktoBasicsCubit(p),
+      new Cubits.RockThrowCubit(p),
+      new Cubits.ArenaRockCubit(p),
+      new Cubits.TimebombCubit(p),
       /*
       // ####################################
       new Cubits.PoofCubit(p),
-      new Cubits.RockThrowCubit(p),
       new Cubits.TauntCubit(p),
-      new Cubits.TimebombCubit(p),
       new Cubits.AncientRevivalCubit(p),
       new Cubits.ArenaHoleCubit(p),
-      new Cubits.ArenaRockCubit(p),
       new Cubits.ArenaIceCubit(p),
-      new Cubits.JumperCubit(p),
       */
     ];
 
@@ -78,9 +79,6 @@ export class GameLogic {
     g.players = {
       "0": {},
       "1": {},
-    };
-    g.effects = {
-      basic: false,
     };
   }
 
@@ -196,6 +194,12 @@ export class GameLogic {
         g.cubits = g.cubits.filter(_ => cubit.children.includes(_.id) === false);
         break;
       }
+      case CUBIT_TYPES.ArenaRock: 
+      {
+        // Remove Children
+        g.cubits = g.cubits.filter(_ => cubit.children.includes(_.id) === false);
+        break;
+      }
       default:
         break;
     }
@@ -285,22 +289,12 @@ export class GameLogic {
   }
 
   attachToLocation(g, ctx, cubit) {
-    // TODO: have an option to call out Activation upon Attachment
     switch (cubit.type) {
       case CUBIT_TYPES.KingOfHill:
       {
-        // Add board marker
-        let options = {
-          '1': {x: 3, y: 3},
-          '2': {x: 3, y: 4},
-          '3': {x: 4, y: 3},
-          '4': {x: 4, y: 4},
-        };
         const die = ctx.random.D4();
-        let item = new Cubits.KingOfHillCubit(cubit.ownership);
-        item.location = LOCATIONS.Board;
-        item.position = options[die];
-        item.obstruction = false;
+        let item = new Cubits.KingsFlagCubit(cubit.ownership);
+        item.position = item.data.positions[die];
         cubit.children.push(item.id);
         g.cubits.push(item);
         break;
@@ -312,7 +306,53 @@ export class GameLogic {
       }
       case CUBIT_TYPES.Reckless:
       {
-        let dice = ctx.random.D6(2);
+        let dice = ctx.random.D4(4);
+        let amount = 0;
+        for (const _ of dice) { amount += _; }
+        cubit.data.amount = amount;
+        break;
+      }
+      case CUBIT_TYPES.RockThrow:
+      {
+        let positions = this.getAdjacentPositions(g, ctx, cubit.position);
+        positions = ctx.random.Shuffle(positions);
+
+        let amount = cubit.data.amount ? cubit.data.amount : 0;
+        for (let i = 0; i < amount; i++) {
+          let position = positions.pop();
+          let item = new Cubits.RockCubit(cubit.ownership);
+          item.position = position;
+          g.cubits.push(item);
+        }
+
+        this.killCubit(g, ctx, cubit);
+
+        break;
+      }
+      case CUBIT_TYPES.ArenaRock:
+      {
+        let units = g.units.filter(_ => _.location === LOCATIONS.Board).map(_ => _.position);
+        let cubits = g.cubits.filter(_ => _.location === LOCATIONS.Board).filter(_ => _.obstruction === true).map(_ => _.position);
+        let obstructions = [].concat(units).concat(cubits);
+
+        let amount = cubit.data.amount ? cubit.data.amount : 0;
+        for (let i = 0; i < amount; i++) {
+          let x = (ctx.random.D8() - 1);
+          let y = (ctx.random.D8() - 1);
+
+          if(this.inObstructions(obstructions, x, y) === false) {
+            let item = new Cubits.RockCubit(cubit.ownership);
+            item.position = {x,y};
+            cubit.children.push(item.id);
+            g.cubits.push(item);
+          }
+        }
+
+        break;
+      }
+      case CUBIT_TYPES.Timebomb:
+      {
+        let dice = ctx.random.D4();
         cubit.data.amount = dice;
         break;
       }
@@ -486,6 +526,31 @@ export class GameLogic {
           ctx.events.endGame(p);
           return;
         }
+      } else if(cubit.type === CUBIT_TYPES.Timebomb && cubit.location === LOCATIONS.Board) {
+        cubit.data.amount--;
+
+        if(cubit.data.amount === 0) {
+          let positions = this.getAdjacentPositions(g, ctx, cubit.position, false);
+          for (const pos of positions) {
+            let units = g.units
+              .filter(_ => _.location === LOCATIONS.Board)
+              .filter(_ => _.position.x === pos.x && _.position.y === pos.y);
+
+            for (const unit of units) {
+              this.killUnit(g, ctx, unit);
+            }
+
+            let cubits = g.cubits
+              .filter(_ => _.location === LOCATIONS.Board)
+              .filter(_ => _.position.x === pos.x && _.position.y === pos.y);
+
+            for (const cubit of cubits) {
+              this.killCubit(g, ctx, cubit);
+            }
+          }
+        
+          this.killCubit(g, ctx, cubit);
+        }
       }
     }
   }
@@ -543,8 +608,8 @@ export class GameLogic {
     switch (unit.type) {
       case UNIT_TYPES.Pawn:
       {
-        // Remove DoubleStep
-        unit.movement = unit.movement.filter(_ => _.temporary === true); 
+        // Remove temporary movement
+        unit.movement = unit.movement.filter(_ => _.temporary !== true);
         break;
       }
       case UNIT_TYPES.King:
@@ -561,7 +626,7 @@ export class GameLogic {
         }
 
         // Remove Castle
-        unit.movement = unit.movement.filter(_ => _.temporary === true); 
+        unit.movement = unit.movement.filter(_ => _.temporary !== true);
         break; 
       }
       default:
@@ -635,22 +700,37 @@ export class GameLogic {
 
   // PROPERTIES
 
+  inObstructions(obstructions, x, y) {
+    for (const pos of obstructions) {
+      if(pos.x === x && pos.y === y) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   getAdjacentPositions(g, ctx, orgin, unoccupied = true) {
     let units = g.units.filter(_ => _.location === LOCATIONS.Board).map(_ => _.position);
-    let cubits = g.units.filter(_ => _.location === LOCATIONS.Board).filter(_ => _.obstruction === true).map(_ => _.position);
+    let cubits = g.cubits.filter(_ => _.location === LOCATIONS.Board).filter(_ => _.obstruction === true).map(_ => _.position);
+    let obstructions = [].concat(units).concat(cubits);
 
     let positions = [];
-    for (let x = (orgin.x - 1); x < (orgin.x + 1); x++) {
-      for (let y = (orgin.y - 1); y < (orgin.y + 1); y++) {
-        if(x > 0 && x < 8 && y > 0 && y < 8 ) {
-          let pos = {x,y};
-          if(unoccupied) {
-            if(units.includes(pos) === false && cubits.includes(pos) === false) {
-              positions.push(pos);
-            }
-          } else {
+    for (let x = (orgin.x - 1); x <= (orgin.x + 1); x++) {
+      for (let y = (orgin.y - 1); y <= (orgin.y + 1); y++) {
+        if(x === orgin.x && y === orgin.y) {
+          continue;
+        }
+        if(x < 0 || x > 7 || y < 0 || y > 7) {
+          continue;
+        }
+        
+        let pos = {x,y};
+        if(unoccupied) {
+          if(this.inObstructions(obstructions, x, y) === false) {
             positions.push(pos);
           }
+        } else {
+          positions.push(pos);
         }
       }
     }

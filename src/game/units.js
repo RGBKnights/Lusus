@@ -77,6 +77,7 @@ export class KingUnit extends Unit {
       this.movement.push({
         type: MOVEMENT_TYPES.Castle,
         constraint: MOVEMENT_CONSTRAINTS.Passive,
+        distance: 1,
         temporary: true,
       });
   }
@@ -152,12 +153,14 @@ export class KnightUnit extends Unit {
         type: MOVEMENT_TYPES.Jump,
         constraint: MOVEMENT_CONSTRAINTS.Aggressive,
         steps: [2,1],
+        distance: 1,
         jump: true
       });
       this.movement.push({
         type: MOVEMENT_TYPES.Jump,
         constraint: MOVEMENT_CONSTRAINTS.Passive,
         steps: [2,1],
+        distance: 1,
         jump: true
       });
   }
