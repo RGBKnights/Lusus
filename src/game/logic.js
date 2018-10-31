@@ -74,6 +74,7 @@ export class GameLogic {
 
   initialize(g, ctx) {
     g.next = uuidv4();
+    g.log = [];
     g.units = [];
     g.cubits = [];
     g.players = {
@@ -151,6 +152,16 @@ export class GameLogic {
 
   // HELPERS
 
+  addEvent(g, ctx, event, description = '') {
+    g.log.push({
+      turn: ctx.turn,
+      player_id: ctx.currentPlayer,
+      player_side: ctx.currentPlayer === "0" ? "White" : "Black",
+      event: event,
+      description: description
+    });
+  }
+
   swapController(obj) {
     obj.controller = obj.controller === "0" ? "1" : "0";
   }
@@ -172,6 +183,8 @@ export class GameLogic {
 
     let draws = this.getDraws(g, ctx, player) + offset;
 
+    this.addEvent(g, ctx, 'Draw', `New hand ${draws} with ${bag.length} left in bag`);
+
     if(draws > bag.length) {
       return false;
     }
@@ -186,6 +199,8 @@ export class GameLogic {
   // ACTIONS
 
   killCubit(g, ctx, cubit) {
+    this.addEvent(g, ctx, 'Killed Cubit', cubit.name);
+
     // Cleanup
     switch (cubit.type) {
       case CUBIT_TYPES.KingOfHill:
@@ -215,6 +230,8 @@ export class GameLogic {
   }
 
   killUnit(g, ctx, unit) {
+    this.addEvent(g, ctx, 'Killed Unit', unit.name);
+
     // Move unit to Afterlife
     unit.location = LOCATIONS.Afterlife;
 
@@ -226,6 +243,8 @@ export class GameLogic {
   }
 
   activateCubit(g, ctx, cubit) {
+    this.addEvent(g, ctx, 'Activate Cubit', cubit.name);
+
     switch (cubit.type) {
       case CUBIT_TYPES.Resourceful:
       {
@@ -244,6 +263,8 @@ export class GameLogic {
 
 
   targetCubit(g, ctx, source, destination) {
+    this.addEvent(g, ctx, 'Target Cubit', `${source.name} @ ${destination.name}`);
+
     switch (source.type) {
       case CUBIT_TYPES.RemovalWeak:
       case CUBIT_TYPES.RemovalStrong:
@@ -258,6 +279,8 @@ export class GameLogic {
   }
 
   targetPlayer(g, ctx, cubit, player) {
+    this.addEvent(g, ctx, 'Target Player', `${cubit.name} @ ${player}`);
+
     switch (cubit.type) {
       case CUBIT_TYPES.ForgottenPast:
       {
@@ -289,6 +312,20 @@ export class GameLogic {
   }
 
   attachToLocation(g, ctx, cubit) {
+    if(cubit.location === LOCATIONS.Board) {
+      this.addEvent(g, ctx, 'Attach Location', `Attached ${cubit.name} to board @ (${cubit.position.x}, ${cubit.position.y})`);
+    } else if(cubit.location === LOCATIONS.Unit) {
+      let unit = g.units.find(_ => _.id === cubit.unit);
+      this.addEvent(g, ctx, 'Attach Location', `Attached ${cubit.name} to ${unit.name} @ (${unit.position.x}, ${unit.position.y})`);
+    } else if(cubit.location === LOCATIONS.Arena) {
+      this.addEvent(g, ctx, 'Attach Location', `Attached ${cubit.name} to arena`);
+    } else if(cubit.location === LOCATIONS.Player) {
+      let player = cubit.controller === "0" ? "White" : "Black";
+      this.addEvent(g, ctx, 'Attach Location', `Attached ${cubit.name} to player (${player})`);
+    } else {
+      this.addEvent(g, ctx, 'Attach Location', `Attached ${cubit.name}`);
+    }
+
     switch (cubit.type) {
       case CUBIT_TYPES.KingOfHill:
       {
@@ -602,7 +639,9 @@ export class GameLogic {
 
   // EVENTS
 
-  onMove(g, ctx, unit, origin = null) {    
+  onMove(g, ctx, unit, origin = null) { 
+    this.addEvent(g, ctx, 'Moved Unit', `${unit.name} from (${origin.x},${origin.x}) to (${unit.position.x},${unit.position.y})`);
+
     unit.moves++;
 
     switch (unit.type) {
@@ -695,7 +734,7 @@ export class GameLogic {
   }
 
   onCheck(g, ctx, source, destination) {
-    // 
+    // Do nothing...
   }
 
   // PROPERTIES

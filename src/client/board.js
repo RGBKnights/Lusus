@@ -24,9 +24,8 @@ import {
 import * as Cubits from './cubits';
 import * as Units from './units';
 
-import {
-  Help
-} from './help'
+import { Help } from './help'
+import { EventLog } from './events'
 
 import { 
   GAME_FLOW,
@@ -992,6 +991,7 @@ class GameTable extends React.Component {
             { this.getNext() }
           </Nav>
           <Nav className="p-1 list-inline ml-auto">
+            <EventLog log={this.props.G.log} />
             <Help playerID={this.props.playerID} />
             { this.getShare() }
             { this.getPlayerConnection() }

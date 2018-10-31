@@ -2,20 +2,7 @@
 
 ### vNext Steps
 
-TALKS:
 
-Event Log
--> a log that can be looked up
--> a serise of events for popups
-
-Priority of OnCaptured() 
--> not just destination then source 
--> but internally to destination/source
-
-FEATURES:
-
-1. Change Classifications[] to Keywords[] and add some for Movement and Traps
-2. More Cubits: ...
 
 ### Components of Framework
 
