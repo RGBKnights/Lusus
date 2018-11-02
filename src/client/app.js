@@ -12,7 +12,7 @@ let App = null;
 const parsed = queryString.parse(window.location.search);
 if(parsed.m === undefined) {
   
-  App = Landing
+  App = Landing;
 
 } else {
   const matchId = parsed.m;

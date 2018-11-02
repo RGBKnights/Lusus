@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import { CUBIT_TYPES } from '../game/common';
+
 export class CubitLogo extends React.Component {
   static propTypes = {
     team: PropTypes.string,
@@ -738,4 +740,175 @@ export class CubitRemovalWeak extends React.Component {
       </g>
     );
   }
+}
+
+export function getCubitElement(cubit, isPlayer) {
+  let teamColors = {'0': 'w', '1': 'b'};
+  let team =  teamColors[cubit.ownership];
+
+  if(cubit.hidden === true && isPlayer) {
+    return React.createElement(CubitLogo, { name: "Hidden", team: team });
+  }
+
+  let type = CubitText;
+  let params = { name: cubit.name, team: team };
+
+  switch (cubit.type) {
+    case CUBIT_TYPES.MovementOrthogonal:
+    {
+      type =  CubitOrthogonal;
+      break;
+    }
+    case CUBIT_TYPES.MovementDiagonal:
+    {
+      type =  CubitDiagonal;
+      break;
+    }
+    case CUBIT_TYPES.MovementCardinal:
+    {
+      type =  CubitCardinal;
+      break;
+    }
+    case CUBIT_TYPES.MovementJump:
+    {
+      type =  CubitPattern;
+      break;
+    }
+    case CUBIT_TYPES.MovementSideStep:
+    {
+      type =  CubitSidestep;
+      break;
+    }
+    case CUBIT_TYPES.MovementSwap:
+    {
+      type =  CubitSwap;
+      break;
+    }
+    case CUBIT_TYPES.DrawPlusOne:
+    {
+      type =  CubitDrawPlus;
+      break;
+    }
+    case CUBIT_TYPES.DrawNegOne:
+    {
+      type =  CubitDrawMinus;
+      break;
+    }
+    case CUBIT_TYPES.DoubleAction:
+    {
+      type =  CubitDoubleAction;
+      break;
+    }
+    case CUBIT_TYPES.Condemn:
+    {
+      type =  CubitCondemn;
+      break;
+    }
+    case CUBIT_TYPES.KingOfHill:
+    {
+      type =  CubitKingOfHill;
+      break;
+    }
+    case CUBIT_TYPES.KingsFlag:
+    {
+      type =  CubitKingOfHill;
+      break;
+    }
+    case CUBIT_TYPES.Timebomb:
+    {
+      type =  CubitTimebomb;
+      params.value = cubit.data.amount;
+      break;
+    }
+    case CUBIT_TYPES.Reckless:
+    {
+      type =  CubitReckless;
+      params.value = cubit.data.amount;
+      break;
+    }
+    case CUBIT_TYPES.BlinkDodge:
+    {
+      type =  CubitBlinkDodge;
+      break;
+    }
+    case CUBIT_TYPES.CostofPower:
+    {
+      type =  CubitCostofPower;
+      break;
+    }
+    case CUBIT_TYPES.Encumber:
+    {
+      type =  CubitEncumber;
+      break;
+    }
+    case CUBIT_TYPES.Enrage:
+    {
+      type =  CubitEnrage;
+      break;
+    }
+    case CUBIT_TYPES.ForgottenPast:
+    {
+      type =  CubitForgottenPast;
+      break;
+    }
+    case CUBIT_TYPES.Heirloom:
+    {
+      type =  CubitHeirloom;
+      break;
+    }
+    case CUBIT_TYPES.Immunity:
+    {
+      type =  CubitImmunity;
+      break;
+    }
+    case CUBIT_TYPES.Knowledge:
+    {
+      type =  CubitKnowledge;
+      break;
+    }
+    case CUBIT_TYPES.Looter:
+    {
+      type =  CubitLooter;
+      break;
+    }
+    case CUBIT_TYPES.Nab:
+    {
+      type =  CubitNab;
+      break;
+    }
+    case CUBIT_TYPES.Passify:
+    {
+      type =  CubitPassify;
+      break;
+    }
+    case CUBIT_TYPES.Poisoned:
+    {
+      type =  CubitPoisoned;
+      break;
+    }
+    case CUBIT_TYPES.Sacrifice:
+    {
+      type =  CubitSacrifice;
+      break;
+    }
+    case CUBIT_TYPES.StickyFeet:
+    {
+      type =  CubitStickyFeet;
+      break;
+    }
+    case CUBIT_TYPES.RemovalStrong:
+    {
+      type =  CubitRemovalStrong;
+      break;
+    }
+    case CUBIT_TYPES.RemovalWeak:
+    {
+      type =  CubitRemovalWeak;
+      break;
+    }
+    default:
+      break;
+  }
+
+  return React.createElement(type, params);
 }

@@ -131,6 +131,8 @@ export class GameLogic {
 
       let cubits = this.getCubits(p);
 
+      // Filter by debug ~ cubits
+
       for (let i = 0; i < cubits.length; i++) {
         const cubit = cubits[i];
         cubit.location = LOCATIONS.Bag;
@@ -624,7 +626,7 @@ export class GameLogic {
 
     // End turn first and end phase resetting to 'Play'
     ctx.events.endTurn();
-    ctx.events.endPhase();
+    ctx.events.endPhase('Play');
   }
 
   draw(g, ctx) {

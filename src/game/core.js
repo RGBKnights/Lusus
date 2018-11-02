@@ -15,7 +15,6 @@ let logic = new GameLogic();
 
 const GameCore = Game({
     name: 'Lusus',
-    // seed: 1010195894359804352,
     setup: (ctx) => {
       let data = {};
       logic.initialize(data, ctx);
