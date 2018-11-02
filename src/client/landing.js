@@ -6,33 +6,52 @@ import {
   Row, Col,
   Navbar, NavbarBrand, Nav,
   Button,
-  Input
+  Form, FormGroup, Input 
 } from 'reactstrap';
 
 const uuidv4 = require('uuid/v4');
 
-class Landing extends React.Component {
+class LandingPage extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {code: ''};
+    this.state = {player: '', code: ''};
 
-    this.onInputChange = this.onInputChange.bind(this);
+    this.onCodeChange = this.onCodeChange.bind(this);
+    this.onPlayerChange = this.onPlayerChange.bind(this);
     this.onNewMatch = this.onNewMatch.bind(this);
     this.onJoinMatch = this.onJoinMatch.bind(this);
+    this.onViewMatch = this.onViewMatch.bind(this);
   }
 
-  onInputChange(event) {
+  onCodeChange(event) {
     this.setState({code: event.target.value});
+  }
+
+  onPlayerChange(event) {
+    this.setState({player: event.target.value});
   }
   
   onNewMatch() {
-    window.location = window.location.origin + "/?p=0&m=" + uuidv4();
+    if(this.state.player) {
+      window.location = window.location.origin + "/match/?p=" +  this.state.player + "&m=" + uuidv4();
+    }
   }
 
   onJoinMatch() {
     if(this.state.code) {
-      window.location = window.location.origin + "/?p=1&m=" + this.state.code;
+      let code = this.state.code.trim();
+      let player = code.substring(0, 1);
+      let match = code.substring(2);
+      window.location = window.location.origin + "/match/?p=" + player + "&m=" + match;
+    }
+  }
+
+  onViewMatch() {
+    if(this.state.code) {
+      let code = this.state.code.trim();
+      let match = code.substring(2);
+      window.location = window.location.origin + "/match/?m=" + match;
     }
   }
 
@@ -44,9 +63,7 @@ class Landing extends React.Component {
             <img className="p-1"  height="32" src="/favicon.ico" alt="Logo"></img>
             <strong className="p-1">Lusus</strong> <small>Tactical Chess</small>
           </NavbarBrand>
-          <Nav>
-           
-          </Nav>
+          <Nav></Nav>
         </Navbar>
         <br />
         <Row>
@@ -91,8 +108,18 @@ class Landing extends React.Component {
               </div>
               <ul className="list-group list-group-flush ">
                 <li className="list-group-item  text-center">
-                  <p>Start a new match as player 1 (White)</p>
-                  <Button onClick={this.onNewMatch} color="primary">Start Match</Button>
+                  <Form>
+                    <FormGroup>
+                      <Input type="select" name="select" id="newPlayer" value={this.state.player} onChange={this.onPlayerChange}>
+                        <option>...</option>
+                        <option value="0">White</option>
+                        <option value="1">Black</option>
+                      </Input>
+                    </FormGroup>
+                    <FormGroup>
+                      <Button onClick={this.onNewMatch} color="success">Start Match</Button>
+                    </FormGroup>
+                  </Form>
                 </li>
               </ul>
             </div>
@@ -103,10 +130,16 @@ class Landing extends React.Component {
               </div>
               <ul className="list-group list-group-flush ">
                 <li className="list-group-item text-center">
-                  <p>Join a match as player 2 (Black)</p>
-                  <Input type="text" name="code" id="matchCode" placeholder="Code" value={this.state.code} onChange={this.onInputChange} />
-                  <br />
-                  <Button onClick={this.onJoinMatch} color="primary">Join Match</Button>
+                  <Form>
+                    <FormGroup>
+                      <Input type="text" name="code" id="matchCode" placeholder="Code" value={this.state.code} onChange={this.onCodeChange} />
+                    </FormGroup>
+                    <FormGroup>
+                      <Button onClick={this.onJoinMatch} color="primary">Join Match</Button> 
+                      &nbsp;
+                      <Button onClick={this.onViewMatch} color="info">View Match</Button>
+                    </FormGroup>
+                  </Form>
                 </li>
               </ul>
             </div>
@@ -117,4 +150,4 @@ class Landing extends React.Component {
   }
 }
 
-export default Landing;
+export default LandingPage;

@@ -12,7 +12,8 @@ import {
   // Row, Col,
   Navbar, NavbarBrand, Nav, NavItem,
   Button,
-  Badge
+  Badge,
+  Form, FormGroup, Label, Input 
 } from 'reactstrap';
 
 // UI
@@ -21,11 +22,11 @@ import {
   Grid
 } from 'boardgame.io/ui';
 
-import { getCubitElement } from './cubits';
-import { getUnitElement } from './units';
+import { getCubitElement } from './svg/cubits';
+import { getUnitElement } from './svg/units';
 
-import { Help } from './help'
-import { EventLog } from './events'
+import { Help } from './dialogs/help'
+import { EventLog } from './dialogs/events'
 
 import { 
   GAME_PHASES,
@@ -66,24 +67,11 @@ class GameTable extends React.Component {
     this.onBoardClickGrid = this.onBoardClickGrid.bind(this);
     this.onCommonClickGrid = this.onCommonClickGrid.bind(this);
     this.onRoyalsClickGrid = this.onRoyalsClickGrid.bind(this);
+    this.onReady = this.onReady.bind(this);
     this.onNext = this.onNext.bind(this);
     this.onShare = this.onShare.bind(this);
     this.onNewGame = this.onNewGame.bind(this);
     this.onRematch = this.onRematch.bind(this);
-    
-    /*
-    this.teamColors = {'0': 'w', '1': 'b'};
-
-    this.unitColors = {};
-    this.unitColors[UNIT_FILE.A] = '#FF5733';
-    this.unitColors[UNIT_FILE.B] = '#F9FF33';
-    this.unitColors[UNIT_FILE.C] = '#008000';
-    this.unitColors[UNIT_FILE.D] = '#33FFA8';
-    this.unitColors[UNIT_FILE.E] = '#33F6FF';
-    this.unitColors[UNIT_FILE.F] = '#3346FF';
-    this.unitColors[UNIT_FILE.G] = '#800080';
-    this.unitColors[UNIT_FILE.H] = '#FF0000';
-    */
 
     this.unitsMap = {};
     this.unitsMap[UNIT_TYPES.Common] = {};
@@ -720,7 +708,7 @@ class GameTable extends React.Component {
   }
 
   getShare() {
-    if(this.props.playerID === "0") {
+    if(this.props.playerID) {
       return (
         <NavItem className="list-inline-item">
           <Button size="sm" color="primary" title="Share" onClick={this.onShare}><FaShareAlt className="icon-inline" /></Button>
@@ -729,11 +717,17 @@ class GameTable extends React.Component {
     }
   }
 
+  onReady() {
+    let bag = [];
+    this.props.moves.customizeBag(bag);
+  }
+
   onShare() {
     let code = this.props.gameID;
+    let opponent = this.props.playerID === "0" ? "1" : "0";
     
     const el = document.createElement('textarea');
-    el.value = code;
+    el.value = opponent + "-" + code;
     document.body.appendChild(el);
     el.select();
     document.execCommand('copy');
@@ -768,7 +762,6 @@ class GameTable extends React.Component {
   }
 
   onRematch() {
-    console.log("onRematch");
     if(this.props.playerID) {
       let opponent = this.props.playerID === "0" ? "1" : "0";
       let url = window.location.origin + "/?p=" + opponent + "&m=" + this.props.G.next;
@@ -776,137 +769,177 @@ class GameTable extends React.Component {
     }
   }
 
-  getHeaderActive() {
-    return (
-      <Container fluid className="p-0">
-        <Navbar color="light" expand="md" className="rounded-bottom p-0">
-          <NavbarBrand className="p-0" href="/">
-            <img className="p-1"  height="32" src="/favicon.ico" alt="Logo"></img>
-            <strong className="p-1 text-white">Lusus</strong>
-          </NavbarBrand>
-          <Nav className="p-1 list-inline">
-            { this.getSwitchPlayers() }
-            { this.getPlayer() }
-            { this.getPlayerStats() }
-            { this.getPhase() }
-            { this.getNext() }
-          </Nav>
-          <Nav className="p-1 list-inline ml-auto">
-            <EventLog log={this.props.G.log} />
-            <Help playerID={this.props.playerID} />
-            { this.getShare() }
-            { this.getPlayerConnection() }
-          </Nav>
-        </Navbar>
-      </Container>
-    );
-  }
-
-  getHeaderGameover() {
-    let playerWon = (Number(this.props.ctx.gameover) + 1);
-
-    return (
-      <Container fluid className="p-0">
-        <Navbar color="light" expand="md" className="rounded-bottom p-0">
-          <NavbarBrand className="p-0">
-            <img className="p-1"  height="32" src="/favicon.ico" alt="Logo"></img>
-            <strong className="p-1">Lusus</strong>
-          </NavbarBrand>
-          <Nav className="p-1 list-inline">
-            { this.getPlayer() }
-            <NavItem className="list-inline-item">
-              <Button size="sm" color="secondary" disabled>Player { playerWon } Won</Button>
-            </NavItem>
-            { this.getNewGame() }
-            { this.getRematch() }
-          </Nav>
-          <Nav className="p-1 list-inline ml-auto">
-            { this.getPlayerConnection() }
-          </Nav>
-        </Navbar>
-      </Container>
-    );
+  getHeader() {
+    if(this.props.ctx.gameover) {
+      let playerWon = (Number(this.props.ctx.gameover) + 1);
+      return (
+        <Container fluid className="p-0">
+          <Navbar color="light" expand="md" className="rounded-bottom p-0">
+            <NavbarBrand className="p-0" href="/">
+              <img className="p-1"  height="32" src="/favicon.ico" alt="Logo"></img>
+              <strong className="p-1 text-white">Lusus</strong>
+            </NavbarBrand>
+            <Nav className="p-1 list-inline">
+              { this.getPlayer() }
+              <NavItem className="list-inline-item">
+                <Button size="sm" color="secondary" disabled>Player { playerWon } Won</Button>
+              </NavItem>
+              { this.getNewGame() }
+              { this.getRematch() }
+            </Nav>
+            <Nav className="p-1 list-inline ml-auto">
+              <EventLog log={this.props.G.log} />
+              <Help playerID={this.props.playerID} />
+              { this.getPlayerConnection() }
+            </Nav>
+          </Navbar>
+        </Container>
+      );
+    } if (this.props.ctx.phase === GAME_PHASES.Customize) {
+      return (
+        <Container fluid className="p-0">
+          <Navbar color="light" expand="md" className="rounded-bottom p-0">
+            <NavbarBrand className="p-0" href="/">
+              <img className="p-1"  height="32" src="/favicon.ico" alt="Logo"></img>
+              <strong className="p-1 text-white">Lusus</strong>
+            </NavbarBrand>
+            <Nav className="p-1 list-inline">
+              { this.getPlayer() }
+              { this.getPhase() }
+            </Nav>
+            <Nav className="p-1 list-inline ml-auto">
+              { this.getPlayerConnection() }
+            </Nav>
+          </Navbar>
+        </Container>
+      );
+    } else {
+      return (
+        <Container fluid className="p-0">
+          <Navbar color="light" expand="md" className="rounded-bottom p-0">
+            <NavbarBrand className="p-0" href="/">
+              <img className="p-1"  height="32" src="/favicon.ico" alt="Logo"></img>
+              <strong className="p-1 text-white">Lusus</strong>
+            </NavbarBrand>
+            <Nav className="p-1 list-inline">
+              { this.getSwitchPlayers() }
+              { this.getPlayer() }
+              { this.getPlayerStats() }
+              { this.getPhase() }
+              { this.getNext() }
+            </Nav>
+            <Nav className="p-1 list-inline ml-auto">
+              <EventLog log={this.props.G.log} />
+              <Help playerID={this.props.playerID} />
+              { this.getShare() }
+              { this.getPlayerConnection() }
+            </Nav>
+          </Navbar>
+        </Container>
+      );
+    } 
   }
 
   getTable() {
-    if(this.state.player === "0") {
+    if (this.props.ctx.phase === GAME_PHASES.Customize) {
       return (
-        <div className="horizontal-warper">
-          <div className="horizontal-section-content">
-            <div className="text-center">
-              <Badge>Royals</Badge>
-            </div>
-            { this.getUnitsField(UNIT_TYPES.Royal) }
-          </div>
-          <div className="horizontal-section-content">
-            <div className="text-center">
-              <Badge>Commons</Badge>
-            </div>
-            { this.getUnitsField(UNIT_TYPES.Common) }
-          </div>
-          <div className="horizontal-section-content">
-            <div className="p-1">
-              { this.getArena() }
-            </div>
-            <div className="horizontal-warper">
-              <div className="horizontal-section-content">
-                { this.getHand() }
-              </div>
-              <div className="horizontal-section-content">
-                { this.getAvatar() }
-              </div>
-            </div>
-          </div>
-          <div className="horizontal-section-content">
-            <div className="text-center">
-              <Badge>Board</Badge>
-            </div>
-            { this.getBoard() }
-          </div>
-        </div>
+        <Container className="p-1">
+          <Form>
+            <FormGroup>
+              <Label for="deck">Select Deck</Label>
+              {/* value={this.state.player} onChange={this.onPlayerChange} */}
+              <Input type="select" name="select" id="deck">
+                <option value="">Default</option>
+              </Input>
+            </FormGroup>
+            <FormGroup>
+            <Button color="success" onClick={this.onReady}>Ready</Button>
+            </FormGroup>
+          </Form>
+        </Container>
       );
-    } else if(this.state.player === "1") {
-      return (
-        <div className="horizontal-warper">
-          <div className="horizontal-section-content">
-            <div className="text-center">
-              <Badge>Board</Badge>
-            </div>
-            { this.getBoard() }
-          </div>
-          <div className="horizontal-section-content">
-            <div className="p-1">
-              { this.getArena() }
-            </div>
-            <div className="horizontal-warper">
-              <div className="horizontal-section-content">
-                { this.getHand() }
+    } else {
+      if(this.state.player === "0") {
+        return (
+          <div className="horizontal-warper">
+            <div className="horizontal-section-content">
+              <div className="text-center">
+                <Badge>Royals</Badge>
               </div>
-              <div className="horizontal-section-content">
-                { this.getAvatar() }
+              { this.getUnitsField(UNIT_TYPES.Royal) }
+            </div>
+            <div className="horizontal-section-content">
+              <div className="text-center">
+                <Badge>Commons</Badge>
+              </div>
+              { this.getUnitsField(UNIT_TYPES.Common) }
+            </div>
+            <div className="horizontal-section-content">
+              <div className="p-1">
+                { this.getArena() }
+              </div>
+              <div className="horizontal-warper">
+                <div className="horizontal-section-content">
+                  { this.getHand() }
+                </div>
+                <div className="horizontal-section-content">
+                  { this.getAvatar() }
+                </div>
               </div>
             </div>
-          </div>
-          <div className="horizontal-section-content">
-            <div className="text-center">
-              <Badge>Royals</Badge>
+            <div className="horizontal-section-content">
+              <div className="text-center">
+                <Badge>Board</Badge>
+              </div>
+              { this.getBoard() }
             </div>
-            { this.getUnitsField(UNIT_TYPES.Royal) }
           </div>
-          <div className="horizontal-section-content">
-            <div className="text-center">
-              <Badge>Commons</Badge>
+        );
+      } else if(this.state.player === "1") {
+        return (
+          <div className="horizontal-warper">
+            <div className="horizontal-section-content">
+              <div className="text-center">
+                <Badge>Board</Badge>
+              </div>
+              { this.getBoard() }
             </div>
-            { this.getUnitsField(UNIT_TYPES.Common) }
+            <div className="horizontal-section-content">
+              <div className="p-1">
+                { this.getArena() }
+              </div>
+              <div className="horizontal-warper">
+                <div className="horizontal-section-content">
+                  { this.getHand() }
+                </div>
+                <div className="horizontal-section-content">
+                  { this.getAvatar() }
+                </div>
+              </div>
+            </div>
+            <div className="horizontal-section-content">
+              <div className="text-center">
+                <Badge>Royals</Badge>
+              </div>
+              { this.getUnitsField(UNIT_TYPES.Royal) }
+            </div>
+            <div className="horizontal-section-content">
+              <div className="text-center">
+                <Badge>Commons</Badge>
+              </div>
+              { this.getUnitsField(UNIT_TYPES.Common) }
+            </div>
           </div>
-        </div>
-      );
+        );
+      }
     }
   }
 
   render() {
-    let header = this.props.ctx.gameover ? this.getHeaderGameover() : this.getHeaderActive();
+    // TODO: allow white/black to submit a bag
+    let header = this.getHeader();
     let table = this.getTable();
+
     return (
       <section className="game-board">
         { header }

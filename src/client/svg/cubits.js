@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { CUBIT_TYPES } from '../game/common';
+import { CUBIT_TYPES } from '../../game/common';
 
 export class CubitLogo extends React.Component {
   static propTypes = {

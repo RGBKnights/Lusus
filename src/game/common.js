@@ -1,6 +1,6 @@
 export const GAME_PHASES = {
   Unknown: '',
-  Lobby: 'Lobby',
+  Customize: 'Customize',
   Play: 'Play',
   Move: 'Move',
   Draw: 'Draw',

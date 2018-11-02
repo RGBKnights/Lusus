@@ -1,4 +1,5 @@
 import {
+  GAME_PHASES,
   CUBIT_TYPES,
   UNIT_TYPES,
   UNIT_FILE,
@@ -81,9 +82,7 @@ export class GameLogic {
       "0": {},
       "1": {},
     };
-  }
 
-  setup(g, ctx) {
     for (let a = 0; a < ctx.numPlayers; a++) {
       let p = a.toString();
 
@@ -128,10 +127,14 @@ export class GameLogic {
 
         g.units.push(unit);
       }
+    }
+  }
+
+  setup(g, ctx, bag) {
+    for (let a = 0; a < ctx.numPlayers; a++) {
+      let p = a.toString();
 
       let cubits = this.getCubits(p);
-
-      // Filter by debug ~ cubits
 
       for (let i = 0; i < cubits.length; i++) {
         const cubit = cubits[i];
@@ -149,13 +152,15 @@ export class GameLogic {
       for (let i = 0; i < draws; i++) {
         bag[i].location = LOCATIONS.Hand;
       }
-    };
+    }
+
+    ctx.events.endPhase(GAME_PHASES.Play);
   }
 
   // HELPERS
 
   addEvent(g, ctx, event, description = '') {
-    g.log.push({
+    g.log.unshift({
       turn: ctx.turn,
       player_id: ctx.currentPlayer,
       player_side: ctx.currentPlayer === "0" ? "White" : "Black",
@@ -626,7 +631,7 @@ export class GameLogic {
 
     // End turn first and end phase resetting to 'Play'
     ctx.events.endTurn();
-    ctx.events.endPhase('Play');
+    ctx.events.endPhase(GAME_PHASES.Play);
   }
 
   draw(g, ctx) {

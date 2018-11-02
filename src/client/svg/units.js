@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { CubitText } from './cubits';
-import { UNIT_TYPES, UNIT_FILE } from '../game/common';
+import { UNIT_TYPES, UNIT_FILE } from '../../game/common';
 
 export class UnitBishop extends React.Component {
   static propTypes = {

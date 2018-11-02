@@ -7,7 +7,7 @@ import {
   Grid
 } from 'boardgame.io/ui';
 
-import * as Cubits from './cubits';
+import { getCubitElement } from '../svg/cubits';
 
 // Bootstrap
 import { 
@@ -20,8 +20,8 @@ import {
 
 import { IoMdHelp } from 'react-icons/io';
 
-import { GameLogic } from '../game/logic';
-import { CUBIT_TYPES, KEYWORDS } from '../game/common';
+import { GameLogic } from '../../game/logic';
+import { KEYWORDS } from '../../game/common';
 
 export class Help extends React.Component {
   static propTypes = {
@@ -46,172 +46,6 @@ export class Help extends React.Component {
     this.setState({
       modal: !this.state.modal
     });
-  }
-
-  getCubitElement(cubit) {
-    let team =  this.teamColors[cubit.ownership];
-
-    let type = Cubits.CubitText;
-    let params = { name: cubit.name, team: team };
-
-    switch (cubit.type) {
-      case CUBIT_TYPES.MovementOrthogonal:
-      {
-        type =  Cubits.CubitOrthogonal;
-        break;
-      }
-      case CUBIT_TYPES.MovementDiagonal:
-      {
-        type =  Cubits.CubitDiagonal;
-        break;
-      }
-      case CUBIT_TYPES.MovementCardinal:
-      {
-        type =  Cubits.CubitCardinal;
-        break;
-      }
-      case CUBIT_TYPES.MovementJump:
-      {
-        type =  Cubits.CubitPattern;
-        break;
-      }
-      case CUBIT_TYPES.MovementSideStep:
-      {
-        type =  Cubits.CubitSidestep;
-        break;
-      }
-      case CUBIT_TYPES.MovementSwap:
-      {
-        type =  Cubits.CubitSwap;
-        break;
-      }
-      case CUBIT_TYPES.DrawPlusOne:
-      {
-        type =  Cubits.CubitDrawPlus;
-        break;
-      }
-      case CUBIT_TYPES.DrawNegOne:
-      {
-        type =  Cubits.CubitDrawMinus;
-        break;
-      }
-      case CUBIT_TYPES.DoubleAction:
-      {
-        type =  Cubits.CubitDoubleAction;
-        break;
-      }
-      case CUBIT_TYPES.Condemn:
-      {
-        type =  Cubits.CubitCondemn;
-        break;
-      }
-      case CUBIT_TYPES.KingOfHill:
-      {
-        type =  Cubits.CubitKingOfHill;
-        break;
-      }
-      case CUBIT_TYPES.KingsFlag:
-      {
-        type =  Cubits.CubitKingOfHill;
-        break;
-      }
-      case CUBIT_TYPES.Timebomb:
-      {
-        type =  Cubits.CubitTimebomb;
-        params.value = cubit.data.amount;
-        break;
-      }
-      case CUBIT_TYPES.Reckless:
-      {
-        type =  Cubits.CubitReckless;
-        params.value = cubit.data.amount;
-        break;
-      }
-      case CUBIT_TYPES.BlinkDodge:
-      {
-        type =  Cubits.CubitBlinkDodge;
-        break;
-      }
-      case CUBIT_TYPES.CostofPower:
-      {
-        type =  Cubits.CubitCostofPower;
-        break;
-      }
-      case CUBIT_TYPES.Encumber:
-      {
-        type =  Cubits.CubitEncumber;
-        break;
-      }
-      case CUBIT_TYPES.Enrage:
-      {
-        type =  Cubits.CubitEnrage;
-        break;
-      }
-      case CUBIT_TYPES.ForgottenPast:
-      {
-        type =  Cubits.CubitForgottenPast;
-        break;
-      }
-      case CUBIT_TYPES.Heirloom:
-      {
-        type =  Cubits.CubitHeirloom;
-        break;
-      }
-      case CUBIT_TYPES.Immunity:
-      {
-        type =  Cubits.CubitImmunity;
-        break;
-      }
-      case CUBIT_TYPES.Knowledge:
-      {
-        type =  Cubits.CubitKnowledge;
-        break;
-      }
-      case CUBIT_TYPES.Looter:
-      {
-        type =  Cubits.CubitLooter;
-        break;
-      }
-      case CUBIT_TYPES.Nab:
-      {
-        type =  Cubits.CubitNab;
-        break;
-      }
-      case CUBIT_TYPES.Passify:
-      {
-        type =  Cubits.CubitPassify;
-        break;
-      }
-      case CUBIT_TYPES.Poisoned:
-      {
-        type =  Cubits.CubitPoisoned;
-        break;
-      }
-      case CUBIT_TYPES.Sacrifice:
-      {
-        type =  Cubits.CubitSacrifice;
-        break;
-      }
-      case CUBIT_TYPES.StickyFeet:
-      {
-        type =  Cubits.CubitStickyFeet;
-        break;
-      }
-      case CUBIT_TYPES.RemovalStrong:
-      {
-        type =  Cubits.CubitRemovalStrong;
-        break;
-      }
-      case CUBIT_TYPES.RemovalWeak:
-      {
-        type =  Cubits.CubitRemovalWeak;
-        break;
-      }
-      default:
-        break;
-    }
-
-    return React.createElement(type, params);
   }
 
   getKeyword(keyword) {
@@ -249,10 +83,7 @@ export class Help extends React.Component {
     cubits.sort(this.sortByName);
     let collection = [];
     for (const cubit of cubits) {
-
-      // let team = this.teamColors[cubit.ownership];
-      // let type = this.getCubitFromType(cubit.type);
-      let element = this.getCubitElement(cubit); //React.createElement(type, { name: cubit.name, value: cubit.name, team: team, color: null, });
+      let element = getCubitElement(cubit); 
       let icon = React.createElement(Token, {key: cubit.id, x: 0, y: 0}, element);
       let colorMap = {};
       colorMap['0,0'] = '#817F7F';

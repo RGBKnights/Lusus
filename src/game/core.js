@@ -1,4 +1,4 @@
-import { Game } from 'boardgame.io/core';
+import { Game, TurnOrder } from 'boardgame.io/core';
 import { 
     GAME_PHASES,
     LOCATIONS,
@@ -18,10 +18,14 @@ const GameCore = Game({
     setup: (ctx) => {
       let data = {};
       logic.initialize(data, ctx);
-      logic.setup(data, ctx);
       return data;
     },
     moves: {
+      customizeBag: (G, ctx, bag) => {
+        const g = clone(G);
+        logic.setup(g, ctx, bag);
+        return g;
+      },
       // Actions
       skipPlay: (G, ctx) => {
         const g = clone(G);
@@ -263,10 +267,20 @@ const GameCore = Game({
     },
     flow: {
       // optimisticUpdate: (G, ctx, move) => false,
+      turnOrder: TurnOrder.DEFAULT,
       endTurn: true,
       endPhase: true,
       endGame: true,
+      setActionPlayers: true,
       phases: [
+        {
+          name: GAME_PHASES.Customize,
+          turnOrder: TurnOrder.ANY,
+          allowedMoves: (G, ctx) => 
+          [
+            'customizeBag'
+          ]
+        },
         {
           name: GAME_PHASES.Play,
           allowedMoves: (G, ctx) => 
