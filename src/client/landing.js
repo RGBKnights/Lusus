@@ -34,7 +34,8 @@ class LandingPage extends React.Component {
   
   onNewMatch() {
     if(this.state.player) {
-      window.location = window.location.origin + "/match/?p=" +  this.state.player + "&m=" + uuidv4();
+      let url = "/match/?p=" +  this.state.player + "&m=" + uuidv4();
+      this.props.history.push(url);
     }
   }
 
@@ -43,7 +44,8 @@ class LandingPage extends React.Component {
       let code = this.state.code.trim();
       let player = code.substring(0, 1);
       let match = code.substring(2);
-      window.location = window.location.origin + "/match/?p=" + player + "&m=" + match;
+      let url = "/match/?p=" + player + "&m=" + match;
+      this.props.history.push(url);
     }
   }
 
@@ -51,7 +53,8 @@ class LandingPage extends React.Component {
     if(this.state.code) {
       let code = this.state.code.trim();
       let match = code.substring(2);
-      window.location = window.location.origin + "/match/?m=" + match;
+      let url = "/match/?m=" + match;
+      this.props.history.push(url);
     }
   }
 

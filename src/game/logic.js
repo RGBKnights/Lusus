@@ -130,7 +130,7 @@ export class GameLogic {
     }
   }
 
-  setup(g, ctx, bag) {
+  setup(g, ctx, bag = []) {
     for (let a = 0; a < ctx.numPlayers; a++) {
       let p = a.toString();
 

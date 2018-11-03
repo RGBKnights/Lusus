@@ -12,8 +12,7 @@ import {
 function getUnit(g, x, y) {
   let units = g.units
     .filter(_ => _.location === LOCATIONS.Board)
-    .filter(_ => _.position != null)
-    .filter(_ => _.position.x === x && _.position.y === y);
+    .filter(_ => _.position !== null && _.position.x === x && _.position.y === y);
 
   return units[0];
 }
@@ -22,8 +21,7 @@ function getCubits(g, x, y) {
   let cubits = g.cubits
     .filter(_ => _.location === LOCATIONS.Board)
     .filter(_ => _.obstruction === true)
-    .filter(_ => _.position !== null)
-    .filter(_ => _.position.x === x && _.position.y === y);
+    .filter(_ => _.position !== null && _.position.x === x && _.position.y === y);
 
   return cubits;
 }
