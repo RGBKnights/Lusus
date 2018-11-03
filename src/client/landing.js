@@ -6,7 +6,7 @@ import {
   Row, Col,
   Navbar, NavbarBrand, Nav,
   Button,
-  Form, FormGroup, Input 
+  Form, FormGroup, Label, Input 
 } from 'reactstrap';
 
 const uuidv4 = require('uuid/v4');
@@ -33,10 +33,9 @@ class LandingPage extends React.Component {
   }
   
   onNewMatch() {
-    if(this.state.player) {
-      let url = "/match/?p=" +  this.state.player + "&m=" + uuidv4();
-      this.props.history.push(url);
-    }
+    let player = this.state.player ? this.state.player : Math.round(Math.random());
+    let url = '/match/?p=' + player  + '&m=' + uuidv4();
+    this.props.history.push(url);
   }
 
   onJoinMatch() {
@@ -44,7 +43,7 @@ class LandingPage extends React.Component {
       let code = this.state.code.trim();
       let player = code.substring(0, 1);
       let match = code.substring(2);
-      let url = "/match/?p=" + player + "&m=" + match;
+      let url = '/match/?p=' + player + '&m=' + match;
       this.props.history.push(url);
     }
   }
@@ -53,7 +52,7 @@ class LandingPage extends React.Component {
     if(this.state.code) {
       let code = this.state.code.trim();
       let match = code.substring(2);
-      let url = "/match/?m=" + match;
+      let url = '/match/?m=' + match;
       this.props.history.push(url);
     }
   }
@@ -114,7 +113,7 @@ class LandingPage extends React.Component {
                   <Form>
                     <FormGroup>
                       <Input type="select" name="select" id="newPlayer" value={this.state.player} onChange={this.onPlayerChange}>
-                        <option>...</option>
+                        <option>Random</option>
                         <option value="0">White</option>
                         <option value="1">Black</option>
                       </Input>
@@ -135,6 +134,7 @@ class LandingPage extends React.Component {
                 <li className="list-group-item text-center">
                   <Form>
                     <FormGroup>
+                      <Label>An opponent needs to share a code which can then be used to join or view their match.</Label>
                       <Input type="text" name="code" id="matchCode" placeholder="Code" value={this.state.code} onChange={this.onCodeChange} />
                     </FormGroup>
                     <FormGroup>

@@ -34,6 +34,7 @@ export class Help extends React.Component {
     this.toggle = this.toggle.bind(this);
 
     this.teamColors = {'0': 'w', '1': 'b'};
+    this.colorMap = {'0': '#817F7F', '1': '#FFFFFF'};
 
     this.logic = new GameLogic();
 
@@ -86,7 +87,7 @@ export class Help extends React.Component {
       let element = getCubitElement(cubit); 
       let icon = React.createElement(Token, {key: cubit.id, x: 0, y: 0}, element);
       let colorMap = {};
-      colorMap['0,0'] = '#817F7F';
+      colorMap['0,0'] = this.colorMap[playerID];
 
       let tags = [];
       for (const key of cubit.keywords) {
@@ -99,7 +100,7 @@ export class Help extends React.Component {
 
       let item = (
         <Media key={cubit.type} className="p-1">
-          <Media left href="#">
+          <Media left>
             <Grid rows={1} cols={1} colorMap={colorMap} style={{ width: 50, strokeWidth: 0.05, stroke: '#000000' }}>
               { icon }
             </Grid>

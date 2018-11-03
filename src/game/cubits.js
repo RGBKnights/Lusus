@@ -605,6 +605,8 @@ export class ArenaRockCubit extends Cubit {
   constructor(ownership) {
       super(CUBIT_TYPES.ArenaRock, "Arena Rock", ownership);
 
+      this.description = "3 random unoccupied spaces are rocks (they act as if they are occupied) with a new rock added every turn";
+
       this.targeting.push({
         type: TARGETING_TYPE.AttachLocation,
         location: LOCATIONS.Arena,
@@ -837,7 +839,7 @@ export class RockThrowCubit extends Cubit {
   constructor(ownership) {
       super(CUBIT_TYPES.RockThrow, "RockThrow", ownership);
 
-      this.description = "Select a space. 3 random unoccupied adjacent spaces act as if they are occupied";
+      this.description = "Select a unoccupied space. 3 random unoccupied adjacent spaces are rocks and act as if they are occupied";
 
       this.targeting.push({
         type: TARGETING_TYPE.AttachLocation,

@@ -358,15 +358,17 @@ export class GameLogic {
       }
       case CUBIT_TYPES.RockThrow:
       {
-        let positions = this.getAdjacentPositions(g, ctx, cubit.position);
+        let positions = this.getAdjacentPositions(g, ctx, cubit.position, true);
         positions = ctx.random.Shuffle(positions);
 
         let amount = cubit.data.amount ? cubit.data.amount : 0;
         for (let i = 0; i < amount; i++) {
           let position = positions.pop();
-          let item = new Cubits.RockCubit(cubit.ownership);
-          item.position = position;
-          g.cubits.push(item);
+          if(position) {
+            let item = new Cubits.RockCubit(cubit.ownership);
+            item.position = position;
+            g.cubits.push(item);
+          }
         }
 
         this.killCubit(g, ctx, cubit);
@@ -375,18 +377,15 @@ export class GameLogic {
       }
       case CUBIT_TYPES.ArenaRock:
       {
-        let units = g.units.filter(_ => _.location === LOCATIONS.Board).map(_ => _.position);
-        let cubits = g.cubits.filter(_ => _.location === LOCATIONS.Board).filter(_ => _.obstruction === true).map(_ => _.position);
-        let obstructions = [].concat(units).concat(cubits);
+        let positions = this.getPositions(g, ctx, false);
+        positions = ctx.random.Shuffle(positions);
 
         let amount = cubit.data.amount ? cubit.data.amount : 0;
         for (let i = 0; i < amount; i++) {
-          let x = (ctx.random.D8() - 1);
-          let y = (ctx.random.D8() - 1);
-
-          if(this.inObstructions(obstructions, x, y) === false) {
+          let position = positions.pop();
+          if(position) {
             let item = new Cubits.RockCubit(cubit.ownership);
-            item.position = {x,y};
+            item.position = position;
             cubit.children.push(item.id);
             g.cubits.push(item);
           }
@@ -595,6 +594,17 @@ export class GameLogic {
         
           this.killCubit(g, ctx, cubit);
         }
+      } else if(cubit.type === CUBIT_TYPES.ArenaRock && cubit.location === LOCATIONS.Arena) {
+        let positions = this.getPositions(g, ctx, false);
+        positions = ctx.random.Shuffle(positions);
+
+        let position = positions.pop();
+        if(position) {
+          let item = new Cubits.RockCubit(cubit.ownership);
+          item.position = position;
+          cubit.children.push(item.id);
+          g.cubits.push(item);
+        }
       }
     }
   }
@@ -746,7 +756,7 @@ export class GameLogic {
 
   // PROPERTIES
 
-  inObstructions(obstructions, x, y) {
+  inCollection(obstructions, x, y) {
     for (const pos of obstructions) {
       if(pos.x === x && pos.y === y) {
         return true;
@@ -755,33 +765,43 @@ export class GameLogic {
     return false;
   }
 
-  getAdjacentPositions(g, ctx, orgin, unoccupied = true) {
+  getPositions(g, ctx, occupied = false) {
     let units = g.units.filter(_ => _.location === LOCATIONS.Board).map(_ => _.position);
     let cubits = g.cubits.filter(_ => _.location === LOCATIONS.Board).filter(_ => _.obstruction === true).map(_ => _.position);
     let obstructions = [].concat(units).concat(cubits);
-
     let positions = [];
-    for (let x = (orgin.x - 1); x <= (orgin.x + 1); x++) {
-      for (let y = (orgin.y - 1); y <= (orgin.y + 1); y++) {
-        if(x === orgin.x && y === orgin.y) {
-          continue;
-        }
-        if(x < 0 || x > 7 || y < 0 || y > 7) {
-          continue;
-        }
-        
-        let pos = {x,y};
-        if(unoccupied) {
-          if(this.inObstructions(obstructions, x, y) === false) {
-            positions.push(pos);
-          }
-        } else {
-          positions.push(pos);
+
+    for (let x = 0; x < 8; x++) {
+      for (let y = 0; y < 8; y++) {
+        if(this.inCollection(obstructions, x, y) === occupied) {
+          positions.push({x,y});
         }
       }
     }
 
     return positions;
+  }
+
+  getAdjacentPositions(g, ctx, origin, occupied = false) {
+    let targets = [
+      {x: origin.x-1, y: origin.y-1},
+      {x: origin.x, y: origin.y-1},
+      {x: origin.x+1, y: origin.y-1},
+      {x: origin.x+1, y: origin.y},
+      {x: origin.x-1, y: origin.y},
+      {x: origin.x-1, y: origin.y+1},
+      {x: origin.x, y: origin.y+1},
+      {x: origin.x+1, y: origin.y+1},
+    ]
+
+    let positions = this.getPositions(g, ctx, occupied);
+    let collection = [];
+    for (const pos of positions) {
+      if(this.inCollection(targets, pos.x, pos.y) === true) {
+        collection.push(pos);
+      }
+    }
+    return collection;
   }
 
   hasCubit(g, ctx, type, location, player = null) {
