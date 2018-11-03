@@ -853,7 +853,7 @@ class GameTable extends React.Component {
               </Input>
             </FormGroup>
             <FormGroup>
-            <Button color="success" onClick={this.onReady}>Ready</Button>
+            <Button color="success" onClick={this.onReady}>Go!</Button>
             </FormGroup>
           </Form>
         </Container>
