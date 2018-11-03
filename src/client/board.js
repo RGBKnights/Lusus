@@ -746,7 +746,7 @@ class GameTable extends React.Component {
 
   onNewGame() {
     if(this.props.playerID) {
-      let url = window.location.origin + "/?p=0&m=" + uuidv4();
+      let url = "/?p=0&m=" + uuidv4();
       this.props.history.push(url);
     }
   }
@@ -764,7 +764,7 @@ class GameTable extends React.Component {
   onRematch() {
     if(this.props.playerID) {
       let opponent = this.props.playerID === "0" ? "1" : "0";
-      let url = window.location.origin + "/?p=" + opponent + "&m=" + this.props.G.next;
+      let url = "/?p=" + opponent + "&m=" + this.props.G.next;
       this.props.history.push(url);
     }
   }
