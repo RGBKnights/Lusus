@@ -67,11 +67,12 @@ class GameTable extends React.Component {
     this.onBoardClickGrid = this.onBoardClickGrid.bind(this);
     this.onCommonClickGrid = this.onCommonClickGrid.bind(this);
     this.onRoyalsClickGrid = this.onRoyalsClickGrid.bind(this);
+    this.onBagChange = this.onBagChange.bind(this);
     this.onReady = this.onReady.bind(this);
     this.onNext = this.onNext.bind(this);
     this.onShare = this.onShare.bind(this);
     this.onNewGame = this.onNewGame.bind(this);
-    this.onRematch = this.onRematch.bind(this);
+    this.onRematch = this.onRematch.bind(this); 
 
     this.unitsMap = {};
     this.unitsMap[UNIT_TYPES.Common] = {};
@@ -83,6 +84,7 @@ class GameTable extends React.Component {
 
     let p = this.props.playerID == null ? "0" : this.props.playerID;
     this.state = {
+      bag: '',
       player: p,
       selection: null,
       targets: [],
@@ -717,9 +719,22 @@ class GameTable extends React.Component {
     }
   }
 
+  onBagChange(event) {
+    this.setState({bag: event.target.value});
+  }
+
   onReady() {
-    let bag = [];
-    this.props.moves.customizeBag(bag);
+    let key = 'bags';
+    let json = localStorage.getItem(key);
+    let data = json ? JSON.parse(json) : [];
+    let index = data.findIndex(_ => _.name === this.state.bag);
+    if(index >= 0) {
+      let item  = data[index];
+      this.props.moves.customizeBag(item);
+    } else {
+      let item = { bag: [] };
+      this.props.moves.customizeBag(item);
+    }
   }
 
   onShare() {
@@ -842,14 +857,22 @@ class GameTable extends React.Component {
 
   getTable() {
     if (this.props.ctx.phase === GAME_PHASES.Customize) {
+      let key = 'bags';
+      let json = localStorage.getItem(key);
+      let data = json ? JSON.parse(json) : [];
+      let options = []
+      for (const item of data) {
+        options.push(<option key={item.name} value={item.name}>{item.name}</option>);
+      }
+
       return (
         <Container className="p-1">
           <Form>
             <FormGroup>
               <Label for="deck">Select Deck</Label>
-              {/* value={this.state.player} onChange={this.onPlayerChange} */}
-              <Input type="select" name="select" id="deck">
+              <Input type="select" name="select" id="deck" value={this.state.bag} onChange={this.onBagChange}  >
                 <option value="">Default</option>
+                { options }
               </Input>
             </FormGroup>
             <FormGroup>

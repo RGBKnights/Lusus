@@ -36,7 +36,7 @@ class BuildPage extends React.Component {
 
     let cubits = this.logic.getCubits("1");
     cubits.sort(this.sortByName);
-    let bag = []; //cubits.map(_ => _.type);
+    let bag = cubits.map(_ => _.type);
 
     let w = 10;
     let h = Math.round(cubits.length / w);
@@ -108,7 +108,7 @@ class BuildPage extends React.Component {
       return;
     }
 
-    let key = 'LususBags';
+    let key = 'bags';
     let json = localStorage.getItem(key);
     let collection = json ? JSON.parse(json) : [];
 

@@ -21,9 +21,9 @@ const GameCore = Game({
       return data;
     },
     moves: {
-      customizeBag: (G, ctx, bag) => {
+      customizeBag: (G, ctx, data) => {
         const g = clone(G);
-        logic.setup(g, ctx, bag);
+        logic.setup(g, ctx, data);
         return g;
       },
       // Actions

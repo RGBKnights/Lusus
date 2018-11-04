@@ -75,6 +75,11 @@ export class GameLogic {
 
   initialize(g, ctx) {
     g.next = uuidv4();
+    g.debug = {
+      skip_action_check: false,
+      skip_move_check: false,
+      skip_draw_check: false
+    }
     g.log = [];
     g.units = [];
     g.cubits = [];
@@ -130,7 +135,11 @@ export class GameLogic {
     }
   }
 
-  setup(g, ctx, bag = []) {
+  setup(g, ctx, data) {    
+    if(data.debug) {
+      g.debug = data.debug;
+    }
+
     for (let a = 0; a < ctx.numPlayers; a++) {
       let p = a.toString();
 
@@ -138,6 +147,13 @@ export class GameLogic {
 
       for (let i = 0; i < cubits.length; i++) {
         const cubit = cubits[i];
+
+        if(data.bag.length > 0) {
+          if(data.bag.includes(cubit.type) === false) {
+            continue;
+          }
+        }
+
         cubit.location = LOCATIONS.Bag;
         cubit.ownership = p;
         cubit.controller = p;
