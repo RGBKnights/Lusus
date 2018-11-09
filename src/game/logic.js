@@ -263,6 +263,11 @@ export class GameLogic {
       let cubit = g.cubits.find(_ => _.id === id);
       cubit.location = LOCATIONS.Afterlife;
     }
+
+    if(unit.type === UNIT_TYPES.King) {
+      let opponent = unit.ownership === '0' ? '1' : '0'
+      ctx.events.endGame(opponent); // GameOver
+    }
   }
 
   activateCubit(g, ctx, cubit) {
@@ -401,6 +406,7 @@ export class GameLogic {
           let position = positions.pop();
           if(position) {
             let item = new Cubits.RockCubit(cubit.ownership);
+            item.location = LOCATIONS.Afterlife;
             item.position = position;
             cubit.children.push(item.id);
             g.cubits.push(item);
@@ -525,9 +531,7 @@ export class GameLogic {
     if(overwritten.killUnit === false) {
       this.killUnit(g, ctx, destination);
 
-      if(destination.type === UNIT_TYPES.King) {
-        ctx.events.endGame(ctx.currentPlayer); // GameOver
-      }
+      
     }
   }
   

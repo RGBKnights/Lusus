@@ -241,6 +241,7 @@ class GameTable extends React.Component {
     if(this.props.isActive) {
       if(this.state.selection && this.state.selection.type === CUBIT_TYPES.Nab) {
         this.setState({ nab: true, selection: null, targets: [] });
+        // TODO: Nabbed => kill the cubit as a move()...
       }
     }
   }
@@ -760,6 +761,7 @@ class GameTable extends React.Component {
   }
 
   onNewGame() {
+    // TODO: this.props.history dose not work...
     if(this.props.playerID) {
       let url = "/?p=0&m=" + uuidv4();
       this.props.history.push(url);
