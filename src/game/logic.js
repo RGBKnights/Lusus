@@ -46,7 +46,6 @@ export class GameLogic {
       new Cubits.HeirloomPastCubit(p),
       new Cubits.LooterCubit(p),
       new Cubits.MulliganCubit(p),
-      new Cubits.NabCubit(p),
       new Cubits.PoisonedCubit(p),
       new Cubits.ResourcefulCubit(p),    
       new Cubits.RecklessCubit(p),  
@@ -60,6 +59,7 @@ export class GameLogic {
       new Cubits.TimebombCubit(p),
       /*
       // ####################################
+      new Cubits.NabCubit(p),
       new Cubits.PoofCubit(p),
       new Cubits.TauntCubit(p),
       new Cubits.AncientRevivalCubit(p),

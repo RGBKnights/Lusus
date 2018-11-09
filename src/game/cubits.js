@@ -785,7 +785,7 @@ export class RecklessCubit extends Cubit {
   constructor(ownership) {
       super(CUBIT_TYPES.Reckless, "Reckless", ownership);
 
-      this.description = "Arena: Once placed 4d4 dice is rolled; after that attached player reaches that number of pieces in the afterlife you win";
+      this.description = "Once placed 4d4 dice is rolled; after that if a player reaches that number of pieces in the afterlife the opponent wins";
 
       this.targeting.push({
         type: TARGETING_TYPE.AttachLocation,
