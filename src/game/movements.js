@@ -128,7 +128,7 @@ export function getMovements(g, ctx, unit) {
     }
 
     if(distance <= 0) {
-      console.log("Movement Trap", movement);
+      // console.log("Movement Trap", movement);
       continue;
     }
 

@@ -7,23 +7,21 @@ import {
   Grid
 } from 'boardgame.io/ui';
 
-import { getCubitElement } from '../svg/cubits';
+import { getCubitElement } from './svg/cubits';
 
 // Bootstrap
-import { 
-  NavItem,
-  Button,
-  Modal, ModalHeader, ModalBody, ModalFooter,
+import {
+  Container,
+  Row, Col,
+  Navbar, NavbarBrand, Nav,
   Media,
   Badge
 } from 'reactstrap';
 
-import { IoMdHelp } from 'react-icons/io';
+import { GameLogic } from '../game/logic';
+import { KEYWORDS } from '../game/common';
 
-import { GameLogic } from '../../game/logic';
-import { KEYWORDS } from '../../game/common';
-
-export class Help extends React.Component {
+class HelpPage extends React.Component {
   static propTypes = {
     playerID: PropTypes.string,
   };
@@ -119,20 +117,42 @@ export class Help extends React.Component {
     }
 
     return (
-      <NavItem className="list-inline-item">
-        <Button size="sm" color="primary" title="Help" onClick={this.toggle}><IoMdHelp className="icon-inline" /></Button>
-      
-        <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
-          <ModalHeader toggle={this.toggle}>Help</ModalHeader>
-          <ModalBody>
+      <Container className="p-0">
+        <Navbar color="light" expand="md" className="rounded-bottom p-0">
+          <NavbarBrand className="p-0" href="/" style={{color: '#FFFFFF'}}>
+            <img className="p-1"  height="32" src="/favicon.ico" alt="Logo"></img>
+            <strong className="p-1">Lusus</strong> <small>Tactical Chess</small>
+          </NavbarBrand>
+          <Nav></Nav>
+        </Navbar>
+        <br />
+        <Row>
+          <Col>
+            <h5 className="text-center">Rules</h5>
+            <p>
+              The game works in phases. 
+              First is the Play Phase.  
+              During this phase you can use your actions to play cubies from your hand and activate certain cubies’ abilities.  
+              Then it is the Move Phase where you will move a unit on the board.  
+              Then the Draw Phase will automatically happen, where you will get a new hand and some abilities will resolve and turn counters will increase. 
+              That will end your turn and it will be the next player.
+            </p>
+            <p>
+              Unlike chess this game has numerous win / lose conditions. 
+              You can still win the game by capturing the opponent's king but unlike chess there is no idea of checkmate. 
+              The act of capture is needed to claim victory (This is important because of things like traps). 
+              A number of cubies also have alternate win conditions that are specific to when the cubie is active. 
+              Also there are a number of lose conditions as well.
+              Frist you can lose if you do not have enough cubies left to draw a full hand (so in a sense your bag size is like you health). 
+              Second, you can also lose if you have no valid moves to make on your movement phase.
+            </p>
             <h5 className="text-center">Cubies</h5>
             { collection }
-          </ModalBody>
-          <ModalFooter>
-            <Button color="secondary" onClick={this.toggle}>Close</Button>
-          </ModalFooter>
-        </Modal>
-      </NavItem>
+          </Col>
+        </Row>
+      </Container>
     );
   }
 }
+
+export default HelpPage;

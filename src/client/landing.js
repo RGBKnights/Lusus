@@ -19,6 +19,7 @@ class LandingPage extends React.Component {
 
     this.onCodeChange = this.onCodeChange.bind(this);
     this.onPlayerChange = this.onPlayerChange.bind(this);
+    this.onHelp = this.onHelp.bind(this);
     this.onNewMatch = this.onNewMatch.bind(this);
     this.onJoinMatch = this.onJoinMatch.bind(this);
     this.onViewMatch = this.onViewMatch.bind(this);
@@ -30,6 +31,11 @@ class LandingPage extends React.Component {
 
   onPlayerChange(event) {
     this.setState({player: event.target.value});
+  }
+
+  onHelp() {
+    let url = '/help/';
+    this.props.history.push(url);
   }
   
   onNewMatch() {
@@ -81,23 +87,12 @@ class LandingPage extends React.Component {
                     The game that is like chess but with even more rules!  
                     To begin both you and your opponent will need to be on this screen on different devices.  
                     Then select the appropriate button to the right, if you are player 1 then click Start Match if you are player 2 select Join Match.  
-                    Player one will need to send player 2 the game code, it will be added to your clipboard by selecting the share icon in the upper right hand corner.</p>
-                  <p>
-                    The game works in phases. 
-                    First is the Play Phase.  
-                    During this phase you can use your actions to play cubies from your hand and activate certain cubies’ abilities.  
-                    Then it is the Move Phase where you will move a unit on the board.  
-                    Then the Draw Phase will automatically happen, where you will get a new hand and some abilities will resolve and turn counters will increase. 
-                    That will end your turn and it will be the next player.
+                    Player one will need to send player 2 the game code, it will be added to your clipboard by selecting the share icon in the upper right hand corner.
                   </p>
                   <p>
-                    Unlike chess this game has numerous win / lose conditions. 
-                    You can still win the game by capturing the opponent's king but unlike chess there is no idea of checkmate. 
-                    The act of capture is needed to claim victory (This is important because of things like traps). 
-                    A number of cubies also have alternate win conditions that are specific to when the cubie is active. 
-                    Also there are a number of lose conditions as well.
-                    Frist you can lose if you do not have enough cubies left to draw a full hand (so in a sense your bag size is like you health). 
-                    Second, you can also lose if you have no valid moves to make on your movement phase.
+                    For game rules and cubits collection please vist the
+                    <br />
+                    <Button onClick={this.onHelp} color="secondary">Help</Button>
                   </p>
                 </li>
               </ul>
