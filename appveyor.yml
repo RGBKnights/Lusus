@@ -5,16 +5,14 @@ environment:
 install:
 - ps: >-
     # Get the latest stable version of Node.js or io.js
-
     Install-Product node $env:nodejs_version
-
     # install modules
-
     npm --loglevel=error install
 build_script:
 - ps: >-
+    # build client
     npm run build-client
-
+    # build server
     npm run build-server
 artifacts:
 - path: /build
