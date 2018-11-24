@@ -1,356 +1,50 @@
-import { Game, TurnOrder } from 'boardgame.io/core';
-import { 
-    GAME_PHASES,
-    LOCATIONS,
-    MOVEMENT_ACTIONS,
-    UNIT_TYPES,
-    // CUBIT_TYPES
-} from './common';
-
-import { GameLogic } from './logic';
-import { getMovements } from '../game/movements';
-
-var clone = require('clone');
-let logic = new GameLogic();
+import { Game, TurnOrder, PlayerView} from 'boardgame.io/core';
+import { GameLogic } from '../game/logic'
 
 const GameCore = Game({
     name: 'Lusus',
+    playerView: PlayerView.STRIP_SECRETS,
     setup: (ctx) => {
-      let data = {};
-      logic.initialize(data, ctx);
-      return data;
+      return GameLogic.setup(ctx);
     },
     moves: {
-      customizeBag: (G, ctx, data) => {
-        const g = clone(G);
-        logic.setup(g, ctx, data);
-        return g;
+      skip: (G, ctx) => {
+        return GameLogic.skip(G, ctx);
       },
-      // Actions
-      skipPlay: (G, ctx) => {
-        const g = clone(G);
-
-        if(g.players[ctx.currentPlayer].actions_used === 0) {
-          let hand = g.cubits.filter(_ => _.location === LOCATIONS.Hand && _.ownership === ctx.currentPlayer);
-          let dice = ctx.random.Die(hand.length) - 1;
-          hand[dice].location = LOCATIONS.Afterlife;
-        }
-
-        ctx.events.endPhase(GAME_PHASES.Move);
-
-        return g;
+      play: (G, ctx) => {
+        return GameLogic.play(G, ctx);
       },
-      // Activation / Consumption
-      activateCubit: (G, ctx, cubitId) => {
-        const g = clone(G);
-        
-        let cubit = g.cubits.find(_ => _.id === cubitId);
-        if(!cubit) {
-          return undefined;
-        }
-
-        if(cubit.activation === false) {
-          return undefined;
-        }
-
-        logic.activateCubit(g, ctx, cubit);
-
-        g.players[ctx.currentPlayer].actions_left--;
-        g.players[ctx.currentPlayer].actions_used++;
-
-        return g;
+      move: (G, ctx) => {
+        return GameLogic.move(G, ctx);
       },
-      // Attach Cubit to Location
-      attachCubitToArena: (G, ctx, cubitId) => {
-        const g = clone(G);
-
-        let cubit = g.cubits.find(_ => _.id === cubitId);
-        if(!cubit) {
-          return undefined;
-        }
-
-        let original = g.cubits.find(_ => _.location === LOCATIONS.Arena);
-        if(original) {
-          logic.killCubit(g, ctx, original);
-        }
-
-        cubit.location = LOCATIONS.Arena;
-
-        logic.attachToLocation(g, ctx, cubit);
-
-        g.players[ctx.currentPlayer].actions_left--;
-        g.players[ctx.currentPlayer].actions_used++;
-
-        return g;
-      },
-      attachCubitToPlayer: (G, ctx, cubitId, playerId) => {
-        const g = clone(G);
-
-        let cubit = g.cubits.find(_ => _.id === cubitId);
-        if(!cubit) {
-          return undefined;
-        }
-
-        cubit.location = LOCATIONS.Player;
-        cubit.controller = playerId;
-
-        logic.attachToLocation(g, ctx, cubit);
-
-        g.players[ctx.currentPlayer].actions_left--;
-        g.players[ctx.currentPlayer].actions_used++;
-
-        return g;
-      },
-      attachCubitToUnit: (G, ctx, cubitId, unitId) => {
-        const g = clone(G);
-
-        let cubit = g.cubits.find(_ => _.id === cubitId);
-        if(!cubit) {
-          return undefined;
-        }
-
-        let unit = g.units.find(_ => _.id === unitId);
-        if(!unit) {
-          return undefined;
-        }
-        
-        // Update Cubit
-        cubit.location = LOCATIONS.Unit;
-        cubit.unit = unit.id;
-
-        // Add cubits to unit
-        unit.cubits.push(cubit.id);
-
-        logic.attachToLocation(g, ctx, cubit);
-
-        g.players[ctx.currentPlayer].actions_left--;
-        g.players[ctx.currentPlayer].actions_used++;
-
-        return g;
-      },
-      attachCubitToBroad: (G, ctx, cubitId, x, y) => {
-        const g = clone(G);
-
-        let cubit = g.cubits.find(_ => _.id === cubitId);
-        if(!cubit) {
-          return undefined;
-        }
-
-        cubit.location = LOCATIONS.Board;
-        cubit.position = {x,y};
-
-        logic.attachToLocation(g, ctx, cubit);
-
-        g.players[ctx.currentPlayer].actions_left--;
-        g.players[ctx.currentPlayer].actions_used++;
-
-        return g;
-      },
-      targetPlayer(G, ctx, sourceId, player) {
-        const g = clone(G);
-
-        let source = g.cubits.find(_ => _.id === sourceId);
-        if(!source) {
-          return undefined;
-        }
-  
-        logic.targetPlayer(g, ctx, source, player);
-
-        g.players[ctx.currentPlayer].actions_left--;
-        g.players[ctx.currentPlayer].actions_used++;
-
-        return g;
-      },
-      targetCubit(G, ctx, sourceId, targetId) {
-        const g = clone(G);
-
-        let source = g.cubits.find(_ => _.id === sourceId);
-        if(!source) {
-          return undefined;
-        }
-
-        let target = g.cubits.find(_ => _.id === targetId);
-        if(!target) {
-          return undefined;
-        }
-        
-        logic.targetCubit(g, ctx, source, target);
-
-        g.players[ctx.currentPlayer].actions_left--;
-        g.players[ctx.currentPlayer].actions_used++;
-
-        return g;
-      },
-      movePassive(G, ctx, unitId, x, y) {
-        const g = clone(G);
-
-        let unit = g.units.find(_ => _.id === unitId);
-        if(!unit) {
-          return undefined;
-        }
-
-        logic.movePassive(g, ctx, unit, x, y);
-        
-        g.players[ctx.currentPlayer].moves--;
-
-        return g;
-      },
-      moveCapture(G, ctx, sourceId, destinationId) {
-        const g = clone(G);
-
-        let source = g.units.find(_ => _.id === sourceId);
-        if(!source) {
-          return undefined;
-        }
-
-        let destination = g.units.find(_ => _.id === destinationId);
-        if(!destination) {
-          return undefined;
-        }
-        
-        logic.moveCapture(g, ctx, source, destination);
-        
-        g.players[ctx.currentPlayer].moves--;
-
-        return g;
-      },
-      moveSwap(G, ctx, sourceId, destinationId) {
-        const g = clone(G);
-
-        let source = g.units.find(_ => _.id === sourceId);
-        if(!source) {
-          return undefined;
-        }
-
-        let destination = g.units.find(_ => _.id === destinationId);
-        if(!destination) {
-          return undefined;
-        }
-
-        logic.moveSwap(g, ctx, source, destination);
-
-        g.players[ctx.currentPlayer].moves--;
-
-        return g;
-      },
-      moveCastle(G, ctx, sourceId, destinationId) {
-        const g = clone(G);
-
-        let source = g.units.find(_ => _.id === sourceId);
-        if(!source) {
-          return undefined;
-        }
-
-        let destination = g.units.find(_ => _.id === destinationId);
-        if(!destination) {
-          return undefined;
-        }
-
-        logic.moveCastle(g, ctx, source, destination);
-
-        g.players[ctx.currentPlayer].moves--;
-
-        return g;
-      },
-      // Draw new Hand
-      drawCubits: (G, ctx) => {
-        const g = clone(G);
-        
-        // Draw
-        logic.draw(g, ctx);
-
-        // Resolve End of Turn effects
-        logic.resolveTurn(g, ctx);
-
-        return g;
+      draw: (G, ctx) => {
+        return GameLogic.draw(G, ctx);
       }
     },
     flow: {
       // optimisticUpdate: (G, ctx, move) => false,
+      // startingPhase: 'play',
       turnOrder: TurnOrder.DEFAULT,
       endTurn: true,
       endPhase: true,
       endGame: true,
       setActionPlayers: true,
-      phases: [
-        {
-          name: GAME_PHASES.Customize,
-          turnOrder: TurnOrder.ANY,
-          allowedMoves: (G, ctx) => 
-          [
-            'customizeBag'
-          ]
+      phases: {
+        play: {
+          next: 'move',
+          allowedMoves: ['skip','play'],
+          endPhaseIf: (G, ctx) => G.players[ctx.currentPlayer].actions === 0
         },
-        {
-          name: GAME_PHASES.Play,
-          allowedMoves: (G, ctx) => 
-          [
-            'skipPlay',
-            'activateCubit',
-            'attachCubitToArena',
-            'attachCubitToPlayer',
-            'attachCubitToUnit',
-            'attachCubitToBroad',
-            'targetPlayer',
-            'targetCubit'
-          ],
-          endPhaseIf: (G, ctx) => {
-            let actions = logic.getActions(G, ctx, ctx.currentPlayer);
-            return actions === 0 ? GAME_PHASES.Move : false;
-          }
+        move: {
+          next: 'draw',
+          allowedMoves: ['move'],
+          endPhaseIf: (G, ctx) => G.players[ctx.currentPlayer].moves === 0
         },
-        {
-          name: GAME_PHASES.Move,
-          allowedMoves: (G, ctx) => [
-            'movePassive',
-            'moveCapture',
-            'moveSwap',
-            'moveCastle'
-          ],
-          onPhaseBegin: (G, ctx) => {
-            const g = clone(G);
-            g.players[ctx.currentPlayer].check = false;
-
-            // Check for valid moves
-            let validMoves = 0;
-            let units = g.units.filter(_ => _.location === LOCATIONS.Board);
-            for (const unit of units) {
-              if(unit.ownership === ctx.currentPlayer)  {
-                // Check for valid move and update counter
-                let moves = getMovements(g, ctx, unit);
-                validMoves += moves.length;
-              } else {
-                // Check for check
-                let moves = getMovements(g, ctx, unit);
-                for (const move of moves) {
-                  if(move.action === MOVEMENT_ACTIONS.Capture) {
-                    let u = g.units.find(_ => _.id === move.unit);
-                    if(u.type === UNIT_TYPES.King) {
-                      g.players[ctx.currentPlayer].check = true;
-                    }
-                  }
-                }
-              }
-            }
-
-            if(validMoves === 0) {
-              // Game Over
-              let opponent = ctx.currentPlayer === "0" ? "1" : "0";
-              ctx.events.endGame(opponent);
-            }
-            
-            return g;
-          },
-          endPhaseIf: (G, ctx) => {
-            let moves = logic.getMoves(G, ctx, ctx.currentPlayer);
-            return moves === 0 ? GAME_PHASES.Draw : false;
-          }
-        },
-        { 
-          name: GAME_PHASES.Draw,
-          allowedMoves: (G, ctx) => ['drawCubits']
+        draw: {
+          next: 'play',
+          allowedMoves: ['draw'],
         }
-      ]
+      }
     }
   });
 

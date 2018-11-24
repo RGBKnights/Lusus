@@ -1,190 +1,81 @@
-import { 
-  UNIT_TYPES,
-  MOVEMENT_TYPES,
-  MOVEMENT_CONSTRAINTS,
-  LOCATIONS,
-} from './common';
+import { UNITS } from './commmon.js';
 
 const uuidv4 = require('uuid/v4');
 
 export class Unit {
-  constructor(type, name, slots, ownership, rank, file) {
-      // unique identifier
-      this.id = uuidv4();
+  constructor(type, name, ownership, identifier) {
+    // unique identifier
+    this.id = uuidv4();
 
-      // own owns the cubit
-      this.ownership = ownership;
-      this.rank = rank;
-      this.file = file;
+    // type of the cubit
+    this.type = type;
 
-      // type of the cubit
-      this.type = type;
+    // the name of the type
+    this.name = name;
 
-      // the name of the type
-      this.name = name;
+    // own owns the cubit
+    this.ownership = ownership;
 
-      // english words for the Help (convert to transltions keys later)
-      this.description = "";
-
-      // for filtering
-      this.classification = [];  
-
-      // track moves and turns
-      this.moves = 0;
-      this.turns = 0;
-
-      // adictional movement options
-      this.location = LOCATIONS.Unknown;
-      this.position = null; // (x,y)
-      this.movement = [];
-      this.obstruction = true;
-
-      // cubits and number of slots
-      this.cubits = [];
-      this.slots = slots;
-
-      // Can this unit handle any more cubits
-      this.isCondemned = false;
+    // unit identifier
+    this.identifier = identifier;
   }
-
 }
 
 export class KingUnit extends Unit {
-  constructor(ownership, file) {
-      super(UNIT_TYPES.King, "King", 3, ownership, UNIT_TYPES.Royal, file);
-
-      this.movement.push({
-        type: MOVEMENT_TYPES.Diagonal,
-        constraint: MOVEMENT_CONSTRAINTS.Aggressive,
-        distance: 1
-      });
-      this.movement.push({
-        type: MOVEMENT_TYPES.Diagonal,
-        constraint: MOVEMENT_CONSTRAINTS.Passive,
-        distance: 1
-      });
-      this.movement.push({
-        type: MOVEMENT_TYPES.Orthogonal,
-        constraint: MOVEMENT_CONSTRAINTS.Aggressive,
-        distance: 1
-      });
-      this.movement.push({
-        type: MOVEMENT_TYPES.Orthogonal,
-        constraint: MOVEMENT_CONSTRAINTS.Passive,
-        distance: 1
-      });
-
-      this.movement.push({
-        type: MOVEMENT_TYPES.Castle,
-        constraint: MOVEMENT_CONSTRAINTS.Passive,
-        distance: 1,
-        temporary: true,
-      });
+  constructor(ownership, identifier) {
+      super(UNITS.King, "King", ownership, identifier);
   }
 }
 
 export class QueenUnit extends Unit {
-  constructor( ownership, file) {
-      super(UNIT_TYPES.Queen, "Queen", 3, ownership, UNIT_TYPES.Royal, file);
-
-
-      this.movement.push({
-        type: MOVEMENT_TYPES.Diagonal,
-        constraint: MOVEMENT_CONSTRAINTS.Aggressive,
-        distance: 8
-      });
-      this.movement.push({
-        type: MOVEMENT_TYPES.Diagonal,
-        constraint: MOVEMENT_CONSTRAINTS.Passive,
-        distance: 8
-      });
-      this.movement.push({
-        type: MOVEMENT_TYPES.Orthogonal,
-        constraint: MOVEMENT_CONSTRAINTS.Aggressive,
-        distance: 8
-      });
-      this.movement.push({
-        type: MOVEMENT_TYPES.Orthogonal,
-        constraint: MOVEMENT_CONSTRAINTS.Passive,
-        distance: 8
-      });
+  constructor(ownership, identifier) {
+      super(UNITS.Queen, "Queen", ownership, identifier);
   }
 }
 
 export class BishopUnit extends Unit {
-  constructor(ownership, file) {
-      super(UNIT_TYPES.Bishop, "Bishop", 3, ownership, UNIT_TYPES.Royal, file);
-
-      this.movement.push({
-        type: MOVEMENT_TYPES.Diagonal,
-        constraint: MOVEMENT_CONSTRAINTS.Aggressive,
-        distance: 8
-      });
-      this.movement.push({
-        type: MOVEMENT_TYPES.Diagonal,
-        constraint: MOVEMENT_CONSTRAINTS.Passive,
-        distance: 8
-      });
-  }
-}
-
-export class RookUnit extends Unit {
-  constructor(ownership, file) {
-      super(UNIT_TYPES.Rook, "Rook", 3, ownership, UNIT_TYPES.Royal, file);
-
-      this.movement.push({
-        type: MOVEMENT_TYPES.Orthogonal,
-        constraint: MOVEMENT_CONSTRAINTS.Aggressive,
-        distance: 8
-      });
-      this.movement.push({
-        type: MOVEMENT_TYPES.Orthogonal,
-        constraint: MOVEMENT_CONSTRAINTS.Passive,
-        distance: 8
-      });
+  constructor(ownership, identifier) {
+      super(UNITS.Bishop, "Bishop", ownership, identifier);
   }
 }
 
 export class KnightUnit extends Unit {
-  constructor(ownership, file) {
-      super(UNIT_TYPES.Knight, "Knight", 3, ownership, UNIT_TYPES.Royal, file);
+  constructor(ownership, identifier) {
+      super(UNITS.Knight, "Knight", ownership, identifier);
+  }
+}
 
-      this.movement.push({
-        type: MOVEMENT_TYPES.Jump,
-        constraint: MOVEMENT_CONSTRAINTS.Aggressive,
-        steps: [2,1],
-        distance: 1,
-        jump: true
-      });
-      this.movement.push({
-        type: MOVEMENT_TYPES.Jump,
-        constraint: MOVEMENT_CONSTRAINTS.Passive,
-        steps: [2,1],
-        distance: 1,
-        jump: true
-      });
+export class RookUnit extends Unit {
+  constructor(ownership, identifier) {
+      super(UNITS.Rook, "Rook", ownership, identifier);
   }
 }
 
 export class PawnUnit extends Unit {
-  constructor(ownership, file) {
-      super(UNIT_TYPES.Pawn, "Pawn", 2, ownership, UNIT_TYPES.Common, file);
-
-      this.movement.push({
-        type: MOVEMENT_TYPES.Forward,
-        constraint: MOVEMENT_CONSTRAINTS.Passive,
-        distance: 1
-      });
-      this.movement.push({
-        type: MOVEMENT_TYPES.Forward,
-        constraint: MOVEMENT_CONSTRAINTS.Passive,
-        distance: 2,
-        temporary: true,
-      });
-      this.movement.push({
-        type: MOVEMENT_TYPES.Fork,
-        constraint: MOVEMENT_CONSTRAINTS.Aggressive,
-        distance: 1
-      });
+  constructor(ownership, identifier) {
+      super(UNITS.Pawn, "Pawn", ownership, identifier);
   }
+}
+
+export function getStartingUnits(player) {
+  return [
+    // Royals
+    new RookUnit(player, '#FF5733'),
+    new KnightUnit(player, '#F9FF33'),
+    new BishopUnit(player, '#008000'),
+    new QueenUnit(player, '#33FFA8'),
+    new KingUnit(player, '#33F6FF'),
+    new BishopUnit(player, '#3346FF'),
+    new KnightUnit(player, '#800080'),
+    new RookUnit(player, '#FF0000'),
+    // Commons
+    new PawnUnit(player, '#FF5733'),
+    new PawnUnit(player, '#F9FF33'),
+    new PawnUnit(player, '#008000'),
+    new PawnUnit(player, '#33FFA8'),
+    new PawnUnit(player, '#33F6FF'),
+    new PawnUnit(player,' #3346FF'),
+    new PawnUnit(player, '#800080'),
+    new PawnUnit(player, '#FF0000'),
+  ];
 }
