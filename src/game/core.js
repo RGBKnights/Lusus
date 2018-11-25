@@ -4,45 +4,38 @@ import { GameLogic } from '../game/logic'
 const GameCore = Game({
     name: 'Lusus',
     playerView: PlayerView.STRIP_SECRETS,
-    setup: (ctx) => {
-      return GameLogic.setup(ctx);
-    },
+    setup: GameLogic.setup,
     moves: {
-      skip: (G, ctx) => {
-        return GameLogic.skip(G, ctx);
-      },
-      play: (G, ctx) => {
-        return GameLogic.play(G, ctx);
-      },
-      move: (G, ctx) => {
-        return GameLogic.move(G, ctx);
-      },
-      draw: (G, ctx) => {
-        return GameLogic.draw(G, ctx);
-      }
+      config: GameLogic.config,
+      skip: GameLogic.skip,
+      play: GameLogic.play,
+      move: GameLogic.move,
     },
     flow: {
-      // optimisticUpdate: (G, ctx, move) => false,
-      // startingPhase: 'play',
+      startingPhase: 'init',
       turnOrder: TurnOrder.DEFAULT,
       endTurn: true,
       endPhase: true,
       endGame: true,
-      setActionPlayers: true,
       phases: {
+        init: {
+          next: 'play',
+          allowedMoves: ['initialize'],
+          turnOrder: TurnOrder.ANY, // Allow any player to initialize the game play
+        },
         play: {
           next: 'move',
           allowedMoves: ['skip','play'],
-          endPhaseIf: (G, ctx) => G.players[ctx.currentPlayer].actions === 0
+          endPhaseIf: GameLogic.hasNoActions,
         },
         move: {
-          next: 'draw',
+          next: 'resolution',
           allowedMoves: ['move'],
-          endPhaseIf: (G, ctx) => G.players[ctx.currentPlayer].moves === 0
+          endPhaseIf: GameLogic.hasNoMoves,
         },
-        draw: {
+        resolution: {
           next: 'play',
-          allowedMoves: ['draw'],
+          onPhaseBegin: GameLogic.resolution,
         }
       }
     }

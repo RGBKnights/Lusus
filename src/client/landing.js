@@ -9,7 +9,7 @@ import {
   Form, FormGroup, Label, Input 
 } from 'reactstrap';
 
-const uuidv4 = require('uuid/v4');
+const shortid = require('shortid');
 
 class LandingPage extends React.Component {
 
@@ -40,7 +40,7 @@ class LandingPage extends React.Component {
   
   onNewMatch() {
     let player = this.state.player ? this.state.player : Math.round(Math.random());
-    let url = '/match/?p=' + player  + '&m=' + uuidv4();
+    let url = '/match/?p=' + player  + '&m=' + shortid.generate();
     this.props.history.push(url);
   }
 

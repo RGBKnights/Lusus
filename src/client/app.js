@@ -18,7 +18,7 @@ class ClientPage extends React.Component {
     const ClientApp = Client({
       game: GameCore,
       board: GameBoard,
-      debug: false,
+      debug: true,
       multiplayer: { server: process.env.REACT_APP_SERVER_URL }
     });
 
