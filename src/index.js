@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { HashRouter as Router, Route } from "react-router-dom"; // BrowserRouter
-import LandingPage from './client/landing';
-import ClientPage from './client/app';
+import LandingPage from './client/pages/landing';
+import MatchPage from './client/pages/match';
 
 import 'react-toastify/dist/ReactToastify.min.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -13,7 +13,7 @@ const AppRouter = () => (
   <Router>
     <div>
       <Route path="/" exact component={LandingPage} />
-      <Route path="/match/" component={ClientPage} />
+      <Route path="/match/" component={MatchPage} />
     </div>
   </Router>
 );

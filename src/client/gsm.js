@@ -1,30 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-// import { FaEye, FaUserAlt, FaClock, FaShareAlt, FaBolt, FaShoppingBag, FaChess, FaSquare } from 'react-icons/fa';
-// import { FiWifiOff }from 'react-icons/fi';
-
+import { SetupView } from './views/setup';
+import { PlayView } from './views/play';
+import { OverView } from './views/over';
 import { ToastContainer, toast } from 'react-toastify';
+import { Container } from 'reactstrap';
 
-// Bootstrap
-import {
-  Container,
-  Row, Col,
-  // Navbar, NavbarBrand, Nav, NavItem,
-  // Button,
-  // Badge,
-  // Form, FormGroup, Label, Input 
-} from 'reactstrap';
-
-// UI
-import { 
-  // Token, Grid
-} from 'boardgame.io/ui';
-
-// import { getCubitElement } from './svg/cubits';
-// import { getUnitElement } from './svg/units';
-
-class GameTable extends React.Component {
+class GameStateManager extends React.Component {
   static propTypes = {
     G: PropTypes.any.isRequired,
     ctx: PropTypes.any.isRequired,
@@ -57,30 +40,35 @@ class GameTable extends React.Component {
     this.forceUpdate();
   };
 
-  componentDidUpdate(props) {
-    /*
+  componentDidUpdate(props) {   
     if(this.props.isActive === false) {
       return;
     }
-
-    if (this.props.ctx.phase === GAME_PHASES.Play && props.ctx.phase !== GAME_PHASES.Play) {
-      toast("Your Turn!");
+    
+    // Handle Notifications
+    if (this.props.ctx.phase === 'play' && props.ctx.phase !== 'play') {
+      toast("Your Turn");
     }
-    */
+  }
+
+  getView() {
+    if(this.props.ctx.gameover) {
+      return React.createElement(OverView, this.props);
+    } else if(this.props.ctx.phase === "config") {
+      return React.createElement(SetupView, this.props);
+    } else {
+      return React.createElement(PlayView, this.props);
+    }
   }
 
   render() {
     return (
       <Container className="game-board" fluid>
-        <Row>
-          <Col>
-            <p>Test</p>
-          </Col>
-        </Row>
+        { this.getView() }
         <ToastContainer autoClose={2000} position={toast.POSITION.BOTTOM_CENTER} />
       </Container>
     );
   }
 }
 
-export default GameTable;
+export default GameStateManager;

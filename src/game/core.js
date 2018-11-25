@@ -1,41 +1,54 @@
-import { Game, TurnOrder, PlayerView} from 'boardgame.io/core';
+import { Game, TurnOrder} from 'boardgame.io/core';
 import { GameLogic } from '../game/logic'
 
 const GameCore = Game({
     name: 'Lusus',
-    playerView: PlayerView.STRIP_SECRETS,
     setup: GameLogic.setup,
     moves: {
-      config: GameLogic.config,
-      skip: GameLogic.skip,
-      play: GameLogic.play,
-      move: GameLogic.move,
+      config(G, ctx, data) {
+        return GameLogic.config(G, ctx, data);
+      },
+      skip(G, ctx) {
+        return GameLogic.skip(G, ctx);
+      },
+      play(G, ctx) {
+        return GameLogic.play(G, ctx);
+      },
+      move(G, ctx) {
+        return GameLogic.move(G, ctx);
+      },
     },
     flow: {
-      startingPhase: 'init',
+      startingPhase: 'config',
       turnOrder: TurnOrder.DEFAULT,
       endTurn: true,
       endPhase: true,
       endGame: true,
       phases: {
-        init: {
+        config: {
           next: 'play',
-          allowedMoves: ['initialize'],
+          allowedMoves: ['config'],
           turnOrder: TurnOrder.ANY, // Allow any player to initialize the game play
         },
         play: {
           next: 'move',
           allowedMoves: ['skip','play'],
-          endPhaseIf: GameLogic.hasNoActions,
+          endPhaseIf: (G, ctx) => {
+            return GameLogic.hasNoActions(G, ctx);
+          },
         },
         move: {
           next: 'resolution',
           allowedMoves: ['move'],
-          endPhaseIf: GameLogic.hasNoMoves,
+          endPhaseIf: (G, ctx) => {
+            return GameLogic.hasNoMoves(G, ctx);
+          },
         },
         resolution: {
           next: 'play',
-          onPhaseBegin: GameLogic.resolution,
+          onPhaseBegin: (G, ctx) => { 
+            GameLogic.resolution(G, ctx);
+          },
         }
       }
     }

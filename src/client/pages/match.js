@@ -1,12 +1,12 @@
 import React from 'react';
 import { Client } from 'boardgame.io/react';
 
-import GameBoard from './board';
-import GameCore from '../game/core';
+import GameStateManager from '../gsm';
+import GameCore from '../../game/core';
 
 const queryString = require('query-string');
 
-class ClientPage extends React.Component {
+class MatchPage extends React.Component {
 
   render() {
     let index = window.location.hash.indexOf('?');
@@ -17,7 +17,7 @@ class ClientPage extends React.Component {
 
     const ClientApp = Client({
       game: GameCore,
-      board: GameBoard,
+      board: GameStateManager,
       debug: true,
       multiplayer: { server: process.env.REACT_APP_SERVER_URL }
     });
@@ -26,4 +26,4 @@ class ClientPage extends React.Component {
   }
 }
 
-export default ClientPage;
+export default MatchPage;
