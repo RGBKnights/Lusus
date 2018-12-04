@@ -40,13 +40,13 @@ class Field extends React.Component {
   constructor(params) {
     super(params);
 
-    this.clearState = this.clearState.bind(this);
-    this.updateState = this.updateState.bind(this);
+    this.validTarget = this.validTarget.bind(this);
     this.validMove = this.validMove.bind(this);
     this.onClick = this.onClick.bind(this);
 
     this.map = {};
-    this.tokens = [];
+    this.placements = {};
+    this.movements = {};
 
     this.rows = 8;
     this.cols = 26;
@@ -88,23 +88,39 @@ class Field extends React.Component {
     this.style = { strokeWidth: 0.02, stroke: '#000000' };
 
     this.state = {
-      moves: [],
       selection: null
     };
   }
 
-  clearState() {
-    this.setState({ selection: null, moves: [] });
+
+  validTarget(x,y) {
+    // Gruad
+    if(!this.props.selection) {
+      return false;
+    }
+    if(!this.props.selection.cubit) {
+      return false;
+    }
+
+    // Check
+    if(this.placements[`${x},${y}`]) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
-  updateState(event) {
-    let moves = getMoves(this.props.G, this.props.ctx, event.unit.id, event.position);
-    this.setState({ selection: event, moves: moves });
-  }
+  validMove(x,y) {
+    // Gruad
+    if(!this.state.selection) {
+      return false;
+    }
+    if(!this.state.selection.unit) {
+      return false;
+    }
 
-  validMove(event) {
-    let move = this.state.moves.filter(_ => _.x === event.position.x && _.y === event.position.y);
-    if(move.length > 0) {
+    // Check
+    if(this.movements[`${x},${y}`]) {
       return true;
     } else {
       return false;
@@ -121,38 +137,42 @@ class Field extends React.Component {
       this.props.onHelp(obj);
     }
 
-    if(this.props.ctx.phase === 'play') {
-      if(this.layout.fieldSelf.includes(x) || this.layout.fieldOpponent.includes(x)) {
-        let event = {
-          unit: (y < 4) ? this.map[`${x},${0}`] : this.map[`${x},${4}`],
-          slot: (y < 4) ? y - 1 : y - 5,
-          cubit: (y !== 0 && y !== 4) ? this.map[`${x},${y}`] : undefined,
-        };
+    let isField = this.layout.fieldSelf.includes(x) || this.layout.fieldOpponent.includes(x);
+    let isBoard = this.layout.board.includes(x);
+    let validSelection = this.props.selection && this.props.selection.cubit;
+
+    if(this.props.ctx.phase === 'play' && isField && validSelection) {
+      let event = {
+        unit: (y < 4) ? this.map[`${x},${0}`] : this.map[`${x},${4}`],
+        slot: (y < 4) ? y - 1 : y - 5,
+        cubit: (y !== 0 && y !== 4) ? this.map[`${x},${y}`] : undefined,
+      };
+      if(this.validTarget(x,y)) {
         this.props.onPlacement(event);
       }
-    } else if(this.props.ctx.phase === 'move') {
-      if(this.layout.board.includes(x)) {
-        let event = {
-          position: {x:x-9,y:y},
-          unit: this.map[`${x},${y}`],
-        };
+    } else if(this.props.ctx.phase === 'move' && isBoard) {
+      let event = {
+        position: {x:x-9,y:y},
+        unit: this.map[`${x},${y}`],
+      };
 
-        if(this.state.selection) {
-          if(this.validMove(event)) {  
-            this.props.onMove(this.state.selection, event);
-            this.clearState();
-          } else {
-            this.clearState();
-          }
-        } else {
-          this.updateState(event);
-        }
-      }  
+      if(this.validMove(x,y)) { 
+        this.props.onMove(this.state.selection, event);
+        this.setState({ selection: null });
+      } else {
+        this.setState({ selection: event });
+      }
     }
   }
 
   render() {
     let background = { ...{}, ...this.background };
+    
+    let tokens = [];
+
+    this.map = {};
+    this.placements = {};
+    this.movements = {};
 
     // Movement highlights
     if(this.state.selection && this.state.selection.unit) {
@@ -160,6 +180,7 @@ class Field extends React.Component {
         for (const move of moves) {
           const key = `${move.x+9},${move.y}`;
           background[key] = this.movementColors[move.target];
+          this.movements[key] = 1;
         }
     }
 
@@ -168,9 +189,6 @@ class Field extends React.Component {
     if(this.props.selection && this.props.selection.cubit) {
       targets = getTargets(this.props.G, this.props.ctx, this.props.selection.cubit.id);
     }
-
-    this.map = {};
-    this.tokens = [];
 
     for (const unit of this.props.G.field) {
       let unitElement = getUnitElement(unit);
@@ -182,7 +200,7 @@ class Field extends React.Component {
           let y = unit.position.y;
           let tokenKey = "board_" + unit.id;
           let token = <Token animate key={tokenKey} x={x} y={y}>{unitElement}</Token>
-          this.tokens.push(token);
+          tokens.push(token);
   
           let mapKey = `${x},${y}`;
           this.map[mapKey] = unit;
@@ -210,13 +228,14 @@ class Field extends React.Component {
 
         let key = "field_" + unit.id;
         let token = <Token key={key} x={position.x} y={position.y}>{unitElement}</Token>
-        this.tokens.push(token);
+        tokens.push(token);
 
         let mapKey = `${position.x},${position.y}`;
         this.map[mapKey] = unit;
 
         if(targeting.includes(PLACEMENT.Unit)) {
           background[mapKey] = this.placementColor;
+          this.placements[mapKey] = true;
         }
       }
 
@@ -230,15 +249,17 @@ class Field extends React.Component {
           let isPlayer = cubit.ownership === this.props.playerID;
           let cubitElement = getCubitElement(cubit, isPlayer);
           let token = <Token animate key={cubit.id} x={x} y={y}>{cubitElement}</Token>
-          this.tokens.push(token);
+          tokens.push(token);
           this.map[mapKey] = cubit;
 
           if(targeting.includes(PLACEMENT.Cubit)) {
             background[mapKey] = this.placementColor;
+            this.placements[mapKey] = true;
           }
         } else {
           if(targeting.includes(PLACEMENT.Empty)) {
             background[mapKey] = this.placementColor;
+            this.placements[mapKey] = true;
           }
         }
       }
@@ -252,7 +273,7 @@ class Field extends React.Component {
         colorMap={background}
         style={this.style}
       >
-        {this.tokens}
+        {tokens}
       </Grid>
     );
   }

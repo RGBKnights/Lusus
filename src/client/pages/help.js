@@ -51,17 +51,12 @@ class HelpPage extends React.Component {
           <Container>
             <NavbarBrand className="p-0" href="/">
               <img className="p-1" height="32" src="/favicon.ico" alt="Logo"></img>
-              <strong className="p-1">Lusus <small>Tactical Chess</small></strong>
+              <strong className="p-1">Lusus <small>Tactical Chess</small> Help</strong>
             </NavbarBrand>
             <Nav></Nav>
           </Container>
         </Navbar>
         <Container className="body">
-          <Row>
-            <Col>
-              <h3 className="text-center">Help</h3>
-            </Col>
-          </Row>
           <Row>
             <Col>
             <h5>Rules</h5>
