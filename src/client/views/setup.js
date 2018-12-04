@@ -59,6 +59,7 @@ export class SetupView extends React.Component {
 
     return (
       <Form>
+        <div>GAME SETUP</div>
         <Modal isOpen={true}>
           <ModalHeader>Customize</ModalHeader>
           <ModalBody>

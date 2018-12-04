@@ -22,11 +22,18 @@ export class OverView extends React.Component {
 
   constructor(params) {
     super(params);
+
+    this.state = {
+      test: false,
+    };
   }
 
   render() {
     return (
-      <div>GAME OVER</div>
+      <div>
+        <h1>GAME OVER</h1>
+        <p>Do something better with this view...</p>
+      </div>
     );
   }
 }

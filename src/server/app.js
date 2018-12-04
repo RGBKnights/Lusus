@@ -1,33 +1,22 @@
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
+const currentPath = process.cwd();
 
-import { Server, Mongo } from 'boardgame.io/server';
+import { Server } from 'boardgame.io/server';
 import GameCore from '../game/core';
 
 const path = require('path');
 const serve = require('koa-static');
 require('dotenv').config();
-
-var currentPath = process.cwd();
-let dbHost = process.env.MONGO_URI;
-let dbName = process.env.MONGO_DATABASE;
-const port = process.env.PORT || 8000;
-
 console.log('Startup[Environment]', process.env.NODE_ENV);
+
+const dbHost = process.env.MONGO_URI;
 console.log('Startup[Database]', dbHost);
 
-let db = undefined;
-if (dbHost && dbName) {
-  db = new Mongo({ url: dbHost, dbname: dbName })
-}
-
-const server = Server({ 
-  games: [GameCore],
-  db: db
-})
-
+const server = Server({ games: [GameCore] });
 const buildPath = path.join(currentPath, '/build/');
 server.app.use(serve(buildPath));
 
+const port = process.env.PORT || 8000;
 server.run(port, () => {
-  console.log(`Startup[Listening] localhost:${port}/`);
+  console.log(`Startup[Listening] http://localhost:${port}/`);
 });

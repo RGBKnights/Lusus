@@ -5,7 +5,6 @@ import { SetupView } from './views/setup';
 import { PlayView } from './views/play';
 import { OverView } from './views/over';
 import { ToastContainer, toast } from 'react-toastify';
-import { Container } from 'reactstrap';
 
 class GameStateManager extends React.Component {
   static propTypes = {
@@ -49,6 +48,9 @@ class GameStateManager extends React.Component {
     if (this.props.ctx.phase === 'play' && props.ctx.phase !== 'play') {
       toast("Your Turn");
     }
+    if (this.props.ctx.phase === 'resolution' && props.ctx.phase !== 'resolution') {
+      this.props.moves.resolution();
+    }
   }
 
   getView() {
@@ -63,10 +65,10 @@ class GameStateManager extends React.Component {
 
   render() {
     return (
-      <Container className="game-board" fluid>
-        { this.getView() }
+      <section>
+         { this.getView() }
         <ToastContainer autoClose={2000} position={toast.POSITION.BOTTOM_CENTER} />
-      </Container>
+      </section>
     );
   }
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { CUBIT_TYPES } from '../../game/common';
+import { CUBITS } from '../../game/common';
 
 export class CubitLogo extends React.Component {
   static propTypes = {
@@ -165,7 +165,7 @@ export class CubitPattern extends React.Component {
         <path d="M160 102.5L237 102.5L237 179.5L160 179.5L160 102.5Z" style={endStyle}></path>
         <path d="M160 217.5L237 217.5L237 294.5L160 294.5L160 217.5Z" style={altStyle}></path>
         <path d="M160 332.5L237 332.5L237 409.5L160 409.5L160 332.5Z" style={altStyle}></path>
-        <path d="M275 332.5L352 332.5L352 409.5L275 409.5L275 332.5Z" style={altStyle}></path>
+        <path d="M275 332.5L352 332.5L352 409.5L275 409.5L275 332.5Z" style={endStyle}></path>
       </g>
     );
   }
@@ -187,7 +187,7 @@ export class CubitSidestep extends React.Component {
         <path 
            d="M233.373 387.02H165.49L256 477.53l90.51-90.51h-67.883V124.98h67.883L256 34.47l-90.51 90.51h67.883v262.04z"
           style={style}
-          transform="translate(0, 0) rotate(-360, 256, 256)" />
+          transform="translate(0, 0) rotate(90, 256, 256)" />
       </g>
     );
   }
@@ -904,203 +904,242 @@ export function getCubitElement(cubit, isPlayer) {
   }
 
   let type = CubitText;
-  let params = { name: cubit.name, team: team };
+  let params = { name: 'Test', team: team };
 
   switch (cubit.type) {
-    case CUBIT_TYPES.MovementOrthogonal:
+    case CUBITS.Orthogonal:
     {
+      params.name = "Orthogonal";
       type =  CubitOrthogonal;
       break;
     }
-    case CUBIT_TYPES.MovementDiagonal:
+    case CUBITS.Diagonal:
     {
+      params.name = "Diagonal";
       type =  CubitDiagonal;
       break;
     }
-    case CUBIT_TYPES.MovementCardinal:
+    case CUBITS.Cardinal:
     {
+      params.name = "Cardinal";
       type =  CubitCardinal;
       break;
     }
-    case CUBIT_TYPES.MovementJump:
+    case CUBITS.Jump:
     {
+      params.name = "Jump";
       type =  CubitPattern;
       break;
     }
-    case CUBIT_TYPES.MovementSideStep:
+    case CUBITS.SideStep:
     {
+      params.name = "Side tep";
       type =  CubitSidestep;
       break;
     }
-    case CUBIT_TYPES.MovementSwap:
+    case CUBITS.Swap:
     {
+      params.name = "Swap";
       type =  CubitSwap;
       break;
     }
-    case CUBIT_TYPES.DrawPlusOne:
+    case CUBITS.DrawPlusOne:
     {
+      params.name = "Draw +1";
       type =  CubitDrawPlus;
       break;
     }
-    case CUBIT_TYPES.DrawNegOne:
+    case CUBITS.DrawNegOne:
     {
+      params.name = "Draw -1";
       type =  CubitDrawMinus;
       break;
     }
-    case CUBIT_TYPES.DoubleAction:
+    case CUBITS.DoubleAction:
     {
+      params.name = "Double Action";
       type =  CubitDoubleAction;
       break;
     }
-    case CUBIT_TYPES.Condemn:
+    case CUBITS.Condemn:
     {
+      params.name = "Condemn";
       type =  CubitCondemn;
       break;
     }
-    case CUBIT_TYPES.KingOfHill:
+    case CUBITS.KingOfHill:
     {
+      params.name = "King Of Hill";
       type =  CubitKingOfHill;
       break;
     }
-    case CUBIT_TYPES.KingsFlag:
+    case CUBITS.KingsFlag:
     {
+      params.name = "King of Hill";
       type =  CubitKingOfHill;
       break;
     }
-    case CUBIT_TYPES.Timebomb:
+    case CUBITS.Timebomb:
     {
+      params.name = "Timebomb";
       type =  CubitTimebomb;
       params.value = cubit.data.amount;
       break;
     }
-    case CUBIT_TYPES.Reckless:
+    case CUBITS.Reckless:
     {
+      params.name = "Reckless";
       type =  CubitReckless;
       params.value = cubit.data.amount;
       break;
     }
-    case CUBIT_TYPES.BlinkDodge:
+    case CUBITS.BlinkDodge:
     {
+      params.name = "Blink Dodge";
       type =  CubitBlinkDodge;
       break;
     }
-    case CUBIT_TYPES.CostofPower:
+    case CUBITS.CostofPower:
     {
+      params.name = "Cost of Power";
       type =  CubitCostofPower;
       break;
     }
-    case CUBIT_TYPES.Encumber:
+    case CUBITS.Encumber:
     {
+      params.name = "Encumber";
       type =  CubitEncumber;
       break;
     }
-    case CUBIT_TYPES.Enrage:
+    case CUBITS.Enrage:
     {
+      params.name = "Enrage";
       type =  CubitEnrage;
       break;
     }
-    case CUBIT_TYPES.ForgottenPast:
+    case CUBITS.ForgottenPast:
     {
+      params.name = "ForgottenPast";
       type =  CubitForgottenPast;
       break;
     }
-    case CUBIT_TYPES.Heirloom:
+    case CUBITS.Heirloom:
     {
+      params.name = "Heirloom";
       type =  CubitHeirloom;
       break;
     }
-    case CUBIT_TYPES.Immunity:
+    case CUBITS.Immunity:
     {
+      params.name = "Immunity";
       type =  CubitImmunity;
       break;
     }
-    case CUBIT_TYPES.Knowledge:
+    case CUBITS.Knowledge:
     {
+      params.name = "Knowledge";
       type =  CubitKnowledge;
       break;
     }
-    case CUBIT_TYPES.Looter:
+    case CUBITS.Looter:
     {
+      params.name = "Looter";
       type =  CubitLooter;
       break;
     }
-    case CUBIT_TYPES.Nab:
+    case CUBITS.Nab:
     {
+      params.name = "Nab";
       type =  CubitNab;
       break;
     }
-    case CUBIT_TYPES.Passify:
+    case CUBITS.Passify:
     {
+      params.name = "Passify";
       type =  CubitPassify;
       break;
     }
-    case CUBIT_TYPES.Poisoned:
+    case CUBITS.Poisoned:
     {
+      params.name = "Poisoned";
       type =  CubitPoisoned;
       break;
     }
-    case CUBIT_TYPES.Sacrifice:
+    case CUBITS.Sacrifice:
     {
+      params.name = "Sacrifice";
       type =  CubitSacrifice;
       break;
     }
-    case CUBIT_TYPES.StickyFeet:
+    case CUBITS.StickyFeet:
     {
+      params.name = "Sticky Feet";
       type =  CubitStickyFeet;
       break;
     }
-    case CUBIT_TYPES.RemovalStrong:
+    case CUBITS.RemovalStrong:
     {
+      params.name = "Removal Strong";
       type =  CubitRemovalStrong;
       break;
     }
-    case CUBIT_TYPES.RemovalWeak:
+    case CUBITS.RemovalWeak:
     {
+      params.name = "Removal Weak";
       type =  CubitRemovalWeak;
       break;
     }
-    case CUBIT_TYPES.ArenaRock:
+    case CUBITS.ArenaRock:
     {
+      params.name = "Arena Rock";
       type =  CubitArenaRock;
       break;
     }
-    case CUBIT_TYPES.BacktoBasics:
+    case CUBITS.BacktoBasics:
     {
+      params.name = "Back to Basics";
       type =  CubitBacktoBasics;
       break;
     }
-    case CUBIT_TYPES.DarkMagic:
+    case CUBITS.DarkMagic:
     {
+      params.name = "Dark Magic";
       type =  CubitDarkMagic;
       break;
     } 
-    case CUBIT_TYPES.Jumper:
+    case CUBITS.Jumper:
     {
+      params.name = "v";
       type =  CubitJumper;
       break;
     }
-    case CUBIT_TYPES.Mulligan:
+    case CUBITS.Mulligan:
     {
+      params.name = "Mulligan";
       type =  CubitMulligan;
       break;
     } 
-    case CUBIT_TYPES.Resourceful:
+    case CUBITS.Resourceful:
     {
+      params.name = "Resourceful";
       type =  CubitResourceful;
       break;
     }
-    case CUBIT_TYPES.Revert:
+    case CUBITS.Revert:
     {
+      params.name = "v";
       type =  CubitRevert;
       break;
     }
-    case CUBIT_TYPES.RockThrow:
+    case CUBITS.RockThrow:
     {
+      params.name = "Rock Throw";
       type =  CubitRockThrow;
       break;
     }
-    case CUBIT_TYPES.ThunderDome:
+    case CUBITS.ThunderDome:
     {
+      params.name = "Thunder Dome";
       type =  CubitThunderDome;
       break;
     }

@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { CubitText } from './cubits';
-import { UNIT_TYPES, UNIT_FILE } from '../../game/common';
+import { UNITS } from '../../game/common';
 
 export class UnitBishop extends React.Component {
   static propTypes = {
@@ -151,48 +151,49 @@ export function getUnitElement(unit) {
   let teamColors = {'0': 'w', '1': 'b'};
 
   let unitColors = {};
-  unitColors[UNIT_FILE.A] = '#FF5733';
-  unitColors[UNIT_FILE.B] = '#F9FF33';
-  unitColors[UNIT_FILE.C] = '#008000';
-  unitColors[UNIT_FILE.D] = '#33FFA8';
-  unitColors[UNIT_FILE.E] = '#33F6FF';
-  unitColors[UNIT_FILE.F] = '#3346FF';
-  unitColors[UNIT_FILE.G] = '#800080';
-  unitColors[UNIT_FILE.H] = '#FF0000';
+  
+  unitColors[0] = '#33F6FF';
+  unitColors[1] = '#3346FF';
+  unitColors[2] = '#800080';
+  unitColors[3] = '#E20000';
+  unitColors[4] = '#FF5733';
+  unitColors[5] = '#F9FF33';
+  unitColors[6] = '#008000';
+  unitColors[7] = '#33FFA8';
 
   let team =  teamColors[unit.ownership];
   let color = unitColors[unit.file];
 
   let type = CubitText;
-  let params = { name: unit.name, team: team, color: color };
+  let params = { name: unit.type, team: team, color: color };
 
   switch (unit.type) {
-    case UNIT_TYPES.Bishop:
+    case UNITS.Bishop:
     {
       type = UnitBishop;
       break;
     }
-    case UNIT_TYPES.King:
+    case UNITS.King:
     {
       type = UnitKing;
       break;
     }
-    case UNIT_TYPES.Knight:
+    case UNITS.Knight:
     {
       type = UnitKnight;
       break;
     }
-    case UNIT_TYPES.Pawn:
+    case UNITS.Pawn:
     {
       type = UnitPawn;
       break;
     }
-    case UNIT_TYPES.Queen:
+    case UNITS.Queen:
     {
       type = UnitQueen;
       break;
     }
-    case UNIT_TYPES.Rook:
+    case UNITS.Rook:
     {
       type = UnitRook;
       break;

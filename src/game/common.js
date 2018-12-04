@@ -7,7 +7,7 @@ export const UNITS = {
   Bishop: 'B',
   Queen: 'Q',
   King: 'K',
-}
+};
 
 export const CUBITS = {
   Unknown: 0,
@@ -38,7 +38,7 @@ export const CUBITS = {
   // OTU - Removal
   Destroy: 1019,
   Eliminate: 1020,
-}
+};
 
 export const CUBIT_TYPES = {
   Unknown: 0,
@@ -52,18 +52,40 @@ export const CUBIT_TYPES = {
   Capture: 204,
   Trap: 205,
   Removal: 206,
-}
-
-export const TARGETS = {
-  Unknown: 0,
-  Empty: 1,
-  Unit: 2,
-  Cubit: 3,
-}
+};
 
 export const SPACE_TYPES = {
   Unknown: 0,
   Normal: 1,
   Empty: 2,
   Obstacle: 3
+};
+
+export const LOCATIONS = {
+  Unknown: 0,
+  Board: 1,
+  MyField: 2,
+  OpponentsField: 3
+};
+
+export const PLACEMENT = {
+  Unknown: 0,
+  Empty: 1,
+  Cubit: 2,
+  Unit: 3
+};
+
+export const DIRECTIONS = {
+  Unknown: 0,
+  Forward: 1,
+  Back: 2,
+  Left: 3,
+  Right: 4,
+};
+
+export const TARGETS = {
+  Unknown: 0,
+  Empty: 1,
+  Enemy: 2,
+  Friendly: 3,
 };

@@ -18,7 +18,7 @@ class MatchPage extends React.Component {
     const ClientApp = Client({
       game: GameCore,
       board: GameStateManager,
-      debug: true,
+      debug: false,
       multiplayer: { server: process.env.REACT_APP_SERVER_URL }
     });
 

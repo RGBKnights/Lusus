@@ -65,85 +65,89 @@ class LandingPage extends React.Component {
 
   render() {
     return (
-      <Container className="p-0">
-        <Navbar color="light" expand="md" className="rounded-bottom p-0">
-          <NavbarBrand className="p-0" style={{color: '#FFFFFF'}}>
-            <img className="p-1"  height="32" src="/favicon.ico" alt="Logo"></img>
-            <strong className="p-1">Lusus</strong> <small>Tactical Chess</small>
-          </NavbarBrand>
-          <Nav></Nav>
+      <section className="p-0">
+        <Navbar color="dark" dark  expand="md" className="fixed-top rounded-bottom">
+          <Container>
+            <NavbarBrand className="p-0" href="/">
+              <img className="p-1" height="32" src="/favicon.ico" alt="Logo"></img>
+              <strong className="p-1">Lusus <small>Tactical Chess</small></strong>
+            </NavbarBrand>
+            <Nav></Nav>
+          </Container>
         </Navbar>
-        <br />
-        <Row>
-          <Col>
-            <div className="card">
-              <div className="card-header text-center">
-              <h5 className="p-1">The Basics</h5>
+        <Container>
+          <br /><br /><br /><br />
+          <Row>
+            <Col>
+              <div className="card">
+                <div className="card-header text-center">
+                <h5 className="p-1">The Basics</h5>
+                </div>
+                <ul className="list-group list-group-flush ">
+                  <li className="list-group-item text-center">
+                    <p>
+                      Hello!  Welcome to Lusus.  
+                      The game that is like chess but with even more rules!  
+                      To begin both you and your opponent will need to be on this screen on different devices.  
+                      Then select the appropriate button to the right, if you are player 1 then click Start Match if you are player 2 select Join Match.  
+                      Player one will need to send player 2 the game code, it will be added to your clipboard by selecting the share icon in the upper right hand corner.
+                    </p>
+                    <p>
+                      For game rules and cubits collection please vist the
+                      <br />
+                      <Button onClick={this.onHelp} color="secondary">Help</Button>
+                    </p>
+                  </li>
+                </ul>
               </div>
-              <ul className="list-group list-group-flush ">
-                <li className="list-group-item text-center">
-                  <p>
-                    Hello!  Welcome to Lusus.  
-                    The game that is like chess but with even more rules!  
-                    To begin both you and your opponent will need to be on this screen on different devices.  
-                    Then select the appropriate button to the right, if you are player 1 then click Start Match if you are player 2 select Join Match.  
-                    Player one will need to send player 2 the game code, it will be added to your clipboard by selecting the share icon in the upper right hand corner.
-                  </p>
-                  <p>
-                    For game rules and cubits collection please vist the
-                    <br />
-                    <Button onClick={this.onHelp} color="secondary">Help</Button>
-                  </p>
-                </li>
-              </ul>
-            </div>
-          </Col>
-          <Col>
-            <div className="card">
-              <div className="card-header text-center">
-                <h5 className="p-1">New Match</h5>
+            </Col>
+            <Col>
+              <div className="card">
+                <div className="card-header text-center">
+                  <h5 className="p-1">New Match</h5>
+                </div>
+                <ul className="list-group list-group-flush ">
+                  <li className="list-group-item  text-center">
+                    <Form>
+                      <FormGroup>
+                        <Input type="select" name="select" id="newPlayer" value={this.state.player} onChange={this.onPlayerChange}>
+                          <option>Random</option>
+                          <option value="0">White</option>
+                          <option value="1">Black</option>
+                        </Input>
+                      </FormGroup>
+                      <FormGroup>
+                        <Button onClick={this.onNewMatch} color="success">Start Match</Button>
+                      </FormGroup>
+                    </Form>
+                  </li>
+                </ul>
               </div>
-              <ul className="list-group list-group-flush ">
-                <li className="list-group-item  text-center">
-                  <Form>
-                    <FormGroup>
-                      <Input type="select" name="select" id="newPlayer" value={this.state.player} onChange={this.onPlayerChange}>
-                        <option>Random</option>
-                        <option value="0">White</option>
-                        <option value="1">Black</option>
-                      </Input>
-                    </FormGroup>
-                    <FormGroup>
-                      <Button onClick={this.onNewMatch} color="success">Start Match</Button>
-                    </FormGroup>
-                  </Form>
-                </li>
-              </ul>
-            </div>
-            <br />
-            <div className="card">
-              <div className="card-header text-center">
-              <h5 className="p-1">Join Match</h5>
+              <br />
+              <div className="card">
+                <div className="card-header text-center">
+                <h5 className="p-1">Join Match</h5>
+                </div>
+                <ul className="list-group list-group-flush ">
+                  <li className="list-group-item text-center">
+                    <Form>
+                      <FormGroup>
+                        <Label>An opponent needs to share a code which can then be used to join or view their match.</Label>
+                        <Input type="text" name="code" id="matchCode" placeholder="Code" value={this.state.code} onChange={this.onCodeChange} />
+                      </FormGroup>
+                      <FormGroup>
+                        <Button onClick={this.onJoinMatch} color="primary">Join Match</Button> 
+                        &nbsp;
+                        <Button onClick={this.onViewMatch} color="info">View Match</Button>
+                      </FormGroup>
+                    </Form>
+                  </li>
+                </ul>
               </div>
-              <ul className="list-group list-group-flush ">
-                <li className="list-group-item text-center">
-                  <Form>
-                    <FormGroup>
-                      <Label>An opponent needs to share a code which can then be used to join or view their match.</Label>
-                      <Input type="text" name="code" id="matchCode" placeholder="Code" value={this.state.code} onChange={this.onCodeChange} />
-                    </FormGroup>
-                    <FormGroup>
-                      <Button onClick={this.onJoinMatch} color="primary">Join Match</Button> 
-                      &nbsp;
-                      <Button onClick={this.onViewMatch} color="info">View Match</Button>
-                    </FormGroup>
-                  </Form>
-                </li>
-              </ul>
-            </div>
-          </Col>
-        </Row>
-      </Container>
+            </Col>
+          </Row>
+        </Container>
+      </section>
     );
   }
 }

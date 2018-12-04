@@ -1,5 +1,5 @@
 import { INVALID_MOVE } from 'boardgame.io/core';
-import { SPACE_TYPES } from './common';
+import { SPACE_TYPES, /*UNITS,*/ CUBITS } from './common';
 
 const shortid = require('shortid');
 
@@ -12,12 +12,14 @@ export class Tile {
 }
 
 export class Unit {
-  constructor(t, o, i, p) {
+  constructor(t, o, p) {
     this.id = shortid.generate();
     this.type = t;
     this.ownership = o;
-    this.identifier = i;
     this.position = p;
+    this.rank = t === 'P' ? 0 : 1; 
+    this.file = p.x;
+    this.slots = [null, null, null];
   }
 }
 
@@ -35,9 +37,9 @@ export class GameLogic {
     let data = {
       next: shortid.generate(),
       rules: {},
+      log: [],
       field: [],
       board: [],
-      afterlife: [],
       players: {}
     };
 
@@ -51,50 +53,57 @@ export class GameLogic {
         moves: 1,
       };
     }
+    
     return data;
   }
 
   static getDefaultSetup(G, ctx) {
     let data = {
+      name: 'Default',
       board: [],
       field: [
         // Black - PLayer 1
-        { type: 'R', ownership: '1', identifier: '#FF5733', position: {x:0, y:0} },
-        { type: 'N', ownership: '1', identifier: '#F9FF33', position: {x:1, y:0} },
-        { type: 'B', ownership: '1', identifier: '#008000', position: {x:2, y:0} },
-        { type: 'Q', ownership: '1', identifier: '#33FFA8', position: {x:3, y:0} },
-        { type: 'K', ownership: '1', identifier: '#33F6FF', position: {x:4, y:0} },
-        { type: 'B', ownership: '1', identifier: '#3346FF', position: {x:5, y:0} },
-        { type: 'N', ownership: '1', identifier: '#800080', position: {x:6, y:0} },
-        { type: 'R', ownership: '1', identifier: '#FF0000', position: {x:7, y:0} },
-        { type: 'P', ownership: '1', identifier: '#FF5733', position: {x:0, y:1} },
-        { type: 'P', ownership: '1', identifier: '#F9FF33', position: {x:1, y:1} },
-        { type: 'P', ownership: '1', identifier: '#008000', position: {x:2, y:1} },
-        { type: 'P', ownership: '1', identifier: '#33FFA8', position: {x:3, y:1} },
-        { type: 'P', ownership: '1', identifier: '#33F6FF', position: {x:4, y:1} },
-        { type: 'P', ownership: '1', identifier: '#3346FF', position: {x:5, y:1} },
-        { type: 'P', ownership: '1', identifier: '#800080', position: {x:6, y:1} },
-        { type: 'P', ownership: '1', identifier: '#FF0000', position: {x:7, y:1} },
+        { type: 'R', player: '1', position: {x:0, y:0} }, // UNITS.Rook
+        { type: 'N', player: '1', position: {x:1, y:0} },
+        { type: 'B', player: '1', position: {x:2, y:0} },
+        { type: 'Q', player: '1', position: {x:3, y:0} },
+        { type: 'K', player: '1', position: {x:4, y:0} },
+        { type: 'B', player: '1', position: {x:5, y:0} },
+        { type: 'N', player: '1', position: {x:6, y:0} },
+        { type: 'R', player: '1', position: {x:7, y:0} },
+        { type: 'P', player: '1', position: {x:0, y:1} },
+        { type: 'P', player: '1', position: {x:1, y:1} },
+        { type: 'P', player: '1', position: {x:2, y:1} },
+        { type: 'P', player: '1', position: {x:3, y:1} },
+        { type: 'P', player: '1', position: {x:4, y:1} },
+        { type: 'P', player: '1', position: {x:5, y:1} },
+        { type: 'P', player: '1', position: {x:6, y:1} },
+        { type: 'P', player: '1', position: {x:7, y:1} },
         // White - Player 0
-        { type: 'P', ownership: '0', identifier: '#FF5733', position: {x:0, y:6} },
-        { type: 'P', ownership: '0', identifier: '#F9FF33', position: {x:1, y:6} },
-        { type: 'P', ownership: '0', identifier: '#008000', position: {x:2, y:6} },
-        { type: 'P', ownership: '0', identifier: '#33FFA8', position: {x:3, y:6} },
-        { type: 'P', ownership: '0', identifier: '#33F6FF', position: {x:4, y:6} },
-        { type: 'P', ownership: '0', identifier: '#3346FF', position: {x:5, y:6} },
-        { type: 'P', ownership: '0', identifier: '#800080', position: {x:6, y:6} },
-        { type: 'P', ownership: '0', identifier: '#FF0000', position: {x:7, y:6} },
-        { type: 'R', ownership: '0', identifier: '#FF5733', position: {x:0, y:7} },
-        { type: 'N', ownership: '0', identifier: '#F9FF33', position: {x:1, y:7} },
-        { type: 'B', ownership: '0', identifier: '#008000', position: {x:2, y:7} },
-        { type: 'Q', ownership: '0', identifier: '#33FFA8', position: {x:3, y:7} },
-        { type: 'K', ownership: '0', identifier: '#33F6FF', position: {x:4, y:7} },
-        { type: 'B', ownership: '0', identifier: '#3346FF', position: {x:5, y:7} },
-        { type: 'N', ownership: '0', identifier: '#800080', position: {x:6, y:7} },
-        { type: 'R', ownership: '0', identifier: '#FF0000', position: {x:7, y:7} },
+        { type: 'P', player: '0', position: {x:0, y:6} },
+        { type: 'P', player: '0', position: {x:1, y:6} },
+        { type: 'P', player: '0', position: {x:2, y:6} },
+        { type: 'P', player: '0', position: {x:3, y:6} },
+        { type: 'P', player: '0', position: {x:4, y:6} },
+        { type: 'P', player: '0', position: {x:5, y:6} },
+        { type: 'P', player: '0', position: {x:6, y:6} },
+        { type: 'P', player: '0', position: {x:7, y:6} },
+        { type: 'R', player: '0', position: {x:0, y:7} },
+        { type: 'N', player: '0', position: {x:1, y:7} },
+        { type: 'B', player: '0', position: {x:2, y:7} },
+        { type: 'Q', player: '0', position: {x:3, y:7} },
+        { type: 'K', player: '0', position: {x:4, y:7} },
+        { type: 'B', player: '0', position: {x:5, y:7} },
+        { type: 'N', player: '0', position: {x:6, y:7} },
+        { type: 'R', player: '0', position: {x:7, y:7} },
       ],
       deck: [
-        { type: 0, amount: 1 },
+        { type: CUBITS.Orthogonal, amount: 1 },
+        { type: CUBITS.Diagonal, amount: 1 },
+        { type: CUBITS.Cardinal, amount: 1 },
+        { type: CUBITS.SideStep, amount: 1 },
+        { type: CUBITS.Swap, amount: 1 },
+        { type: CUBITS.Jump, amount: 1 },
       ],
       rules: {
         passPlay: true,
@@ -117,6 +126,7 @@ export class GameLogic {
   static config(G, ctx, data) {
     let defaults = GameLogic.getDefaultSetup();
     var config = { ...data, ...defaults };
+    // Note this may not work... look at clone()
 
     // Override the rules
     G.rules = config.rules;
@@ -129,19 +139,17 @@ export class GameLogic {
 
     // Field
     for (const item of config.field) {
-      let unit = new Unit(item.type, item.ownership, item.identifier, item.position);
+      let unit = new Unit(item.type, item.player, item.position);
       G.field.push(unit);
     }
 
     // Bag
     for (let i = 0; i < ctx.numPlayers; i++) {
       let p = i.toString();
-      let player = G.players[p];
-
       for (const item of config.deck) {
         for (let a = 0; a < item.amount; a++) {
           let cubit = new Cubit(item.type, p);
-          player.bag.push(cubit);
+          G.players[p].bag.push(cubit);
         }
       }
     }
@@ -149,45 +157,129 @@ export class GameLogic {
     // Hand
     for (let i = 0; i < ctx.numPlayers; i++) {
       let p = i.toString();
-      let player = G.players[p];
-      let bag = ctx.random.Shuffle(player.bag);
-
-      for (let a = 0; a < player.draws; a++) {
-        let cubit = bag.pop();
-        player.hand.push(cubit);
+      G.players[p].bag = ctx.random.Shuffle(G.players[p].bag);
+      for (let a = 0; a < G.players[p].draws; a++) {
+        let cubit = G.players[p].bag.pop();
+        G.players[p].hand.push(cubit);
       }
     }
+
+    // G.log.push();
 
     ctx.events.endPhase();
   }
 
   static skip(G, ctx) {
-    return INVALID_MOVE;
-    // G.players[ctx.currentPlayer].actions = 0;
+    if(G.rules.freePass === false) {
+      let length = G.players[ctx.currentPlayer].hand.length;
+      if(length === 0) {
+        return INVALID_MOVE;
+      } else {
+        let index = ctx.random.Die(length) - 1;
+        GameLogic.hand(G, ctx, index);
+      }
+    }
+
+    if(ctx.phase === 'play') {
+      G.players[ctx.currentPlayer].actions = 0;
+    } else if(ctx.phase === 'move') {
+      G.players[ctx.currentPlayer].moves = 0;
+    }
+
+    // G.log.push();
   }
 
-  static play(G, ctx) {
+  static placement(G, ctx, source, destination) {
+    // Get source from hand
+    let s = GameLogic.hand(G, ctx, source.slot);
+    
+    //  Move it to unit slot
+    let d = G.field.find(_ => _.id === destination.unit);
+    d.slots[destination.slot] = s;
+
+    // Update state counters
     G.players[ctx.currentPlayer].actions--;
+
+    // G.log.push();
   }
 
-  static moves(G, ctx) {
+  static movement(G, ctx, source, destination) {
+    // Move source
+    let s = G.field.find(_ => _.id === source.unit);
+    s.position.x = destination.position.x;
+    s.position.y = destination.position.y;
+
+    // Capture destination
+    let d = G.field.find(_ => _.id === destination.unit);
+    if(d) {
+      d.position = null;
+    }
+
+    // Update state counters
     G.players[ctx.currentPlayer].moves--;
+
+    // G.log.push();
   }
 
   static resolution(G, ctx) {
+    // Update #s from cubits 
     G.players[ctx.currentPlayer].actions = 1;
     G.players[ctx.currentPlayer].moves = 1;
+    G.players[ctx.currentPlayer].draws = 3;
+
+    GameLogic.draw(G, ctx);
+
     ctx.events.endTurn();
     ctx.events.endPhase();
   }
 
-  static hasNoActions(G, ctx)  {
-    return G.players[ctx.currentPlayer].actions === 0;
+  static draw(G, ctx) {
+    while(G.players[ctx.currentPlayer].hand.length > 0) {
+      let cubit = G.players[ctx.currentPlayer].hand.pop();
+      G.players[ctx.currentPlayer].bag.push(cubit);
+    }
+
+    if(G.players[ctx.currentPlayer].draws > G.players[ctx.currentPlayer].bag.length && G.rules.freeDraw === false) {
+      let opponent = ctx.currentPlayer === "0" ? "1" : "0";
+      ctx.events.endGame(opponent);
+      return;
+    }
+
+    G.players[ctx.currentPlayer].bag = ctx.random.Shuffle(G.players[ctx.currentPlayer].bag);
+    for (let i = 0; i < G.players[ctx.currentPlayer].draws; i++) {
+      let cubit = G.players[ctx.currentPlayer].bag.pop();
+      G.players[ctx.currentPlayer].hand.push(cubit);
+    }
+
+    // G.log.push();
   }
 
-  static hasNoMoves(G, ctx)  {
-    return G.players[ctx.currentPlayer].moves === 0;
+  static hand(G, ctx, slot) {
+    let cubit = G.players[ctx.currentPlayer].hand[slot];
+    if(cubit) {
+      let delta = G.players[ctx.currentPlayer].hand.filter(_ => _.id !== cubit.id);
+      G.players[ctx.currentPlayer].hand = delta;
+      return cubit;
+
+      // G.log.push();
+    } else {
+      return undefined;
+    }
   }
 
-  
+  static isEndOfPlacement(G, ctx)  {
+    if(G.rules.passPlay && G.rules.freePass) {
+      return false;
+    } else {
+      return G.players[ctx.currentPlayer].actions === 0;  
+    }
+  }
+
+  static isEndOfMovement(G, ctx)  {
+    if(G.rules.passMove && G.rules.freePass) {
+      return false;
+    } else {
+      return G.players[ctx.currentPlayer].moves === 0;
+    }
+  }
 }

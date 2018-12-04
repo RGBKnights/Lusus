@@ -6,8 +6,8 @@ import MatchPage from './client/pages/match';
 
 import 'react-toastify/dist/ReactToastify.min.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-// import './client/css/bootstrap.min.css';
-// import './client/css/app.css';
+import './client/css/bootstrap.min.css';
+import './client/css/app.css';
 
 const AppRouter = () => (
   <Router>

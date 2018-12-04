@@ -1,4 +1,4 @@
-import { Game, TurnOrder} from 'boardgame.io/core';
+import { Game, TurnOrder } from 'boardgame.io/core';
 import { GameLogic } from '../game/logic'
 
 const GameCore = Game({
@@ -11,11 +11,14 @@ const GameCore = Game({
       skip(G, ctx) {
         return GameLogic.skip(G, ctx);
       },
-      play(G, ctx) {
-        return GameLogic.play(G, ctx);
+      placement(G, ctx, source, destination) {
+        return GameLogic.placement(G, ctx, source, destination);
       },
-      move(G, ctx) {
-        return GameLogic.move(G, ctx);
+      movement(G, ctx, source, destination) {
+        return GameLogic.movement(G, ctx, source, destination);
+      },
+      resolution(G, ctx) {
+        return GameLogic.resolution(G, ctx);
       },
     },
     flow: {
@@ -32,23 +35,21 @@ const GameCore = Game({
         },
         play: {
           next: 'move',
-          allowedMoves: ['skip','play'],
+          allowedMoves: ['skip','placement'],
           endPhaseIf: (G, ctx) => {
-            return GameLogic.hasNoActions(G, ctx);
+            return GameLogic.isEndOfPlacement(G, ctx);
           },
         },
         move: {
           next: 'resolution',
-          allowedMoves: ['move'],
+          allowedMoves: ['movement'],
           endPhaseIf: (G, ctx) => {
-            return GameLogic.hasNoMoves(G, ctx);
+            return GameLogic.isEndOfMovement(G, ctx);
           },
         },
         resolution: {
           next: 'play',
-          onPhaseBegin: (G, ctx) => { 
-            GameLogic.resolution(G, ctx);
-          },
+          allowedMoves: ['resolution']
         }
       }
     }
