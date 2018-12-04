@@ -162,7 +162,7 @@ export function getUnitElement(unit) {
   unitColors[7] = '#33FFA8';
 
   let team =  teamColors[unit.ownership];
-  let color = unitColors[unit.file];
+  let color = unitColors[unit.layout.f];
 
   let type = CubitText;
   let params = { name: unit.type, team: team, color: color };

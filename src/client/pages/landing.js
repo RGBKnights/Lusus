@@ -66,7 +66,7 @@ class LandingPage extends React.Component {
   render() {
     return (
       <section className="p-0">
-        <Navbar color="dark" dark  expand="md" className="fixed-top rounded-bottom">
+        <Navbar color="light" light  expand="md" className="fixed-top rounded-bottom">
           <Container>
             <NavbarBrand className="p-0" href="/">
               <img className="p-1" height="32" src="/favicon.ico" alt="Logo"></img>
@@ -75,8 +75,7 @@ class LandingPage extends React.Component {
             <Nav></Nav>
           </Container>
         </Navbar>
-        <Container>
-          <br /><br /><br /><br />
+        <Container className="body">
           <Row>
             <Col>
               <div className="card">

@@ -1,9 +1,5 @@
-import { TARGETS, CUBITS, DIRECTIONS } from './common';
+import { TARGETS, CUBITS, DIRECTIONS, hasCubits } from './common';
 import { Database } from './database';
-
-function hasCubits(unit, type) {
-  return unit.slots.filter(_ => _ != null).filter(_ => _.type === type).length > 0;
-}
 
 function isValid(player, obstacles, moves, targets, destination) {
   if(destination.x < 0 || destination.x > 7 || destination.y < 0 || destination.y > 7) {
@@ -57,11 +53,11 @@ export function getMoves(G, ctx, id, source) {
 
   let slow = 0;
   if(encumbered) {
-    slow = unit.slots.filter(_ => _ != null).length;
+    slow = unit.cubits.filter(_ => _ != null).length;
   }
 
   let movements = [];
-  for (const cubit of unit.slots) {
+  for (const cubit of unit.cubits) {
     if(cubit) {
       let cubitData = Database.cubits[cubit.type];
       movements = movements.concat(cubitData.movements);

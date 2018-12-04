@@ -1,5 +1,5 @@
 import { INVALID_MOVE } from 'boardgame.io/core';
-import { SPACE_TYPES, /*UNITS,*/ CUBITS } from './common';
+import { SPACE_TYPES, UNITS, CUBITS } from './common';
 
 const shortid = require('shortid');
 
@@ -12,14 +12,14 @@ export class Tile {
 }
 
 export class Unit {
-  constructor(t, o, p) {
+  constructor(t, o, p, l) {
     this.id = shortid.generate();
     this.type = t;
     this.ownership = o;
     this.position = p;
-    this.rank = t === 'P' ? 0 : 1; 
-    this.file = p.x;
-    this.slots = [null, null, null];
+    this.layout = l;
+    this.slots = 3;
+    this.cubits = [];
   }
 }
 
@@ -63,39 +63,39 @@ export class GameLogic {
       board: [],
       field: [
         // Black - PLayer 1
-        { type: 'R', player: '1', position: {x:0, y:0} }, // UNITS.Rook
-        { type: 'N', player: '1', position: {x:1, y:0} },
-        { type: 'B', player: '1', position: {x:2, y:0} },
-        { type: 'Q', player: '1', position: {x:3, y:0} },
-        { type: 'K', player: '1', position: {x:4, y:0} },
-        { type: 'B', player: '1', position: {x:5, y:0} },
-        { type: 'N', player: '1', position: {x:6, y:0} },
-        { type: 'R', player: '1', position: {x:7, y:0} },
-        { type: 'P', player: '1', position: {x:0, y:1} },
-        { type: 'P', player: '1', position: {x:1, y:1} },
-        { type: 'P', player: '1', position: {x:2, y:1} },
-        { type: 'P', player: '1', position: {x:3, y:1} },
-        { type: 'P', player: '1', position: {x:4, y:1} },
-        { type: 'P', player: '1', position: {x:5, y:1} },
-        { type: 'P', player: '1', position: {x:6, y:1} },
-        { type: 'P', player: '1', position: {x:7, y:1} },
+        { type: UNITS.Rook,   player: '1', position: {x:0, y:0}, layout: { f:0, r:1 } },
+        { type: UNITS.Knight, player: '1', position: {x:1, y:0}, layout: { f:1, r:1 } },
+        { type: UNITS.Bishop, player: '1', position: {x:2, y:0}, layout: { f:2, r:1 } },
+        { type: UNITS.Queen,  player: '1', position: {x:3, y:0}, layout: { f:3, r:1 } },
+        { type: UNITS.King,   player: '1', position: {x:4, y:0}, layout: { f:4, r:1 } },
+        { type: UNITS.Bishop, player: '1', position: {x:5, y:0}, layout: { f:5, r:1 } },
+        { type: UNITS.Knight, player: '1', position: {x:6, y:0}, layout: { f:6, r:1 } },
+        { type: UNITS.Rook,   player: '1', position: {x:7, y:0}, layout: { f:7, r:1 } },
+        { type: UNITS.Pawn, player: '1', position: {x:0, y:1}, layout: { f:0, r:0 } },
+        { type: UNITS.Pawn, player: '1', position: {x:1, y:1}, layout: { f:1, r:0 } },
+        { type: UNITS.Pawn, player: '1', position: {x:2, y:1}, layout: { f:2, r:0 } },
+        { type: UNITS.Pawn, player: '1', position: {x:3, y:1}, layout: { f:3, r:0 } },
+        { type: UNITS.Pawn, player: '1', position: {x:4, y:1}, layout: { f:4, r:0 } },
+        { type: UNITS.Pawn, player: '1', position: {x:5, y:1}, layout: { f:5, r:0 } },
+        { type: UNITS.Pawn, player: '1', position: {x:6, y:1}, layout: { f:6, r:0 } },
+        { type: UNITS.Pawn, player: '1', position: {x:7, y:1}, layout: { f:7, r:0 } },
         // White - Player 0
-        { type: 'P', player: '0', position: {x:0, y:6} },
-        { type: 'P', player: '0', position: {x:1, y:6} },
-        { type: 'P', player: '0', position: {x:2, y:6} },
-        { type: 'P', player: '0', position: {x:3, y:6} },
-        { type: 'P', player: '0', position: {x:4, y:6} },
-        { type: 'P', player: '0', position: {x:5, y:6} },
-        { type: 'P', player: '0', position: {x:6, y:6} },
-        { type: 'P', player: '0', position: {x:7, y:6} },
-        { type: 'R', player: '0', position: {x:0, y:7} },
-        { type: 'N', player: '0', position: {x:1, y:7} },
-        { type: 'B', player: '0', position: {x:2, y:7} },
-        { type: 'Q', player: '0', position: {x:3, y:7} },
-        { type: 'K', player: '0', position: {x:4, y:7} },
-        { type: 'B', player: '0', position: {x:5, y:7} },
-        { type: 'N', player: '0', position: {x:6, y:7} },
-        { type: 'R', player: '0', position: {x:7, y:7} },
+        { type: UNITS.Pawn, player: '0', position: {x:0, y:6}, layout: { f:0, r:0 } },
+        { type: UNITS.Pawn, player: '0', position: {x:1, y:6}, layout: { f:1, r:0 } },
+        { type: UNITS.Pawn, player: '0', position: {x:2, y:6}, layout: { f:2, r:0 } },
+        { type: UNITS.Pawn, player: '0', position: {x:3, y:6}, layout: { f:3, r:0 } },
+        { type: UNITS.Pawn, player: '0', position: {x:4, y:6}, layout: { f:4, r:0 } },
+        { type: UNITS.Pawn, player: '0', position: {x:5, y:6}, layout: { f:5, r:0 } },
+        { type: UNITS.Pawn, player: '0', position: {x:6, y:6}, layout: { f:6, r:0 } },
+        { type: UNITS.Pawn, player: '0', position: {x:7, y:6}, layout: { f:7, r:0 } },
+        { type: UNITS.Rook,   player: '0', position: {x:0, y:7}, layout: { f:0, r:1 } },
+        { type: UNITS.Knight, player: '0', position: {x:1, y:7}, layout: { f:1, r:1 } },
+        { type: UNITS.Bishop, player: '0', position: {x:2, y:7}, layout: { f:2, r:1 } },
+        { type: UNITS.Queen,  player: '0', position: {x:3, y:7}, layout: { f:3, r:1 } },
+        { type: UNITS.King,   player: '0', position: {x:4, y:7}, layout: { f:4, r:1 } },
+        { type: UNITS.Bishop, player: '0', position: {x:5, y:7}, layout: { f:5, r:1 } },
+        { type: UNITS.Knight, player: '0', position: {x:6, y:7}, layout: { f:6, r:1 } },
+        { type: UNITS.Rook,   player: '0', position: {x:7, y:7}, layout: { f:7, r:1 } },
       ],
       deck: [
         { type: CUBITS.Orthogonal, amount: 1 },
@@ -139,7 +139,7 @@ export class GameLogic {
 
     // Field
     for (const item of config.field) {
-      let unit = new Unit(item.type, item.player, item.position);
+      let unit = new Unit(item.type, item.player, item.position, item.layout);
       G.field.push(unit);
     }
 
@@ -194,8 +194,8 @@ export class GameLogic {
     let s = GameLogic.hand(G, ctx, source.slot);
     
     //  Move it to unit slot
-    let d = G.field.find(_ => _.id === destination.unit);
-    d.slots[destination.slot] = s;
+    let d = G.field.find(_ => _.id === destination.unit.id);
+    d.cubits[destination.slot] = s;
 
     // Update state counters
     G.players[ctx.currentPlayer].actions--;
@@ -205,16 +205,21 @@ export class GameLogic {
 
   static movement(G, ctx, source, destination) {
     // Move source
-    let s = G.field.find(_ => _.id === source.unit);
+    let s = G.field.find(_ => _.id === source.unit.id);
     s.position.x = destination.position.x;
     s.position.y = destination.position.y;
 
-    // Capture destination
-    let d = G.field.find(_ => _.id === destination.unit);
-    if(d) {
-      d.position = null;
+    // Capture / Swap destination
+    if(destination.unit) {
+      let d = G.field.find(_ => _.id === destination.unit.id);
+      if(s.ownership === d.ownership) {
+        d.position.x = source.position.x;
+        d.position.y = source.position.y;
+      } else {
+        d.position = null;
+      }
     }
-
+    
     // Update state counters
     G.players[ctx.currentPlayer].moves--;
 

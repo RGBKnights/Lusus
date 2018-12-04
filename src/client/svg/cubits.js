@@ -898,10 +898,12 @@ export class CubitThunderDome extends React.Component {
 export function getCubitElement(cubit, isPlayer) {
   let teamColors = {'0': 'w', '1': 'b'};
   let team =  teamColors[cubit.ownership];
-
+  
+  /*
   if(cubit.hidden === true && isPlayer) {
     return React.createElement(CubitLogo, { name: "Hidden", team: team });
   }
+  */
 
   let type = CubitText;
   let params = { name: 'Test', team: team };

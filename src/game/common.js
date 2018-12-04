@@ -89,3 +89,7 @@ export const TARGETS = {
   Enemy: 2,
   Friendly: 3,
 };
+
+export function hasCubits(unit, type) {
+  return unit.cubits.filter(_ => _ != null).filter(_ => _.type === type).length > 0;
+}

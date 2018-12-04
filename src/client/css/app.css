@@ -3,6 +3,10 @@
   margin-bottom: 80px;
 }
 
+.body {
+  margin-top: 60px;
+}
+
 .vertical-center {
   margin: 0;
   position: absolute;

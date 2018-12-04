@@ -14,20 +14,25 @@ import {
   Badge
 } from 'reactstrap';
 
-import { TARGETS } from '../../game/common'
+import { TARGETS, PLACEMENT, LOCATIONS } from '../../game/common'
 import { Database } from '../../game/database';
 import { getMoves } from '../../game/movement'
+import { getTargets } from '../../game/placement'
 
 class Field extends React.Component {
   static propTypes = {
     G: PropTypes.any.isRequired,
     ctx: PropTypes.any.isRequired,
     playerID: PropTypes.string.isRequired,
+    selection: PropTypes.any,
+    onHelp: PropTypes.func,
     onMove: PropTypes.func,
     onPlacement: PropTypes.func,
   };
 
   static defaultProps = {
+    selection: null,
+    onHelp: () => {},
     onMove: () => {},
     onPlacement: () => {},
   };
@@ -50,10 +55,11 @@ class Field extends React.Component {
     this.altColor = '#FFFFFF';
     this.primaryColor = '#ADAAAA';
     this.secondaryColor = '#D9D6D6';
+    this.placementColor = '#188108';
 
     this.movementColors = {};
-    this.movementColors[TARGETS.Empty] = '#1E6912';
-    this.movementColors[TARGETS.Friendly] = '#1E6912';
+    this.movementColors[TARGETS.Empty] = '#188108';
+    this.movementColors[TARGETS.Friendly] = '#188108';
     this.movementColors[TARGETS.Enemy] = '#801D15';
 
     this.layout = {
@@ -92,7 +98,7 @@ class Field extends React.Component {
   }
 
   updateState(event) {
-    let moves = getMoves(this.props.G, this.props.ctx, event.unit, event.position);
+    let moves = getMoves(this.props.G, this.props.ctx, event.unit.id, event.position);
     this.setState({ selection: event, moves: moves });
   }
 
@@ -108,6 +114,11 @@ class Field extends React.Component {
   onClick({ x, y }) {
     if(this.layout.breaks.includes(x)) {
       return; // Out of bounds
+    }
+
+    let obj = this.map[`${x},${y}`];
+    if(obj) {
+      this.props.onHelp(obj);
     }
 
     if(this.props.ctx.phase === 'play') {
@@ -130,8 +141,6 @@ class Field extends React.Component {
           if(this.validMove(event)) {  
             this.props.onMove(this.state.selection, event);
             this.clearState();
-          } else if(this.state.selection.unit !== event.unit) {
-            this.updateState(event);
           } else {
             this.clearState();
           }
@@ -145,16 +154,19 @@ class Field extends React.Component {
   render() {
     let background = { ...{}, ...this.background };
 
-    if(this.state.selection) {
-      let id = this.state.selection.unit;
-      if(id) {
-        let moves = getMoves(this.props.G, this.props.ctx, id, this.state.selection.position);
+    // Movement highlights
+    if(this.state.selection && this.state.selection.unit) {
+      let moves = getMoves(this.props.G, this.props.ctx, this.state.selection.unit.id, this.state.selection.position);
         for (const move of moves) {
           const key = `${move.x+9},${move.y}`;
-          const color = this.movementColors[move.target];
-          background[key] = color;
+          background[key] = this.movementColors[move.target];
         }
-      }
+    }
+
+    // Placement highlights
+    let targets = [];
+    if(this.props.selection && this.props.selection.cubit) {
+      targets = getTargets(this.props.G, this.props.ctx, this.props.selection.cubit.id);
     }
 
     this.map = {};
@@ -173,24 +185,26 @@ class Field extends React.Component {
           this.tokens.push(token);
   
           let mapKey = `${x},${y}`;
-          this.map[mapKey] = unit.id;
+          this.map[mapKey] = unit;
         }
       }
 
+      let location = (unit.ownership === this.props.playerID) ? LOCATIONS.MyField : LOCATIONS.OpponentsField
+      let targeting = targets.filter(_ => _.where === location).map(_ => _.condition);
       let position = {x:0, y:0};
       {
-        let offset = (unit.ownership === this.props.playerID) ? 0 : 18;
-        if(unit.rank === 0 && unit.ownership === '0') {
-          position.x = unit.file + offset;
+        let offset = location === LOCATIONS.MyField ? 0 : 18;
+        if(unit.layout.r === 0 && unit.ownership === '0') {
+          position.x = unit.layout.f + offset;
           position.y = 0;
-        } else if(unit.rank === 1 && unit.ownership === '0') {
-          position.x = unit.file + offset;
+        } else if(unit.layout.r === 1 && unit.ownership === '0') {
+          position.x = unit.layout.f + offset;
           position.y = 4;
-        } else if(unit.rank === 0 && unit.ownership === '1') {
-          position.x = unit.file + offset;
+        } else if(unit.layout.r === 0 && unit.ownership === '1') {
+          position.x = unit.layout.f+ offset;
           position.y = 0;
-        } else if(unit.rank === 1 && unit.ownership === '1') {
-          position.x = unit.file + offset;
+        } else if(unit.layout.r === 1 && unit.ownership === '1') {
+          position.x = unit.layout.f + offset;
           position.y = 4;
         }
 
@@ -199,20 +213,33 @@ class Field extends React.Component {
         this.tokens.push(token);
 
         let mapKey = `${position.x},${position.y}`;
-        this.map[mapKey] = unit.id;
+        this.map[mapKey] = unit;
+
+        if(targeting.includes(PLACEMENT.Unit)) {
+          background[mapKey] = this.placementColor;
+        }
       }
 
-      for (let i = 0; i < unit.slots.length; i++) {
-        const cubit = unit.slots[i];
+      for (let i = 0; i < unit.slots; i++) {
+        let x = position.x;
+        let y = position.y + i + 1;
+        let mapKey = `${x},${y}`;
+
+        const cubit = unit.cubits[i];
         if(cubit) {
-          let x = position.x;
-          let y = position.y + i + 1;
           let isPlayer = cubit.ownership === this.props.playerID;
           let cubitElement = getCubitElement(cubit, isPlayer);
           let token = <Token animate key={cubit.id} x={x} y={y}>{cubitElement}</Token>
           this.tokens.push(token);
-          let mapKey = `${x},${y}`;
-          this.map[mapKey] = cubit.id;
+          this.map[mapKey] = cubit;
+
+          if(targeting.includes(PLACEMENT.Cubit)) {
+            background[mapKey] = this.placementColor;
+          }
+        } else {
+          if(targeting.includes(PLACEMENT.Empty)) {
+            background[mapKey] = this.placementColor;
+          }
         }
       }
     }
@@ -231,18 +258,19 @@ class Field extends React.Component {
   }
 }
 
-
 class Hand extends React.Component {
   static propTypes = {
     G: PropTypes.any.isRequired,
     ctx: PropTypes.any.isRequired,
     playerID: PropTypes.string.isRequired,
     onSelection: PropTypes.func,
+    onHelp: PropTypes.func,
     selection: PropTypes.any,
   };
 
   static defaultProps = {
     onSelection: () => {},
+    onHelp: () => {},
     selection: null,
   };
 
@@ -261,7 +289,7 @@ class Hand extends React.Component {
     this.altColor = '#FFFFFF';
     this.primaryColor = '#ADAAAA';
     this.secondaryColor = '#D9D6D6';
-    this.selectionColor = '#1E6912';
+    this.selectionColor = '#188108';
     this.selectionAltColor = '#801D15';
     
     this.background = {};
@@ -276,11 +304,13 @@ class Hand extends React.Component {
   }
 
   onClick({ x, y }) {
+    let cubit = this.map[`${x},${y}`];
     let event = {
       slot: x,
-      cubit: this.map[`${x},${y}`],
+      cubit: cubit,
     };
     this.props.onSelection(event);
+    this.props.onHelp(cubit);
   };
 
   render() {
@@ -288,7 +318,6 @@ class Hand extends React.Component {
 
     this.map = {};
     this.tokens = [];
-    let selection = null;
 
     let hand = this.props.G.players[this.props.playerID].hand;
     for (let i = 0; i < hand.length; i++) {
@@ -302,33 +331,50 @@ class Hand extends React.Component {
       let token = <Token animate key={cubit.id} x={i} y={0}>{cubitElement}</Token>
       this.tokens.push(token);
       let mapKey = `${i},${0}`;
-      this.map[mapKey] = cubit.id;
+      this.map[mapKey] = cubit;
 
-      if(this.props.selection && cubit.id === this.props.selection.cubit) {
-        colorMap[mapKey] = this.props.ctx.phase === 'play' ? this.selectionColor : this.selectionAltColor;
-        let data = Database.cubits[cubit.type];
-        selection = <div className="text-light"><strong>{data.name}</strong><br /><span>{data.description}</span></div>;
+      if(this.props.selection && this.props.selection.cubit 
+        && cubit.id === this.props.selection.cubit.id 
+        && this.props.isActive && this.props.ctx.phase === 'play') {
+        colorMap[mapKey] = this.selectionColor
       }
     }
 
     return (
-      <Row>
-        <Col xs="6">
-          <Grid
-            rows={this.rows}
-            cols={this.cols}
-            onClick={this.onClick}
-            colorMap={colorMap}
-            style={this.style}
-          >
-          {this.tokens}
-        </Grid>
-        </Col>
-        <Col xs="6">
-          { selection }
-        </Col>
-      </Row>
+      <Grid
+        rows={this.rows}
+        cols={this.cols}
+        onClick={this.onClick}
+        colorMap={colorMap}
+        style={this.style}
+        >
+        {this.tokens}
+      </Grid>
+      
     );
+  }
+}
+
+class Help extends React.Component {
+  static propTypes = {
+    selection: PropTypes.any,
+  };
+
+  static defaultProps = {
+    selection: null,
+  };
+
+  render() {
+    let type = this.props.selection ? this.props.selection.type : '';
+    let cubit = Database.cubits[type];
+    let unit = Database.units[type];
+    if(cubit) {
+      return <div className="text-light"><span>Cubit</span> - <strong>{cubit.name}</strong><br /><span>{cubit.description}</span></div>;
+    } else if(unit) { 
+      return <div className="text-light"><span>Unit</span> - <strong>{unit.name}</strong><br /><span>{unit.description}</span></div>;
+    } else {
+      return <div></div>;
+    }
   }
 }
 
@@ -353,10 +399,12 @@ export class PlayView extends React.Component {
     this.onSelection = this.onSelection.bind(this);
     this.onPlacement = this.onPlacement.bind(this);
     this.onMove = this.onMove.bind(this);
+    this.onHelp = this.onHelp.bind(this);
 
     this.state = {
       menuOpen: false,
       selection: null,
+      help: null,
     };
   }
 
@@ -372,14 +420,14 @@ export class PlayView extends React.Component {
 
   onSelection(event) {
     if(event.cubit) {
-      if(this.state.selection && this.state.selection.cubit === event.cubit) {
-        this.setState({ selection: null });
-      } else {
-        this.setState({ selection: event });
-      }
+      this.setState({ selection: event });
     } else {
       this.setState({ selection: null });
     }
+  }
+
+  onHelp(cubit) {
+    this.setState({ help: cubit });
   }
 
   onPlacement(event) {
@@ -393,20 +441,29 @@ export class PlayView extends React.Component {
 
   render() {
     let fieldParams = {
+      selection: this.state.selection,
       onMove: this.onMove,
       onPlacement: this.onPlacement,
+      onHelp: this.onHelp
     };
     let field = React.createElement(Field, { ...fieldParams, ...this.props});
 
     let handParams = {
       selection: this.state.selection,
       onSelection: this.onSelection,
+      onHelp: this.onHelp
     };
     let hand = React.createElement(Hand, { ...handParams, ...this.props});
 
+    let helpParams = { 
+      selection: this.state.help 
+    };
+    let help = React.createElement(Help, helpParams);
+
+    // TODO: move into new React Compount
     let skip = null;
-    let validPlay = this.props.G.rules.passPlay && this.props.ctx.phase === 'play';
-    let validMove = this.props.G.rules.passMove && this.props.ctx.phase === 'move';
+    let validPlay = this.props.isActive && this.props.G.rules.passPlay && this.props.ctx.phase === 'play';
+    let validMove = this.props.isActive && this.props.G.rules.passMove && this.props.ctx.phase === 'move';
     if(validPlay || validMove) {
       let color = this.props.G.rules.freePass ? 'success' : 'warning';
       skip = <Button size="sm" color={color} onClick={this.passPhase}>Pass</Button>;
@@ -471,9 +528,12 @@ export class PlayView extends React.Component {
         <Navbar color="light" light expand="md" className="p-0 fixed-bottom rounded-bottom">
           <Container>
            <Row className="p-1 " style={{width:'100%'}}>
-             <Col>
+            <Col xs="6">
               { hand }
-             </Col>
+            </Col>
+            <Col xs="6">
+              { help }
+            </Col>
            </Row>
           </Container>
         </Navbar>

@@ -4,6 +4,7 @@ function getUnits() {
   let data = {};
   data[UNITS.Bishop] = {
     name: 'Bishop',
+    description: '',
     movements: [
       { directions: [DIRECTIONS.Forward, DIRECTIONS.Left], distance: 7, contiguous: true, targets: [TARGETS.Empty, TARGETS.Enemy] },
       { directions: [DIRECTIONS.Forward, DIRECTIONS.Right], distance: 7, contiguous: true, targets: [TARGETS.Empty, TARGETS.Enemy] },
@@ -13,6 +14,7 @@ function getUnits() {
   };
   data[UNITS.King] = {
     name: 'King',
+    description: '',
     movements: [
       { directions: [DIRECTIONS.Forward], distance: 1, contiguous: true, targets: [TARGETS.Empty, TARGETS.Enemy] },
       { directions: [DIRECTIONS.Back], distance: 1, contiguous: true, targets: [TARGETS.Empty, TARGETS.Enemy] },
@@ -26,6 +28,7 @@ function getUnits() {
   };
   data[UNITS.Queen] = {
     name: 'Queen',
+    description: '',
     movements: [
       { directions: [DIRECTIONS.Forward], distance: 7, contiguous: true, targets: [TARGETS.Empty, TARGETS.Enemy] },
       { directions: [DIRECTIONS.Back], distance: 7, contiguous: true, targets: [TARGETS.Empty, TARGETS.Enemy] },
@@ -39,6 +42,7 @@ function getUnits() {
   };
   data[UNITS.Knight] = {
     name: 'Knight',
+    description: '',
     movements: [
       { directions: [DIRECTIONS.Forward, DIRECTIONS.Forward, DIRECTIONS.Left], distance: 1, contiguous: false, targets: [TARGETS.Empty, TARGETS.Enemy] },
       { directions: [DIRECTIONS.Forward, DIRECTIONS.Forward, DIRECTIONS.Right], distance: 1, contiguous: false, targets: [TARGETS.Empty, TARGETS.Enemy] },
@@ -52,6 +56,7 @@ function getUnits() {
   };
   data[UNITS.Rook] = {
     name: 'Rook',
+    description: '',
     movements: [
       { directions: [DIRECTIONS.Forward], distance: 7, contiguous: true, targets: [TARGETS.Empty, TARGETS.Enemy] },
       { directions: [DIRECTIONS.Back], distance: 7, contiguous: true, targets: [TARGETS.Empty, TARGETS.Enemy] },
@@ -61,6 +66,7 @@ function getUnits() {
   };
   data[UNITS.Pawn] = {
     name: 'Pawn',
+    description: '',
     movements: [
       { directions: [DIRECTIONS.Forward], distance: 1, contiguous: true, targets: [TARGETS.Empty] },
       { directions: [DIRECTIONS.Forward], distance: 2, contiguous: true, consumable: true, targets: [TARGETS.Empty] },
