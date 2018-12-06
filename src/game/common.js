@@ -30,7 +30,7 @@ export const CUBITS = {
   Poisoned: 1013,
   Bleed: 1014,
   // Attachments - Capture
-  DarkMagic: 1015,
+  // DarkMagic: 1015,
   Looter: 1016,
   // Attachments - Traps
   BlinkDodge: 1017,
@@ -90,6 +90,6 @@ export const TARGETS = {
   Friendly: 3,
 };
 
-export function hasCubits(unit, type) {
+export function unitHasCubits(unit, type) {
   return unit.cubits.filter(_ => _ != null).filter(_ => _.type === type).length > 0;
 }

@@ -1,4 +1,4 @@
-import { TARGETS, CUBITS, DIRECTIONS, hasCubits } from './common';
+import { TARGETS, CUBITS, DIRECTIONS, unitHasCubits } from './common';
 import { Database } from './database';
 
 function isValid(player, obstacles, moves, targets, destination) {
@@ -47,8 +47,8 @@ export function getMoves(G, ctx, id, source) {
   directions[DIRECTIONS.Left] = { x:-1, y:0 };
   directions[DIRECTIONS.Right] = { x:1, y:0 };
 
-  let encumbered = hasCubits(unit, CUBITS.Encumber);
-  let stuck = hasCubits(unit, CUBITS.StickyFeet);
+  let encumbered = unitHasCubits(unit, CUBITS.Encumber);
+  let stuck = unitHasCubits(unit, CUBITS.StickyFeet);
   let handicapped = stuck || encumbered;
 
   let slow = 0;
@@ -60,7 +60,9 @@ export function getMoves(G, ctx, id, source) {
   for (const cubit of unit.cubits) {
     if(cubit) {
       let cubitData = Database.cubits[cubit.type];
-      movements = movements.concat(cubitData.movements);
+      if(cubitData.movements) {
+        movements = movements.concat(cubitData.movements);
+      }
     }
   }
   let unitData = Database.units[unit.type];
@@ -101,11 +103,11 @@ export function getMoves(G, ctx, id, source) {
     }
   }
   
-  if(hasCubits(unit, CUBITS.Enrage)) {
-    moves = moves.filter(_ => _.target === TARGETS.Empty);
-  }
-  if(hasCubits(unit, CUBITS.Passify)) {
+  if(unitHasCubits(unit, CUBITS.Enrage)) {
     moves = moves.filter(_ => _.target === TARGETS.Enemy);
+  }
+  if(unitHasCubits(unit, CUBITS.Passify)) {
+    moves = moves.filter(_ => _.target === TARGETS.Empty);
   }
 
   return moves;

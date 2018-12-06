@@ -20,6 +20,7 @@ export class Unit {
     this.layout = l;
     this.slots = 3;
     this.cubits = [];
+    this.moves = 0;
   }
 }
 
@@ -28,6 +29,7 @@ export class Cubit {
     this.id = shortid.generate();
     this.type = t;
     this.ownership = o;
+    this.moves = 0;
   }
 }
 
@@ -57,56 +59,65 @@ export class GameLogic {
     return data;
   }
 
-  static getDefaultSetup(G, ctx) {
+  static getDefaultSetup() {
     let data = {
       name: 'Default',
       board: [],
       field: [
         // Black - PLayer 1
-        { type: UNITS.Rook,   player: '1', position: {x:0, y:0}, layout: { f:0, r:1 } },
-        { type: UNITS.Knight, player: '1', position: {x:1, y:0}, layout: { f:1, r:1 } },
-        { type: UNITS.Bishop, player: '1', position: {x:2, y:0}, layout: { f:2, r:1 } },
-        { type: UNITS.Queen,  player: '1', position: {x:3, y:0}, layout: { f:3, r:1 } },
-        { type: UNITS.King,   player: '1', position: {x:4, y:0}, layout: { f:4, r:1 } },
-        { type: UNITS.Bishop, player: '1', position: {x:5, y:0}, layout: { f:5, r:1 } },
-        { type: UNITS.Knight, player: '1', position: {x:6, y:0}, layout: { f:6, r:1 } },
-        { type: UNITS.Rook,   player: '1', position: {x:7, y:0}, layout: { f:7, r:1 } },
-        { type: UNITS.Pawn, player: '1', position: {x:0, y:1}, layout: { f:0, r:0 } },
-        { type: UNITS.Pawn, player: '1', position: {x:1, y:1}, layout: { f:1, r:0 } },
-        { type: UNITS.Pawn, player: '1', position: {x:2, y:1}, layout: { f:2, r:0 } },
-        { type: UNITS.Pawn, player: '1', position: {x:3, y:1}, layout: { f:3, r:0 } },
-        { type: UNITS.Pawn, player: '1', position: {x:4, y:1}, layout: { f:4, r:0 } },
-        { type: UNITS.Pawn, player: '1', position: {x:5, y:1}, layout: { f:5, r:0 } },
-        { type: UNITS.Pawn, player: '1', position: {x:6, y:1}, layout: { f:6, r:0 } },
-        { type: UNITS.Pawn, player: '1', position: {x:7, y:1}, layout: { f:7, r:0 } },
-        // White - Player 0
-        { type: UNITS.Pawn, player: '0', position: {x:0, y:6}, layout: { f:0, r:0 } },
-        { type: UNITS.Pawn, player: '0', position: {x:1, y:6}, layout: { f:1, r:0 } },
-        { type: UNITS.Pawn, player: '0', position: {x:2, y:6}, layout: { f:2, r:0 } },
-        { type: UNITS.Pawn, player: '0', position: {x:3, y:6}, layout: { f:3, r:0 } },
-        { type: UNITS.Pawn, player: '0', position: {x:4, y:6}, layout: { f:4, r:0 } },
-        { type: UNITS.Pawn, player: '0', position: {x:5, y:6}, layout: { f:5, r:0 } },
-        { type: UNITS.Pawn, player: '0', position: {x:6, y:6}, layout: { f:6, r:0 } },
-        { type: UNITS.Pawn, player: '0', position: {x:7, y:6}, layout: { f:7, r:0 } },
-        { type: UNITS.Rook,   player: '0', position: {x:0, y:7}, layout: { f:0, r:1 } },
-        { type: UNITS.Knight, player: '0', position: {x:1, y:7}, layout: { f:1, r:1 } },
-        { type: UNITS.Bishop, player: '0', position: {x:2, y:7}, layout: { f:2, r:1 } },
-        { type: UNITS.Queen,  player: '0', position: {x:3, y:7}, layout: { f:3, r:1 } },
-        { type: UNITS.King,   player: '0', position: {x:4, y:7}, layout: { f:4, r:1 } },
-        { type: UNITS.Bishop, player: '0', position: {x:5, y:7}, layout: { f:5, r:1 } },
-        { type: UNITS.Knight, player: '0', position: {x:6, y:7}, layout: { f:6, r:1 } },
-        { type: UNITS.Rook,   player: '0', position: {x:7, y:7}, layout: { f:7, r:1 } },
+        { type: UNITS.Rook,   ownership: '1', position: {x:0, y:0}, layout: { f:0, r:1 } },
+        { type: UNITS.Knight, ownership: '1', position: {x:1, y:0}, layout: { f:1, r:1 } },
+        { type: UNITS.Bishop, ownership: '1', position: {x:2, y:0}, layout: { f:2, r:1 } },
+        { type: UNITS.Queen,  ownership: '1', position: {x:3, y:0}, layout: { f:3, r:1 } },
+        { type: UNITS.King,   ownership: '1', position: {x:4, y:0}, layout: { f:4, r:1 } },
+        { type: UNITS.Bishop, ownership: '1', position: {x:5, y:0}, layout: { f:5, r:1 } },
+        { type: UNITS.Knight, ownership: '1', position: {x:6, y:0}, layout: { f:6, r:1 } },
+        { type: UNITS.Rook,   ownership: '1', position: {x:7, y:0}, layout: { f:7, r:1 } },
+        { type: UNITS.Pawn, ownership: '1', position: {x:0, y:1}, layout: { f:0, r:0 } },
+        { type: UNITS.Pawn, ownership: '1', position: {x:1, y:1}, layout: { f:1, r:0 } },
+        { type: UNITS.Pawn, ownership: '1', position: {x:2, y:1}, layout: { f:2, r:0 } },
+        { type: UNITS.Pawn, ownership: '1', position: {x:3, y:1}, layout: { f:3, r:0 } },
+        { type: UNITS.Pawn, ownership: '1', position: {x:4, y:1}, layout: { f:4, r:0 } },
+        { type: UNITS.Pawn, ownership: '1', position: {x:5, y:1}, layout: { f:5, r:0 } },
+        { type: UNITS.Pawn, ownership: '1', position: {x:6, y:1}, layout: { f:6, r:0 } },
+        { type: UNITS.Pawn, ownership: '1', position: {x:7, y:1}, layout: { f:7, r:0 } },
+        // White - ownership 0
+        { type: UNITS.Pawn, ownership: '0', position: {x:0, y:6}, layout: { f:0, r:0 } },
+        { type: UNITS.Pawn, ownership: '0', position: {x:1, y:6}, layout: { f:1, r:0 } },
+        { type: UNITS.Pawn, ownership: '0', position: {x:2, y:6}, layout: { f:2, r:0 } },
+        { type: UNITS.Pawn, ownership: '0', position: {x:3, y:6}, layout: { f:3, r:0 } },
+        { type: UNITS.Pawn, ownership: '0', position: {x:4, y:6}, layout: { f:4, r:0 } },
+        { type: UNITS.Pawn, ownership: '0', position: {x:5, y:6}, layout: { f:5, r:0 } },
+        { type: UNITS.Pawn, ownership: '0', position: {x:6, y:6}, layout: { f:6, r:0 } },
+        { type: UNITS.Pawn, ownership: '0', position: {x:7, y:6}, layout: { f:7, r:0 } },
+        { type: UNITS.Rook,   ownership: '0', position: {x:0, y:7}, layout: { f:0, r:1 } },
+        { type: UNITS.Knight, ownership: '0', position: {x:1, y:7}, layout: { f:1, r:1 } },
+        { type: UNITS.Bishop, ownership: '0', position: {x:2, y:7}, layout: { f:2, r:1 } },
+        { type: UNITS.Queen,  ownership: '0', position: {x:3, y:7}, layout: { f:3, r:1 } },
+        { type: UNITS.King,   ownership: '0', position: {x:4, y:7}, layout: { f:4, r:1 } },
+        { type: UNITS.Bishop, ownership: '0', position: {x:5, y:7}, layout: { f:5, r:1 } },
+        { type: UNITS.Knight, ownership: '0', position: {x:6, y:7}, layout: { f:6, r:1 } },
+        { type: UNITS.Rook,   ownership: '0', position: {x:7, y:7}, layout: { f:7, r:1 } },
       ],
       deck: [
         { type: CUBITS.Orthogonal, amount: 1 },
         { type: CUBITS.Diagonal, amount: 1 },
         { type: CUBITS.Cardinal, amount: 1 },
-        { type: CUBITS.SideStep, amount: 1 },
-        { type: CUBITS.Swap, amount: 1 },
-        { type: CUBITS.Jump, amount: 1 },
+        // { type: CUBITS.SideStep, amount: 1 },
+        // { type: CUBITS.Swap, amount: 1 },
+        // { type: CUBITS.Jump, amount: 1 },
+        // { type: CUBITS.Enrage, amount: 1 },
+        // { type: CUBITS.Passify, amount: 1 },
+        // { type: CUBITS.Encumber, amount: 5 },
+        // { type: CUBITS.StickyFeet, amount: 5 },
+        // { type: CUBITS.Condemn, amount: 1 },
+        // { type: CUBITS.Immunity, amount: 1 },
+        // { type: CUBITS.Poisoned, amount: 1 },
+        // { type: CUBITS.Bleed, amount: 1 },
+        { type: CUBITS.Looter, amount: 5 },
       ],
       rules: {
-        passPlay: true,
+        passPlay: false,
         passMove: false,
         freePass: false,
         freeDraw: false,
@@ -125,8 +136,7 @@ export class GameLogic {
 
   static config(G, ctx, data) {
     let defaults = GameLogic.getDefaultSetup();
-    var config = { ...data, ...defaults };
-    // Note this may not work... look at clone()
+    var config = { ...defaults, ...data };
 
     // Override the rules
     G.rules = config.rules;
@@ -139,7 +149,7 @@ export class GameLogic {
 
     // Field
     for (const item of config.field) {
-      let unit = new Unit(item.type, item.player, item.position, item.layout);
+      let unit = new Unit(item.type, item.ownership, item.position, item.layout);
       G.field.push(unit);
     }
 
@@ -209,6 +219,25 @@ export class GameLogic {
     s.position.x = destination.position.x;
     s.position.y = destination.position.y;
 
+    let hasLooter = false;
+    let isPoisonLeathal = false;
+    let isBleeding = false;
+
+    s.moves++;
+    for (const cubit of s.cubits) {
+      cubit.moves++;
+
+      if(cubit.type === CUBITS.Poisoned && cubit.moves > 2) {
+        isPoisonLeathal = true;
+      }
+      if(cubit.type === CUBITS.Bleed) {
+        isBleeding = true;
+      }
+      if(cubit.type === CUBITS.Looter) {
+        hasLooter = true;
+      }
+    }
+
     // Capture / Swap destination
     if(destination.unit) {
       let d = G.field.find(_ => _.id === destination.unit.id);
@@ -218,8 +247,29 @@ export class GameLogic {
       } else {
         d.position = null;
       }
+
+      if(hasLooter) {
+        let index = ctx.random.Die(d.cubits.length) - 1;
+        let cubit = d.cubits.splice(index, 0);
+        if(cubit) {
+          G.players[ctx.currentPlayer].bag.push(cubit);
+        }
+      }
     }
-    
+
+    if(isPoisonLeathal) {
+      s.position = null;
+    }
+   
+    if(isBleeding) {
+      if(s.cubits.length === 1) {
+        s.position = null;
+      } else {
+        let index = ctx.random.Die(s.cubits.length) - 1;
+        s.cubits.splice(index, 0);
+      }
+    }
+
     // Update state counters
     G.players[ctx.currentPlayer].moves--;
 

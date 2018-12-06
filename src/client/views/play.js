@@ -14,7 +14,7 @@ import {
   Badge
 } from 'reactstrap';
 
-import { TARGETS, PLACEMENT, LOCATIONS } from '../../game/common'
+import { TARGETS, PLACEMENT, LOCATIONS, unitHasCubits, CUBITS } from '../../game/common'
 import { Database } from '../../game/database';
 import { getMoves } from '../../game/movement'
 import { getTargets } from '../../game/placement'
@@ -252,12 +252,12 @@ class Field extends React.Component {
           tokens.push(token);
           this.map[mapKey] = cubit;
 
-          if(targeting.includes(PLACEMENT.Cubit)) {
+          if(targeting.includes(PLACEMENT.Cubit) && !unitHasCubits(unit, CUBITS.Immunity)) {
             background[mapKey] = this.placementColor;
             this.placements[mapKey] = true;
           }
         } else {
-          if(targeting.includes(PLACEMENT.Empty)) {
+          if(targeting.includes(PLACEMENT.Empty) && !unitHasCubits(unit, CUBITS.Immunity)) {
             background[mapKey] = this.placementColor;
             this.placements[mapKey] = true;
           }
@@ -390,9 +390,21 @@ class Help extends React.Component {
     let cubit = Database.cubits[type];
     let unit = Database.units[type];
     if(cubit) {
-      return <div className="text-light"><span>Cubit</span> - <strong>{cubit.name}</strong><br /><span>{cubit.description}</span></div>;
+      return (
+        <div className="text-light">
+          <strong>{cubit.name}</strong><br />
+          <span>Cubit</span> - <span>{cubit.type}</span> - <span>{cubit.subordinate}</span><br />
+          <span>{cubit.description}</span>
+        </div>
+      );
     } else if(unit) { 
-      return <div className="text-light"><span>Unit</span> - <strong>{unit.name}</strong><br /><span>{unit.description}</span></div>;
+      return (
+        <div className="text-light">
+          <strong>{unit.name}</strong><br />
+          <span>Unit</span><br />
+          <span>{unit.description}</span>
+        </div>
+      );
     } else {
       return <div></div>;
     }
@@ -448,7 +460,9 @@ export class PlayView extends React.Component {
   }
 
   onHelp(cubit) {
-    this.setState({ help: cubit });
+    if(!this.state.selection) {
+      this.setState({ help: cubit });
+    }
   }
 
   onPlacement(event) {
@@ -493,7 +507,7 @@ export class PlayView extends React.Component {
     return (
       <section>
         <Navbar color="light" light expand="md" className="p-0 fixed-top rounded-bottom">
-          <Container>
+
             <NavbarBrand className="p-0" href="/">
               <img className="p-1" height="40" src="/favicon.ico" alt="Logo"></img>
               <strong className="p-1">Lusus</strong>
@@ -537,7 +551,7 @@ export class PlayView extends React.Component {
               </Row>
             </Collapse>
             <NavbarToggler onClick={this.menuToggle} />
-          </Container>
+
         </Navbar>
         <Container fluid className="gameboard">
           <Row>
@@ -547,16 +561,14 @@ export class PlayView extends React.Component {
           </Row>
         </Container>
         <Navbar color="light" light expand="md" className="p-0 fixed-bottom rounded-bottom">
-          <Container>
-           <Row className="p-1 " style={{width:'100%'}}>
-            <Col xs="6">
+        <Row className="p-1 " style={{width:'100%'}}>
+            <Col xs="4">
               { hand }
             </Col>
-            <Col xs="6">
+            <Col xs="8">
               { help }
             </Col>
            </Row>
-          </Container>
         </Navbar>
       </section>
     );

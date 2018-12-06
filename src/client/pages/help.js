@@ -20,26 +20,27 @@ class HelpPage extends React.Component {
 
     for (const key in Database.cubits) {
       if (Database.cubits.hasOwnProperty(key)) {
-        const cubit = { type: parseInt(key), ownership: '1'};
         const data = Database.cubits[key];
-        
+        const cubit = { type: data.key, ownership: '1'};
         let element = getCubitElement(cubit);
 
-        let media = <Media>
-          <Media left href="#" className="p-1">
-            <Grid rows={1} cols={1} style={{width:60}}>
-              <Token x={0} y={0}>
-                { element }
-              </Token>
-            </Grid>
-          </Media>
-          <Media body>
-            <Media heading>
-              { data.name }
+        let media = (
+          <Media>
+            <Media left href="#" className="p-1">
+              <Grid rows={1} cols={1} style={{width:60}}>
+                <Token x={0} y={0}>
+                  { element }
+                </Token>
+              </Grid>
             </Media>
-            { data.description }
+            <Media body>
+              <Media heading>
+                { data.name }
+              </Media>
+              { data.description }
+            </Media>
           </Media>
-        </Media>;
+        );
 
         cubits.push(media);
       }
