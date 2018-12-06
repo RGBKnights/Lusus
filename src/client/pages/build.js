@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Token, Grid } from 'boardgame.io/ui';
-// import { getUnitElement } from '../svg/units';
+import { getUnitElement } from '../svg/units';
 import { getCubitElement } from '../svg/cubits';
 
 // Bootstrap
@@ -26,6 +26,17 @@ class BuildPage extends React.Component {
   constructor(props) {
     super(props);
 
+    let size = 8;
+    this.background = {};
+    for (let x = 0; x < size; x++) {
+      for (let y = 0; y < size; y++) {
+        const key = `${x},${y}`;
+        this.background[key] = ((x + y) % 2 === 0) ? '#D9D6D6' :'#ADAAAA';
+      }
+    }
+
+    this.style = { strokeWidth: 0.02, stroke: '#000000' };
+
     this.onRulePassPlayChanged = this.onRulePassPlayChanged.bind(this);
     this.onRulePassMoveChanged = this.onRulePassMoveChanged.bind(this);
     this.onRuleFeePassChanged = this.onRuleFeePassChanged.bind(this);
@@ -38,7 +49,7 @@ class BuildPage extends React.Component {
       if (Database.cubits.hasOwnProperty(key)) {
         const data = Database.cubits[key];
         if(data.enabled) {
-          deck.push({ type: data.key, amount: 0 });
+          deck.push({ type: data.key, amount: 1 });
         }
       }
     }
@@ -48,6 +59,7 @@ class BuildPage extends React.Component {
     this.state = {
       name: 'Custom',
       rules: defaults.rules,
+      field: defaults.field,
       deck: deck,
     };
   }
@@ -104,20 +116,13 @@ class BuildPage extends React.Component {
   }
 
   render() {
-    // Build
-    // - name - SET TO 'CUSTOM'
-    // - rules { passPlay, passMove, freePass, freeDraw }
-    // * board [] { type, position: {x,y} }
-    // * field [] { type, player, position: {x,y}, layout: {r,f} } // just changing position
-    // - deck [] { type, amount }
-
     let items = [];
     for (const item of this.state.deck) {
       let key = "cubit_" + item.type;
       let data = Database.cubits[item.type];
       if(data) {
         let cubit = { type: item.type, ownership: '1' };
-        let element = getCubitElement(cubit);
+        let element = getCubitElement(cubit, true);
         let media = (
         <Media key={key}>
             <Media left href="#" className="p-1">
@@ -147,6 +152,14 @@ class BuildPage extends React.Component {
       }
     }
 
+    let deployment = [];
+    let layout = { '0': [], '1': [] };
+    for (const unit of this.state.field) {
+      let element = getUnitElement(unit);
+      layout[unit.ownership].push(<Token key={unit.id} x={unit.layout.f} y={unit.layout.r}>{ element }</Token>);
+      deployment.push(<Token key={unit.id} x={unit.position.x} y={unit.position.y}>{ element }</Token>);
+    }
+
     return (
       <section className="p-0">
         <Navbar color="light" light expand="md" className="fixed-top rounded-bottom">
@@ -165,7 +178,7 @@ class BuildPage extends React.Component {
         <Container className="body">
           <Row>
             <Col>
-              <h5>Rules <small>Overrides</small></h5>
+              <h5 className="text-center">Rules <small>Overrides</small></h5>
             </Col>
           </Row>
           <Form>
@@ -211,10 +224,41 @@ class BuildPage extends React.Component {
           <hr className="highlighted" />
           <Row>
             <Col>
-              <h5>Deck</h5>
+              <h5 className="text-center">Deck</h5>
               { items }
             </Col>
           </Row>
+          <hr className="highlighted" />
+          <Row>
+            <Col>
+              <h5 className="text-center">Deployment</h5>
+              <Row>
+                <Col>
+                  <Grid rows={8} cols={8} colorMap={this.background} style={this.style}>
+                    { deployment }
+                  </Grid>
+                </Col>
+                <Col>
+                  <Row>
+                    <Col>
+                      <Grid rows={2} cols={8} colorMap={this.background} style={this.style}>
+                        { layout['1'] }
+                      </Grid>
+                    </Col>
+                  </Row>
+                  <br />
+                  <Row>
+                    <Col>
+                      <Grid rows={2} cols={8} colorMap={this.background} style={this.style}>
+                        { layout['0'] }
+                      </Grid>
+                    </Col>
+                  </Row>
+                </Col>
+              </Row>
+            </Col>
+          </Row>
+          <br />
         </Container>
         <ToastContainer autoClose={2000} position={toast.POSITION.BOTTOM_CENTER} />
       </section>

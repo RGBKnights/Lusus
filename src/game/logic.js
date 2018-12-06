@@ -36,6 +36,16 @@ export class Cubit {
 
 export class GameLogic {
 
+  static addEvent(G, ctx, event, description = '') {
+    G.log.unshift({
+      turn: ctx.turn,
+      player_id: ctx.currentPlayer,
+      player_side: ctx.currentPlayer === "0" ? "White" : "Black",
+      event: event,
+      description: description
+    });
+  }
+
   static setup(ctx) {
     let data = {
       next: shortid.generate(),
@@ -101,28 +111,28 @@ export class GameLogic {
         { type: UNITS.Rook,   ownership: '0', position: {x:7, y:7}, layout: { f:7, r:1 } },
       ],
       deck: [
-        { type: CUBITS.Orthogonal, amount: 2 },
-        { type: CUBITS.Diagonal, amount: 2 },
-        { type: CUBITS.Cardinal, amount: 2 },
-        // { type: CUBITS.SideStep, amount: 1 },
-        // { type: CUBITS.Swap, amount: 1 },
-        // { type: CUBITS.Jump, amount: 1 },
-        // { type: CUBITS.Enrage, amount: 1 },
-        // { type: CUBITS.Passify, amount: 1 },
-        // { type: CUBITS.Encumber, amount: 5 },
-        // { type: CUBITS.StickyFeet, amount: 5 },
-        // { type: CUBITS.Condemn, amount: 1 },
-        // { type: CUBITS.Immunity, amount: 1 },
-        // { type: CUBITS.Poisoned, amount: 1 },
-        // { type: CUBITS.Bleed, amount: 1 },
-        // { type: CUBITS.Looter, amount: 1 },
-        // { type: CUBITS.BlinkDodge, amount: 1 },
-        // { type: CUBITS.Recover, amount: 1 },
-        // { type: CUBITS.Destroy, amount: 1 },
-        // { type: CUBITS.Eliminate, amount: 1 },
+        { type: CUBITS.Orthogonal, amount: 1 },
+        { type: CUBITS.Diagonal, amount: 1 },
+        { type: CUBITS.Cardinal, amount: 1 },
+        { type: CUBITS.SideStep, amount: 1 },
+        { type: CUBITS.Swap, amount: 1 },
+        { type: CUBITS.Jump, amount: 1 },
+        { type: CUBITS.Enrage, amount: 1 },
+        { type: CUBITS.Passify, amount: 1 },
+        { type: CUBITS.Encumber, amount: 1 },
+        { type: CUBITS.StickyFeet, amount: 1 },
+        { type: CUBITS.Condemn, amount: 1 },
+        { type: CUBITS.Immunity, amount: 1 },
+        { type: CUBITS.Poisoned, amount: 1 },
+        { type: CUBITS.Bleed, amount: 1 },
+        { type: CUBITS.Looter, amount: 1 },
+        { type: CUBITS.BlinkDodge, amount: 1 },
+        { type: CUBITS.Recover, amount: 1 },
+        { type: CUBITS.Destroy, amount: 1 },
+        { type: CUBITS.Eliminate, amount: 1 },
       ],
       rules: {
-        passPlay: true,
+        passPlay: false,
         passMove: false,
         freePass: false,
         freeDraw: false,
@@ -179,7 +189,7 @@ export class GameLogic {
       }
     }
 
-    // G.log.push();
+    // GameLogic.addEvent(G, ctx, 'Config', `Configuration [${config.name}]`);
 
     ctx.events.endPhase();
   }
@@ -201,7 +211,7 @@ export class GameLogic {
       G.players[ctx.currentPlayer].moves = 0;
     }
 
-    // G.log.push();
+    GameLogic.addEvent(G, ctx, 'Skip', `Phase ${ctx.phase}`);
   }
 
   static placement(G, ctx, source, destination) {
@@ -212,20 +222,24 @@ export class GameLogic {
       // Remove a Cubie from a unit
       let d = G.field.find(_ => _.id === destination.unit.id);
       d.cubits = d.cubits.filter(_ => _.id !== destination.cubit.id);
+      
+      GameLogic.addEvent(G, ctx, 'Placement', `Destroyed #[${destination.cubit.id}] on #[${d.id}]`);
     } else if(s.type === CUBITS.Eliminate) {
       // Remove all Cubies from a unit
       let d = G.field.find(_ => _.id === destination.unit.id);
       d.cubits = d.cubits.filter(_ => false);
+
+      GameLogic.addEvent(G, ctx, 'Placement', `Eliminated all cubits on #[${d.id}]`);
     } else {
       //  Move it to unit slot
       let d = G.field.find(_ => _.id === destination.unit.id);
       d.cubits[destination.slot] = s;
+    
+      GameLogic.addEvent(G, ctx, 'Placement', `Attached #[${s.id}] to #[${d.id}]`);
     }
 
     // Update state counters
     G.players[ctx.currentPlayer].actions--;
-
-    // G.log.push();
   }
 
   static movement(G, ctx, source, destination) {
@@ -233,6 +247,8 @@ export class GameLogic {
     let s = G.field.find(_ => _.id === source.unit.id);
     s.position.x = destination.position.x;
     s.position.y = destination.position.y;
+
+    GameLogic.addEvent(G, ctx, 'Movement', `Moved #[${s.id}] from (${source.position.x},${source.position.y}) to (${destination.position.x},${destination.position.y})`);
 
     let hasLooter = false;
     let isPoisonLeathal = false;
@@ -275,6 +291,8 @@ export class GameLogic {
       if(isSwap) {
         d.position.x = source.position.x;
         d.position.y = source.position.y;
+
+        GameLogic.addEvent(G, ctx, 'Movement', `Swapd #[${s.id}] with #[${d.id}]`);
       } else if(isDodged) {
         let spaces = getAdjacentSpaces(G, ctx, d.position);
         if(spaces.length > 0) {
@@ -284,12 +302,18 @@ export class GameLogic {
         } else {
           d.position = null;
         }
+
+        GameLogic.addEvent(G, ctx, `Tripped Blink Dodge`);
       } else if (d.type === UNITS.King) {
+        GameLogic.addEvent(G, ctx, 'Movement', `Captured #[${d.id}] with #[${s.id}]`);
+
         d.position = null;
         ctx.events.endGame(s.ownership);
         return;
       } else {
         d.position = null;
+
+        GameLogic.addEvent(G, ctx, 'Movement', `Captured #[${d.id}] with #[${s.id}]`);
       }
 
       if(isRecovered && d.cubits.length > 0) {
@@ -297,6 +321,8 @@ export class GameLogic {
         for (const cubit of cubits) {
           G.players[d.ownership].bag.push(cubit);
         }
+
+        GameLogic.addEvent(G, ctx, 'Movement', `Tripped Recovered`);
       }
 
       if(hasLooter && d.cubits.length > 0) {
@@ -305,11 +331,15 @@ export class GameLogic {
         for (const cubit of cubits) {
           G.players[s.ownership].bag.push(cubit);
         }
+
+        GameLogic.addEvent(G, ctx, 'Movement', `Looted #[${d.id}] with #[${s.id}]`);
       }
     }
 
     if(isPoisonLeathal) {
       s.position = null;
+
+      GameLogic.addEvent(G, ctx, 'Movement', `Poisoned #[${s.id}]`);
     }
    
     if(isBleeding) {
@@ -319,12 +349,12 @@ export class GameLogic {
         let index = ctx.random.Die(s.cubits.length) - 1;
         s.cubits.splice(index, 1);
       }
+
+      GameLogic.addEvent(G, ctx, 'Movement', `Bleeding #[${s.id}]`);
     }
 
     // Update state counters
     G.players[ctx.currentPlayer].moves--;
-
-    // G.log.push();
   }
 
   static resolution(G, ctx) {
@@ -345,19 +375,20 @@ export class GameLogic {
       G.players[ctx.currentPlayer].bag.push(cubit);
     }
 
-    if(G.players[ctx.currentPlayer].draws > G.players[ctx.currentPlayer].bag.length && G.rules.freeDraw === false) {
+    let draws = G.players[ctx.currentPlayer].draws;
+    if(draws > G.players[ctx.currentPlayer].bag.length && G.rules.freeDraw === false) {
       let opponent = ctx.currentPlayer === "0" ? "1" : "0";
       ctx.events.endGame(opponent);
       return;
     }
 
     G.players[ctx.currentPlayer].bag = ctx.random.Shuffle(G.players[ctx.currentPlayer].bag);
-    for (let i = 0; i < G.players[ctx.currentPlayer].draws; i++) {
+    for (let i = 0; i < draws; i++) {
       let cubit = G.players[ctx.currentPlayer].bag.pop();
       G.players[ctx.currentPlayer].hand.push(cubit);
     }
 
-    // G.log.push();
+    GameLogic.addEvent(G, ctx, 'Draw', `Drawing ${draws} cubits`);
   }
 
   static hand(G, ctx, slot) {
@@ -366,8 +397,6 @@ export class GameLogic {
       let delta = G.players[ctx.currentPlayer].hand.filter(_ => _.id !== cubit.id);
       G.players[ctx.currentPlayer].hand = delta;
       return cubit;
-
-      // G.log.push();
     } else {
       return undefined;
     }

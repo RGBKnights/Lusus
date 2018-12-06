@@ -6,6 +6,7 @@ import { Menu } from '../components/menu';
 import { Field } from '../components/field';
 import { Hand } from '../components/hand';
 import { Help } from '../components/help';
+import { EventLog } from '../components/events';
 
 // Bootstrap
 import {
@@ -93,8 +94,9 @@ class PlayView extends React.Component {
       let color = this.props.G.rules.freePass ? 'success' : 'warning';
       buttons.push(<Button size="sm" color={color} onClick={this.onSkipPhase}>Pass</Button>);
     }
-
+    
     buttons.push(<Button size="sm" color="primary" onClick={this.onShare}>Share</Button>);
+    buttons.push(<EventLog log={this.props.G.log}></EventLog>);
 
     return buttons;
   }
@@ -138,10 +140,10 @@ class PlayView extends React.Component {
         
         <Navbar color="light" light expand="md" className="p-0 fixed-bottom rounded-bottom">
           <Row className="p-1 " style={{width:'100%'}}>
-            <Col xs="4">
+            <Col xs="5">
               { hand }
             </Col>
-            <Col xs="8">
+            <Col xs="7">
               { help }
             </Col>
            </Row>

@@ -5,7 +5,7 @@ function getUnits() {
   data[UNITS.Bishop] = {
     key: UNITS.Pawn,
     name: 'Bishop',
-    description: '',
+    description: 'A bishop moves any number of vacant squares in any diagonal direction by default.',
     movements: [
       { directions: [DIRECTIONS.Forward, DIRECTIONS.Left], distance: 7, contiguous: true, targets: [TARGETS.Empty, TARGETS.Enemy] },
       { directions: [DIRECTIONS.Forward, DIRECTIONS.Right], distance: 7, contiguous: true, targets: [TARGETS.Empty, TARGETS.Enemy] },
@@ -16,7 +16,7 @@ function getUnits() {
   data[UNITS.King] = {
     key: UNITS.Pawn,
     name: 'King',
-    description: '',
+    description: 'The king moves one square horizontally, vertically, or diagonally by default. The game can be won by capturing this piece.',
     movements: [
       { directions: [DIRECTIONS.Forward], distance: 1, contiguous: true, targets: [TARGETS.Empty, TARGETS.Enemy] },
       { directions: [DIRECTIONS.Back], distance: 1, contiguous: true, targets: [TARGETS.Empty, TARGETS.Enemy] },
@@ -31,7 +31,7 @@ function getUnits() {
   data[UNITS.Queen] = {
     key: UNITS.Pawn,
     name: 'Queen',
-    description: '',
+    description: 'The queen moves any number of vacant squares in a horizontal, vertical, or diagonal direction by default.',
     movements: [
       { directions: [DIRECTIONS.Forward], distance: 7, contiguous: true, targets: [TARGETS.Empty, TARGETS.Enemy] },
       { directions: [DIRECTIONS.Back], distance: 7, contiguous: true, targets: [TARGETS.Empty, TARGETS.Enemy] },
@@ -46,7 +46,7 @@ function getUnits() {
   data[UNITS.Knight] = {
     key: UNITS.Pawn,
     name: 'Knight',
-    description: '',
+    description: 'A Knight moves to any of the closest squares that are not on the same rank, file, or diagonal, thus the move forms an "L"-shape: two squares vertically and one square horizontally, or two squares horizontally and one square vertically. The knight can leap over other pieces.',
     movements: [
       { directions: [DIRECTIONS.Forward, DIRECTIONS.Forward, DIRECTIONS.Left], distance: 1, contiguous: false, targets: [TARGETS.Empty, TARGETS.Enemy] },
       { directions: [DIRECTIONS.Forward, DIRECTIONS.Forward, DIRECTIONS.Right], distance: 1, contiguous: false, targets: [TARGETS.Empty, TARGETS.Enemy] },
@@ -61,7 +61,7 @@ function getUnits() {
   data[UNITS.Rook] = {
     key: UNITS.Pawn,
     name: 'Rook',
-    description: '',
+    description: 'A rook moves any number of vacant squares in a horizontal or vertical direction by default.',
     movements: [
       { directions: [DIRECTIONS.Forward], distance: 7, contiguous: true, targets: [TARGETS.Empty, TARGETS.Enemy] },
       { directions: [DIRECTIONS.Back], distance: 7, contiguous: true, targets: [TARGETS.Empty, TARGETS.Enemy] },
@@ -72,7 +72,7 @@ function getUnits() {
   data[UNITS.Pawn] = {
     key: UNITS.Pawn,
     name: 'Pawn',
-    description: '',
+    description: 'A pawn moves straight forward one square, if that square is vacant. If it has not yet moved, a pawn also has the option of moving two squares straight forward, provided both squares are vacant. Pawns cannot move backwards.A pawn can capture an enemy piece on either of the two squares diagonally in front of the pawn.',
     movements: [
       { directions: [DIRECTIONS.Forward], distance: 1, contiguous: true, targets: [TARGETS.Empty] },
       { directions: [DIRECTIONS.Forward], distance: 2, contiguous: true, consumable: true, targets: [TARGETS.Empty] },

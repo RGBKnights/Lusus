@@ -22,7 +22,7 @@ class HelpPage extends React.Component {
       if (Database.cubits.hasOwnProperty(key)) {
         const data = Database.cubits[key];
         const cubit = { type: data.key, ownership: '1'};
-        let element = getCubitElement(cubit);
+        let element = getCubitElement(cubit, true);
 
         let media = (
           <Media>
