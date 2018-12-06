@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { SetupView } from './views/setup';
-import { PlayView } from './views/play';
-import { OverView } from './views/over';
+import SetupView from './views/setup';
+import PlayView from './views/play';
+import OverView from './views/over';
 import { ToastContainer, toast } from 'react-toastify';
 
 class GameStateManager extends React.Component {
@@ -43,7 +43,7 @@ class GameStateManager extends React.Component {
     if(this.props.isActive === false) {
       return;
     }
-    
+
     // Handle Notifications
     if (this.props.ctx.phase === 'play' && props.ctx.phase !== 'play') {
       toast("Your Turn");

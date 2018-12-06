@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { withRouter } from "react-router-dom";
 
 // Bootstrap
 import { 
@@ -79,3 +80,5 @@ export class SetupView extends React.Component {
     );
   }
 }
+
+export default withRouter(SetupView);

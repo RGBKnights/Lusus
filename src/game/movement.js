@@ -26,6 +26,32 @@ function isValid(player, obstacles, moves, targets, destination) {
   return false;
 }
 
+export function getAdjacentSpaces(G, ctx, position, unoccupied = true) {
+  let obstacles = G.field.filter(_ => _.position != null);
+  let bounds = { x: (position.x-1), y: (position.y-1), w: (position.x+1), h: (position.y+1) };
+
+  let spaces = [];
+  for (let x = bounds.x; x <= bounds.w; x++) {
+    for (let y = bounds.y; y <= bounds.h; y++) {
+      if(x < 0 || x > 7 || y < 0 || y > 7) {
+        continue;
+      }
+      if(x === position.x && y === position.y) {
+        continue; // Not Adjacent
+      }
+
+      let hasObstacles = obstacles.filter(_ => _.position.x === x && _.position.y === y).length > 0;
+      if(unoccupied === true && hasObstacles === false) {
+        spaces.push({x,y});
+      } else if(unoccupied === false && hasObstacles === true) {
+        spaces.push({x,y});
+      }
+    }
+  }
+
+  return ctx.random.Shuffle(spaces);
+}
+
 export function getMoves(G, ctx, id, source) {
   // TODO: G.board => test for SPACE_TYPES
 
@@ -65,8 +91,10 @@ export function getMoves(G, ctx, id, source) {
       }
     }
   }
+
   let unitData = Database.units[unit.type];
-  movements = movements.concat(unitData.movements);
+  let filteredMovements = unit.moves > 0 ? unitData.movements.filter(_ => _.consumable !== true) : unitData.movements;
+  movements = movements.concat(filteredMovements);
 
   for (const movement of movements) {
     let destination = {

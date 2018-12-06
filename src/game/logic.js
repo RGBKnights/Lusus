@@ -1,5 +1,6 @@
 import { INVALID_MOVE } from 'boardgame.io/core';
 import { SPACE_TYPES, UNITS, CUBITS } from './common';
+import { getAdjacentSpaces } from './movement'
 
 const shortid = require('shortid');
 
@@ -100,9 +101,9 @@ export class GameLogic {
         { type: UNITS.Rook,   ownership: '0', position: {x:7, y:7}, layout: { f:7, r:1 } },
       ],
       deck: [
-        { type: CUBITS.Orthogonal, amount: 1 },
-        { type: CUBITS.Diagonal, amount: 1 },
-        { type: CUBITS.Cardinal, amount: 1 },
+        { type: CUBITS.Orthogonal, amount: 2 },
+        { type: CUBITS.Diagonal, amount: 2 },
+        { type: CUBITS.Cardinal, amount: 2 },
         // { type: CUBITS.SideStep, amount: 1 },
         // { type: CUBITS.Swap, amount: 1 },
         // { type: CUBITS.Jump, amount: 1 },
@@ -114,10 +115,14 @@ export class GameLogic {
         // { type: CUBITS.Immunity, amount: 1 },
         // { type: CUBITS.Poisoned, amount: 1 },
         // { type: CUBITS.Bleed, amount: 1 },
-        { type: CUBITS.Looter, amount: 5 },
+        // { type: CUBITS.Looter, amount: 1 },
+        // { type: CUBITS.BlinkDodge, amount: 1 },
+        // { type: CUBITS.Recover, amount: 1 },
+        // { type: CUBITS.Destroy, amount: 1 },
+        // { type: CUBITS.Eliminate, amount: 1 },
       ],
       rules: {
-        passPlay: false,
+        passPlay: true,
         passMove: false,
         freePass: false,
         freeDraw: false,
@@ -202,10 +207,20 @@ export class GameLogic {
   static placement(G, ctx, source, destination) {
     // Get source from hand
     let s = GameLogic.hand(G, ctx, source.slot);
-    
-    //  Move it to unit slot
-    let d = G.field.find(_ => _.id === destination.unit.id);
-    d.cubits[destination.slot] = s;
+
+    if(s.type === CUBITS.Destroy) {
+      // Remove a Cubie from a unit
+      let d = G.field.find(_ => _.id === destination.unit.id);
+      d.cubits = d.cubits.filter(_ => _.id !== destination.cubit.id);
+    } else if(s.type === CUBITS.Eliminate) {
+      // Remove all Cubies from a unit
+      let d = G.field.find(_ => _.id === destination.unit.id);
+      d.cubits = d.cubits.filter(_ => false);
+    } else {
+      //  Move it to unit slot
+      let d = G.field.find(_ => _.id === destination.unit.id);
+      d.cubits[destination.slot] = s;
+    }
 
     // Update state counters
     G.players[ctx.currentPlayer].actions--;
@@ -222,6 +237,9 @@ export class GameLogic {
     let hasLooter = false;
     let isPoisonLeathal = false;
     let isBleeding = false;
+    let isDodged = false;
+    let isRecovered = false;
+    let isSwap = false;
 
     s.moves++;
     for (const cubit of s.cubits) {
@@ -242,17 +260,50 @@ export class GameLogic {
     if(destination.unit) {
       let d = G.field.find(_ => _.id === destination.unit.id);
       if(s.ownership === d.ownership) {
+        isSwap = true;
+      }
+
+      for (const cubit of d.cubits) {
+        if(cubit.type === CUBITS.BlinkDodge) {
+          isDodged = true;
+        }
+        if(cubit.type === CUBITS.Recover) {
+          isRecovered = true;
+        }
+      }
+
+      if(isSwap) {
         d.position.x = source.position.x;
         d.position.y = source.position.y;
+      } else if(isDodged) {
+        let spaces = getAdjacentSpaces(G, ctx, d.position);
+        if(spaces.length > 0) {
+          let space = spaces.pop();
+          d.position = space;
+          d.cubits = d.cubits.filter(_ => _.type !== CUBITS.BlinkDodge);
+        } else {
+          d.position = null;
+        }
+      } else if (d.type === UNITS.King) {
+        d.position = null;
+        ctx.events.endGame(s.ownership);
+        return;
       } else {
         d.position = null;
       }
 
-      if(hasLooter) {
+      if(isRecovered && d.cubits.length > 0) {
+        let cubits = d.cubits.splice(0, d.cubits.length);
+        for (const cubit of cubits) {
+          G.players[d.ownership].bag.push(cubit);
+        }
+      }
+
+      if(hasLooter && d.cubits.length > 0) {
         let index = ctx.random.Die(d.cubits.length) - 1;
-        let cubit = d.cubits.splice(index, 0);
-        if(cubit) {
-          G.players[ctx.currentPlayer].bag.push(cubit);
+        let cubits = d.cubits.splice(index, 1);
+        for (const cubit of cubits) {
+          G.players[s.ownership].bag.push(cubit);
         }
       }
     }
@@ -266,7 +317,7 @@ export class GameLogic {
         s.position = null;
       } else {
         let index = ctx.random.Die(s.cubits.length) - 1;
-        s.cubits.splice(index, 0);
+        s.cubits.splice(index, 1);
       }
     }
 

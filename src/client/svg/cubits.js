@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { CUBITS } from '../../game/common';
+import { Database } from '../../game/database';
 
 export class CubitLogo extends React.Component {
   static propTypes = {
@@ -895,259 +896,50 @@ export class CubitThunderDome extends React.Component {
   }
 }
 
-export function getCubitElement(cubit, isPlayer) {
+export function getCubitElement(cubit, isPlayer = false) {
+  let data = Database.cubits[cubit.type];
+
   let teamColors = {'0': 'w', '1': 'b'};
   let team =  teamColors[cubit.ownership];
-  
-  /*
-  if(cubit.hidden === true && isPlayer) {
+  let params = { name: data.name, team: team };
+
+  if(data.hidden === true && isPlayer === false) {
     return React.createElement(CubitLogo, { name: "Hidden", team: team });
+  } else if(cubit.type === CUBITS.Orthogonal) {
+    return React.createElement(CubitOrthogonal, params);
+  } else if(cubit.type === CUBITS.Diagonal) {
+    return React.createElement(CubitDiagonal, params);
+  } else if(cubit.type === CUBITS.Cardinal) {
+    return React.createElement(CubitCardinal, params);
+  } else if(cubit.type === CUBITS.Jump) {
+    return React.createElement(CubitPattern, params);
+  } else if(cubit.type === CUBITS.SideStep) {
+    return React.createElement(CubitSidestep, params);
+  } else if(cubit.type === CUBITS.Swap) {
+    return React.createElement(CubitSwap, params);
+  } else if(cubit.type === CUBITS.Condemn) {
+    return React.createElement(CubitCondemn, params);
+  } else if(cubit.type === CUBITS.BlinkDodge) {
+    return React.createElement(CubitBlinkDodge, params);
+  } else if(cubit.type === CUBITS.Encumber) {
+    return React.createElement(CubitEncumber, params);
+  } else if(cubit.type === CUBITS.Enrage) {
+    return React.createElement(CubitEnrage, params);
+  } else if(cubit.type === CUBITS.Looter) {
+    return React.createElement(CubitLooter, params);
+  } else if(cubit.type === CUBITS.Passify) {
+    return React.createElement(CubitPassify, params);
+  } else if(cubit.type === CUBITS.Poisoned) {
+    return React.createElement(CubitPoisoned, params);
+  } else if(cubit.type === CUBITS.Bleed) {
+    return React.createElement(CubitSacrifice, params);
+  } else if(cubit.type === CUBITS.StickyFeet) {
+    return React.createElement(CubitStickyFeet, params);
+  } else if(cubit.type === CUBITS.DarkMagic) {
+    return React.createElement(CubitDarkMagic, params);
+  } else if(cubit.type === CUBITS.Recover) {
+    return React.createElement(CubitHeirloom, params);
+  } else {
+    return React.createElement(CubitText, params);
   }
-  */
-
-  let type = CubitText;
-  let params = { name: 'Test', team: team };
-
-  switch (cubit.type) {
-    case CUBITS.Orthogonal:
-    {
-      params.name = "Orthogonal";
-      type =  CubitOrthogonal;
-      break;
-    }
-    case CUBITS.Diagonal:
-    {
-      params.name = "Diagonal";
-      type =  CubitDiagonal;
-      break;
-    }
-    case CUBITS.Cardinal:
-    {
-      params.name = "Cardinal";
-      type =  CubitCardinal;
-      break;
-    }
-    case CUBITS.Jump:
-    {
-      params.name = "Jump";
-      type =  CubitPattern;
-      break;
-    }
-    case CUBITS.SideStep:
-    {
-      params.name = "Side tep";
-      type =  CubitSidestep;
-      break;
-    }
-    case CUBITS.Swap:
-    {
-      params.name = "Swap";
-      type =  CubitSwap;
-      break;
-    }
-    case CUBITS.DrawPlusOne:
-    {
-      params.name = "Draw +1";
-      type =  CubitDrawPlus;
-      break;
-    }
-    case CUBITS.DrawNegOne:
-    {
-      params.name = "Draw -1";
-      type =  CubitDrawMinus;
-      break;
-    }
-    case CUBITS.DoubleAction:
-    {
-      params.name = "Double Action";
-      type =  CubitDoubleAction;
-      break;
-    }
-    case CUBITS.Condemn:
-    {
-      params.name = "Condemn";
-      type =  CubitCondemn;
-      break;
-    }
-    case CUBITS.KingOfHill:
-    {
-      params.name = "King Of Hill";
-      type =  CubitKingOfHill;
-      break;
-    }
-    case CUBITS.KingsFlag:
-    {
-      params.name = "King of Hill";
-      type =  CubitKingOfHill;
-      break;
-    }
-    case CUBITS.Timebomb:
-    {
-      params.name = "Timebomb";
-      type =  CubitTimebomb;
-      params.value = cubit.data.amount;
-      break;
-    }
-    case CUBITS.Reckless:
-    {
-      params.name = "Reckless";
-      type =  CubitReckless;
-      params.value = cubit.data.amount;
-      break;
-    }
-    case CUBITS.BlinkDodge:
-    {
-      params.name = "Blink Dodge";
-      type =  CubitBlinkDodge;
-      break;
-    }
-    case CUBITS.CostofPower:
-    {
-      params.name = "Cost of Power";
-      type =  CubitCostofPower;
-      break;
-    }
-    case CUBITS.Encumber:
-    {
-      params.name = "Encumber";
-      type =  CubitEncumber;
-      break;
-    }
-    case CUBITS.Enrage:
-    {
-      params.name = "Enrage";
-      type =  CubitEnrage;
-      break;
-    }
-    case CUBITS.ForgottenPast:
-    {
-      params.name = "ForgottenPast";
-      type =  CubitForgottenPast;
-      break;
-    }
-    case CUBITS.Heirloom:
-    {
-      params.name = "Heirloom";
-      type =  CubitHeirloom;
-      break;
-    }
-    case CUBITS.Immunity:
-    {
-      params.name = "Immunity";
-      type =  CubitImmunity;
-      break;
-    }
-    case CUBITS.Knowledge:
-    {
-      params.name = "Knowledge";
-      type =  CubitKnowledge;
-      break;
-    }
-    case CUBITS.Looter:
-    {
-      params.name = "Looter";
-      type =  CubitLooter;
-      break;
-    }
-    case CUBITS.Nab:
-    {
-      params.name = "Nab";
-      type =  CubitNab;
-      break;
-    }
-    case CUBITS.Passify:
-    {
-      params.name = "Passify";
-      type =  CubitPassify;
-      break;
-    }
-    case CUBITS.Poisoned:
-    {
-      params.name = "Poisoned";
-      type =  CubitPoisoned;
-      break;
-    }
-    case CUBITS.Sacrifice:
-    {
-      params.name = "Sacrifice";
-      type =  CubitSacrifice;
-      break;
-    }
-    case CUBITS.StickyFeet:
-    {
-      params.name = "Sticky Feet";
-      type =  CubitStickyFeet;
-      break;
-    }
-    case CUBITS.RemovalStrong:
-    {
-      params.name = "Removal Strong";
-      type =  CubitRemovalStrong;
-      break;
-    }
-    case CUBITS.RemovalWeak:
-    {
-      params.name = "Removal Weak";
-      type =  CubitRemovalWeak;
-      break;
-    }
-    case CUBITS.ArenaRock:
-    {
-      params.name = "Arena Rock";
-      type =  CubitArenaRock;
-      break;
-    }
-    case CUBITS.BacktoBasics:
-    {
-      params.name = "Back to Basics";
-      type =  CubitBacktoBasics;
-      break;
-    }
-    case CUBITS.DarkMagic:
-    {
-      params.name = "Dark Magic";
-      type =  CubitDarkMagic;
-      break;
-    } 
-    case CUBITS.Jumper:
-    {
-      params.name = "v";
-      type =  CubitJumper;
-      break;
-    }
-    case CUBITS.Mulligan:
-    {
-      params.name = "Mulligan";
-      type =  CubitMulligan;
-      break;
-    } 
-    case CUBITS.Resourceful:
-    {
-      params.name = "Resourceful";
-      type =  CubitResourceful;
-      break;
-    }
-    case CUBITS.Revert:
-    {
-      params.name = "v";
-      type =  CubitRevert;
-      break;
-    }
-    case CUBITS.RockThrow:
-    {
-      params.name = "Rock Throw";
-      type =  CubitRockThrow;
-      break;
-    }
-    case CUBITS.ThunderDome:
-    {
-      params.name = "Thunder Dome";
-      type =  CubitThunderDome;
-      break;
-    }
-    default:
-      break;
-  }
-
-  return React.createElement(type, params);
 }

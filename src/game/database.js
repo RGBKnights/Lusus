@@ -203,6 +203,7 @@ function getCubits() {
   data[CUBITS.Enrage] = {
     key: CUBITS.Enrage,
     enabled: true,
+    hidden: false,
     name: 'Enrage',
     description: "The piece can only make Capture movements.",
     type: 'Attachment',
@@ -214,6 +215,7 @@ function getCubits() {
   data[CUBITS.Passify] = {
     key: CUBITS.Passify,
     enabled: true,
+    hidden: false,
     name: 'Passify',
     description: "The piece can only make Passive movements",
     type: 'Attachment',
@@ -225,6 +227,7 @@ function getCubits() {
   data[CUBITS.Encumber] = {
     key: CUBITS.Encumber,
     enabled: true,
+    hidden: false,
     name: 'Encumber',
     description: "",
     type: 'Attachment',
@@ -236,6 +239,7 @@ function getCubits() {
   data[CUBITS.StickyFeet] = {
     key: CUBITS.StickyFeet,
     enabled: true,
+    hidden: false,
     name: 'Sticky Feet',
     description: "",
     type: 'Attachment',
@@ -248,6 +252,7 @@ function getCubits() {
   data[CUBITS.Condemn] = {
     key: CUBITS.Condemn,
     enabled: true,
+    hidden: false,
     name: 'Condemn',
     description: "Replace a cubie on an opppent's piece with this one",
     type: 'Attachment',
@@ -259,6 +264,7 @@ function getCubits() {
   data[CUBITS.Immunity] = {
     key: CUBITS.Immunity,
     enabled: true,
+    hidden: false,
     name: 'Immunity',
     description: "Attached piece slot's can not be targeted",
     type: 'Attachment',
@@ -271,6 +277,7 @@ function getCubits() {
   data[CUBITS.Poisoned] = {
     key: CUBITS.Poisoned,
     enabled: true,
+    hidden: false,
     name: 'Poisoned',
     description: "After this piece makes 3 moves it is sent to the afterlife",
     type: 'Attachment',
@@ -282,6 +289,7 @@ function getCubits() {
   data[CUBITS.Bleed] = {
     key: CUBITS.Bleed,
     enabled: true,
+    hidden: false,
     name: 'Bleed',
     description: "After moving, remove a random cubie from this piece; if this is only cubit then send the piece to the afterlife",
     type: 'Attachment',
@@ -294,6 +302,7 @@ function getCubits() {
   data[CUBITS.Looter] = {
     key: CUBITS.Looter,
     enabled: true,
+    hidden: false,
     name: 'Looter',
     description: "On Capture before the captured piece is sent to the afterlife, a random cubit attached to it is sent to your bag",
     type: 'Attachment',
@@ -305,9 +314,10 @@ function getCubits() {
 
   data[CUBITS.BlinkDodge] = {
     key: CUBITS.BlinkDodge,
-    enabled: false,
+    enabled: true,
+    hidden: true,
     name: 'Blink Dodge',
-    description: "When Captured instead of being captured, move it to a random unoccupied adjacent space. If no space is avaible it is captured.",
+    description: "When Captured, move the unit to a random unoccupied adjacent space. If no space is avaible it is captured.",
     type: 'Attachment',
     subordinate: 'Trap',
     placement: [
@@ -316,7 +326,8 @@ function getCubits() {
   };
   data[CUBITS.Recover] = {
     key: CUBITS.Recover,
-    enabled: false,
+    enabled: true,
+    hidden: true,
     name: 'Recover',
     description: "When Captured put the cubies attached to the piece into the bag.",
     type: 'Attachment',
@@ -328,7 +339,8 @@ function getCubits() {
 
   data[CUBITS.Destroy] = {
     key: CUBITS.Destroy,
-    enabled: false,
+    enabled: true,
+    hidden: false,
     name: 'Destroy',
     description: "Remove a Cubie from a unit",
     type: 'Consumable',
@@ -340,7 +352,8 @@ function getCubits() {
   };
   data[CUBITS.Eliminate] = {
     key: CUBITS.Eliminate,
-    enabled: false,
+    enabled: true,
+    hidden: false,
     name: 'Eliminate',
     description: "Remove all Cubies from a unit",
     type: 'Consumable',

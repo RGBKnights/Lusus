@@ -30,7 +30,7 @@ export const CUBITS = {
   Poisoned: 1013,
   Bleed: 1014,
   // Attachments - Capture
-  // DarkMagic: 1015,
+  DarkMagic: 1015,
   Looter: 1016,
   // Attachments - Traps
   BlinkDodge: 1017,
