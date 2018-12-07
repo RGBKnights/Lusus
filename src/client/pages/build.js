@@ -225,7 +225,7 @@ class BuildPage extends React.Component {
       { r: 1, f: 5, o: '0', x: 7, y: 6 },
       { r: 1, f: 7, o: '0', x: 7, y: 5 },
       { r: 0, f: 0, o: '0', x: 0, y: 4 },
-      { r: 0, f: 1, o: '0', x: 1, y: 3 },
+      { r: 0, f: 1, o: '0', x: 1, y: 5 },
       { r: 0, f: 2, o: '0', x: 2, y: 4 },
       { r: 0, f: 3, o: '0', x: 3, y: 2 },
       { r: 0, f: 4, o: '0', x: 4, y: 6 },
@@ -244,7 +244,7 @@ class BuildPage extends React.Component {
       { r: 0, f: 3, o: '1', x: 3, y: 1 },
       { r: 0, f: 4, o: '1', x: 4, y: 5 },
       { r: 0, f: 5, o: '1', x: 5, y: 3 },
-      { r: 0, f: 6, o: '1', x: 6, y: 4 },
+      { r: 0, f: 6, o: '1', x: 6, y: 2 },
       { r: 0, f: 7, o: '1', x: 7, y: 3 },
     ];
 
@@ -411,7 +411,7 @@ class BuildPage extends React.Component {
                 <ButtonGroup>
                   <Button color="primary" onClick={this.onClearDeck}>Clear</Button>
                   <Button color="primary" onClick={this.onResetDeck}>Reset</Button>
-                  <Button color="primary" onClick={this.onSetDeck}>Set</Button>
+                  <Button color="primary" onClick={this.onSetDeck}>Set All</Button>
                 </ButtonGroup>
               </div>
               <div>

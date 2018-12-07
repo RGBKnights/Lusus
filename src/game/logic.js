@@ -114,6 +114,7 @@ export class GameLogic {
         { type: CUBITS.Orthogonal, amount: 1 },
         { type: CUBITS.Diagonal, amount: 1 },
         { type: CUBITS.Cardinal, amount: 1 },
+        /*
         { type: CUBITS.SideStep, amount: 1 },
         { type: CUBITS.Swap, amount: 1 },
         { type: CUBITS.Jump, amount: 1 },
@@ -131,6 +132,10 @@ export class GameLogic {
         { type: CUBITS.Condemn, amount: 1 },
         { type: CUBITS.Immunity, amount: 1 },
         { type: CUBITS.Replacement, amount: 1 },
+        */
+        { type: CUBITS.NoLeftTurn, amount: 3 },
+        { type: CUBITS.Monster, amount: 3 },
+        // { type: CUBITS.Telaporter, amount: 3 },
       ],
       rules: {
         passPlay: true,

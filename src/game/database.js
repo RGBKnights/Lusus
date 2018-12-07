@@ -413,11 +413,11 @@ function getCubits() {
       { directions: [DIRECTIONS.Forward], distance: 7, contiguous: true, targets: [TARGETS.Empty, TARGETS.Enemy] },
     ],
   };
-  data[CUBITS.Telaporter] = {
-    key: CUBITS.Telaporter,
+  data[CUBITS.Swapaport] = {
+    key: CUBITS.Swapaport,
     enabled: true,
     hidden: false,
-    name: 'Telaporter',
+    name: 'Swapaport',
     description: "Some Crazy Swap Stuff",
     type: 'Buff',
     subordinate: 'Movement',

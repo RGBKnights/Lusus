@@ -73,7 +73,7 @@ export function getMoves(G, ctx, id, source) {
   directions[DIRECTIONS.Left] = { x: unit.ownership === '0' ? -1 : 1, y:0 };
   directions[DIRECTIONS.Right] = { x: unit.ownership === '0' ? 1 : -1, y:0 };
 
-  let isTelaporter = unitHasCubits(unit, CUBITS.Telaporter);
+  let isTelaporter = unitHasCubits(unit, CUBITS.Swapaport);
   let noLeftTurn = unitHasCubits(unit, CUBITS.NoLeftTurn);
   let encumbered = unitHasCubits(unit, CUBITS.Encumber);
   let stuck = unitHasCubits(unit, CUBITS.StickyFeet);
@@ -97,10 +97,6 @@ export function getMoves(G, ctx, id, source) {
   let unitData = Database.units[unit.type];
   let filteredMovements = unit.moves > 0 ? unitData.movements.filter(_ => _.consumable !== true) : unitData.movements;
   movements = movements.concat(filteredMovements);
-
-  if(isTelaporter) {
-    movements = Database.cubits[CUBITS.Telaporter].movements;
-  }
 
   if(noLeftTurn) {
     movements = movements.filter(_ => _.directions.includes(DIRECTIONS.Left) === false);
@@ -140,6 +136,14 @@ export function getMoves(G, ctx, id, source) {
   }
   if(unitHasCubits(unit, CUBITS.Passify)) {
     moves = moves.filter(_ => _.target === TARGETS.Empty);
+  }
+
+  if(isTelaporter) {
+    moves = [];
+    let units = G.field.filter(_ => _.position != null && _.ownership === unit.ownership && _.id !== unit.id);
+    for (const unit of units) {
+      moves.push({ target: TARGETS.Friendly, x: unit.position.x, y: unit.position.y });
+    }
   }
 
   return moves;

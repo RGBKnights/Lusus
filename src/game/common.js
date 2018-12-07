@@ -42,7 +42,7 @@ export const CUBITS = {
   // Testing
   NoLeftTurn: 1021,
   Monster: 1022,
-  Telaporter: 1023,
+  Swapaport: 1023,
 };
 
 export const CUBIT_TYPES = {
