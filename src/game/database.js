@@ -87,6 +87,7 @@ function getUnits() {
 function getCubits() {
   let data = {};
 
+  // Movements
   data[CUBITS.Orthogonal] = {
     key: CUBITS.Orthogonal,
     enabled: true,
@@ -248,33 +249,6 @@ function getCubits() {
       { where: LOCATIONS.OpponentsField, condition: PLACEMENT.Empty },
     ]
   };
-
-  data[CUBITS.Condemn] = {
-    key: CUBITS.Condemn,
-    enabled: true,
-    hidden: false,
-    name: 'Condemn',
-    description: "Replace a cubie on an opppent's piece with this one",
-    type: 'Strategic',
-    subordinate: '',
-    placement: [
-      { where: LOCATIONS.Self, condition: PLACEMENT.Cubit },
-      { where: LOCATIONS.OpponentsField, condition: PLACEMENT.Cubit },
-    ]
-  };
-  data[CUBITS.Immunity] = {
-    key: CUBITS.Immunity,
-    enabled: true,
-    hidden: false,
-    name: 'Immunity',
-    description: "Attached piece slot's can not be targeted",
-    type: 'Buff',
-    subordinate: '',
-    placement: [
-      { where: LOCATIONS.MyField, condition: PLACEMENT.Empty },
-      { where: LOCATIONS.OpponentsField, condition: PLACEMENT.Empty },
-    ]
-  };
   data[CUBITS.Poisoned] = {
     key: CUBITS.Poisoned,
     enabled: true,
@@ -300,6 +274,7 @@ function getCubits() {
     ]
   };
 
+  // Aggressive
   data[CUBITS.Looter] = {
     key: CUBITS.Looter,
     enabled: true,
@@ -313,6 +288,7 @@ function getCubits() {
     ]
   };
 
+  // Traps
   data[CUBITS.BlinkDodge] = {
     key: CUBITS.BlinkDodge,
     enabled: true,
@@ -338,6 +314,47 @@ function getCubits() {
     ]
   };
 
+  // Targeting
+  data[CUBITS.Condemn] = {
+    key: CUBITS.Condemn,
+    enabled: true,
+    hidden: false,
+    name: 'Condemn',
+    description: "Attached piece slot's can not be targeted",
+    type: 'Debuff',
+    subordinate: 'Targeting',
+    placement: [
+      { where: LOCATIONS.OpponentsField, condition: PLACEMENT.Empty },
+    ]
+  };
+  data[CUBITS.Immunity] = {
+    key: CUBITS.Immunity,
+    enabled: true,
+    hidden: false,
+    name: 'Immunity',
+    description: "This piece or its slot's can not be targeted",
+    type: 'Strategic',
+    subordinate: 'Targeting',
+    placement: [
+      { where: LOCATIONS.MyField, condition: PLACEMENT.Empty },
+      { where: LOCATIONS.OpponentsField, condition: PLACEMENT.Empty },
+    ]
+  };
+
+  // Removal
+  data[CUBITS.Replacement] = {
+    key: CUBITS.Replacement,
+    enabled: true,
+    hidden: false,
+    name: 'Replacement',
+    description: "Replace a cubie on an opppent's piece with this one",
+    type: 'Strategic',
+    subordinate: '',
+    placement: [
+      { where: LOCATIONS.MyField, condition: PLACEMENT.Cubit },
+      { where: LOCATIONS.OpponentsField, condition: PLACEMENT.Cubit },
+    ]
+  };
   data[CUBITS.Destroy] = {
     key: CUBITS.Destroy,
     enabled: true,

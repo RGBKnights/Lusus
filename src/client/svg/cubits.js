@@ -915,6 +915,26 @@ export class CubitEliminate extends React.Component {
   }
 }
 
+export class CubitReplacement extends React.Component {
+  static propTypes = {
+    team: PropTypes.string,
+    name: PropTypes.string,
+  };
+
+  render() {
+    let teamColor = this.props.team === 'b' ? '#000000' : '#FFFFFF';
+    let style = { fill: teamColor, fillOpacity: 1 };
+
+    return (
+      <g transform="scale(0.0018,0.0018) translate(20,20)">
+        <title>{this.props.name}</title>
+        <path style={style}  d="M128 32a96 96 0 0 0-96 96 96 96 0 0 0 96 96 96 96 0 0 0 30.285-4.986L140.29 201.02l64.353-64.352 6.363-6.363 11.86 11.86A96 96 0 0 0 224 128a96 96 0 0 0-96-96zm83.006 123.76l-45.26 45.26L252.73 288l-23.468 23.467 115.24 23.047-23.05-115.24-23.466 23.466-86.98-86.98zM353.556 288l13.89 69.46L288 341.57V480h192V288H353.555z" ></path>
+      </g>
+    );
+  }
+}
+
+
 export function getCubitElement(cubit, isPlayer = false) {
   let data = Database.cubits[cubit.type];
   
@@ -964,6 +984,8 @@ export function getCubitElement(cubit, isPlayer = false) {
     return React.createElement(CubitEliminate, params);
   } else if(cubit.type === CUBITS.Immunity) {
     return React.createElement(CubitImmunity, params);
+  } else if(cubit.type === CUBITS.Replacement) {
+    return React.createElement(CubitReplacement, params);
   } else {
     return React.createElement(CubitText, params);
   }

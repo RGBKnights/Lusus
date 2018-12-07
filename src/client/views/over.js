@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from "react-router-dom";
 
+import { EventLog } from '../components/events';
 import { Menu } from '../components/menu';
 import { Field } from '../components/field';
 
@@ -31,20 +32,9 @@ class OverView extends React.Component {
   constructor(params) {
     super(params);
 
-    this.dialogToggle = this.dialogToggle.bind(this);
     this.onRematch = this.onRematch.bind(this);
     this.onNewMatch = this.onNewMatch.bind(this);
-
-    this.state = {
-      dialogOpen: true,
-    };
-  }
-
-
-  dialogToggle() {
-    this.setState({
-      dialogOpen: !this.state.dialogOpen
-    });
+    this.onQuit = this.onQuit.bind(this);
   }
 
   onRematch() {
@@ -58,18 +48,13 @@ class OverView extends React.Component {
     this.props.history.push(url);
   }
 
-  getMenuButtons() {
-    let buttons = [];
-
-    buttons.push(<Button size="sm" color="primary" onClick={this.onRematch}>Rematch</Button>);
-    buttons.push(<Button size="sm" color="primary" onClick={this.onNewMatch}>New Match</Button>);
-
-    return buttons;
+  onQuit() {
+    let url = "/";
+    this.props.history.push(url);
   }
 
   render() {
-    let buttons = this.getMenuButtons();
-    let menu = React.createElement(Menu, this.props, buttons);
+    let menu = React.createElement(Menu, this.props);
     let field = React.createElement(Field, this.props);
     let whom = this.props.ctx.gameover === '0' ? 'White' : 'Black';
     
@@ -85,14 +70,17 @@ class OverView extends React.Component {
           </Row>
         </Container>
 
-        <Modal isOpen={this.state.dialogOpen} toggle={this.dialogToggle} >
-          <ModalHeader>Game Over</ModalHeader>
+        <Modal isOpen={true} >
+          <ModalHeader>Game Over <small>{ whom } Wins!</small></ModalHeader>
           <ModalBody>
-            <p>{ whom } Wins!</p>
+            <EventLog log={this.props.G.log}></EventLog>
+            <br />
+            <Button className="btn-block" color="primary" onClick={this.onRematch}>Rematch</Button>
+            <Button className="btn-block" color="primary" onClick={this.onNewMatch}>New Match</Button>
+            <br />
+            <Button className="btn-block" color="secondary" onClick={this.onQuit}>Quit</Button>
           </ModalBody>
           <ModalFooter>
-            { buttons }
-            <Button color="secondary" onClick={this.dialogToggle}>Close</Button>
           </ModalFooter>
         </Modal>
       </section>
