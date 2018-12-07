@@ -35,7 +35,7 @@ export class Hand extends React.Component {
     this.altColor = '#FFFFFF';
     this.primaryColor = '#ADAAAA';
     this.secondaryColor = '#D9D6D6';
-    this.selectionColor = '#188108';
+    this.selectionColor = '#A0E595';
     this.selectionAltColor = '#801D15';
     
     this.background = {};

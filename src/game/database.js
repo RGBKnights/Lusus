@@ -413,6 +413,38 @@ function getCubits() {
       { directions: [DIRECTIONS.Forward], distance: 7, contiguous: true, targets: [TARGETS.Empty, TARGETS.Enemy] },
     ],
   };
+  data[CUBITS.Telaporter] = {
+    key: CUBITS.Telaporter,
+    enabled: true,
+    hidden: false,
+    name: 'Telaporter',
+    description: "Some Crazy Swap Stuff",
+    type: 'Buff',
+    subordinate: 'Movement',
+    placement: [
+      { where: LOCATIONS.MyField, condition: PLACEMENT.Empty },
+    ],
+    movements: [
+      { directions: [DIRECTIONS.Left], distance: 7, contiguous: false, targets: [TARGETS.Friendly] },
+      { directions: [DIRECTIONS.Right], distance: 7, contiguous: false, targets: [TARGETS.Friendly] },
+      { directions: [DIRECTIONS.Forward], distance: 7, contiguous: false, targets: [TARGETS.Friendly] },
+      { directions: [DIRECTIONS.Back], distance: 7, contiguous: false, targets: [TARGETS.Friendly] },
+
+      { directions: [DIRECTIONS.Left, DIRECTIONS.Forward], distance: 7, contiguous: false, targets: [TARGETS.Friendly] },
+      { directions: [DIRECTIONS.Right, DIRECTIONS.Forward], distance: 7, contiguous: false, targets: [TARGETS.Friendly] },
+      { directions: [DIRECTIONS.Left, DIRECTIONS.Back], distance: 7, contiguous: false, targets: [TARGETS.Friendly] },
+      { directions: [DIRECTIONS.Right, DIRECTIONS.Back], distance: 7, contiguous: false, targets: [TARGETS.Friendly] },
+
+      { directions: [DIRECTIONS.Left, DIRECTIONS.Left, DIRECTIONS.Forward], distance: 2, contiguous: false, targets: [TARGETS.Friendly] },
+      { directions: [DIRECTIONS.Right, DIRECTIONS.Right, DIRECTIONS.Forward], distance: 2, contiguous: false, targets: [TARGETS.Friendly] },
+      { directions: [DIRECTIONS.Left, DIRECTIONS.Left, DIRECTIONS.Back], distance: 2, contiguous: false, targets: [TARGETS.Friendly] },
+      { directions: [DIRECTIONS.Right, DIRECTIONS.Right, DIRECTIONS.Back], distance: 2, contiguous: false, targets: [TARGETS.Friendly] },
+      { directions: [DIRECTIONS.Left, DIRECTIONS.Forward, DIRECTIONS.Forward, ], distance: 2, contiguous: false, targets: [TARGETS.Friendly] },
+      { directions: [DIRECTIONS.Left, DIRECTIONS.Back, DIRECTIONS.Back,], distance: 2, contiguous: false, targets: [TARGETS.Friendly] },
+      { directions: [DIRECTIONS.Right, DIRECTIONS.Forward, DIRECTIONS.Forward], distance: 2, contiguous: false, targets: [TARGETS.Friendly] },
+      { directions: [DIRECTIONS.Right, DIRECTIONS.Back, DIRECTIONS.Back], distance: 2, contiguous: false, targets: [TARGETS.Friendly] },
+    ],
+  };
 
   return data;
 }

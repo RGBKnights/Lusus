@@ -45,13 +45,13 @@ export class Field extends React.Component {
     this.altColor = '#FFFFFF';
     this.primaryColor = '#ADAAAA';
     this.secondaryColor = '#D9D6D6';
-    this.placementColor = '#188108';
+    this.placementColor = '#A0E595';
     this.deadColor = '#F9766C';
 
     this.movementColors = {};
-    this.movementColors[TARGETS.Empty] = '#188108';
-    this.movementColors[TARGETS.Friendly] = '#188108';
-    this.movementColors[TARGETS.Enemy] = '#801D15';
+    this.movementColors[TARGETS.Empty] = '#A0E595';
+    this.movementColors[TARGETS.Friendly] = '#A0E595';
+    this.movementColors[TARGETS.Enemy] = '#F9766C';
 
     this.layout = {
       breaks: [8,17],
