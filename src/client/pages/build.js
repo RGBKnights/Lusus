@@ -10,7 +10,8 @@ import {
   Row, Col,
   Navbar, NavbarBrand, 
   Form, FormGroup, Label, Input, Button,
-  Media
+  Media,
+  ButtonGroup 
 } from 'reactstrap';
 import NumericInput from 'react-numeric-input';
 
@@ -41,6 +42,17 @@ class BuildPage extends React.Component {
     this.onRulePassMoveChanged = this.onRulePassMoveChanged.bind(this);
     this.onRuleFeePassChanged = this.onRuleFeePassChanged.bind(this);
     this.onRuleFreeDrawChanged = this.onRuleFreeDrawChanged.bind(this);
+    this.onClearDeck = this.onClearDeck.bind(this);
+    this.onResetDeck = this.onResetDeck.bind(this);
+    this.onSetDeck = this.onSetDeck.bind(this);
+    this.onClearDeployment = this.onClearDeployment.bind(this);
+    this.onResetDeployment = this.onResetDeployment.bind(this);
+    this.onRoyalDeployment = this.onRoyalDeployment.bind(this);
+    this.onFortifyDeployment = this.onFortifyDeployment.bind(this);
+    this.onHostageDeployment = this.onHostageDeployment.bind(this);
+    this.onClickBlack = this.onClickBlack.bind(this);
+    this.onClickWhite = this.onClickWhite.bind(this);
+    this.onClickField = this.onClickField.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.onSave = this.onSave.bind(this);
 
@@ -57,6 +69,7 @@ class BuildPage extends React.Component {
     let defaults = GameLogic.getDefaultSetup();
 
     this.state = {
+      selection: null,
       name: 'Custom',
       rules: defaults.rules,
       field: defaults.field,
@@ -88,16 +101,172 @@ class BuildPage extends React.Component {
     this.setState({ rules: rules });
   }
 
-  onClickBlack({x,y}) {
+  onClearDeck() {
+    let deck = this.state.deck;
+    for (let i = 0; i < deck.length; i++) {
+      deck[i].amount = 0;
+    }
+    this.setState({ deck: deck });
+  }
 
+  onResetDeck() {
+    let deck = this.state.deck;
+    for (let i = 0; i < deck.length; i++) {
+      deck[i].amount = 1;
+    }
+    this.setState({ deck: deck });
+  }
+
+  onSetDeck() {
+    let amount = prompt("Please enter the amount");
+
+    let deck = this.state.deck;
+    for (let i = 0; i < deck.length; i++) {
+      deck[i].amount = parseInt(amount);
+    }
+    this.setState({ deck: deck });
+  }
+
+  onClearDeployment() {
+    let field = this.state.field;
+    for (let i = 0; i < field.length; i++) {
+      field[i].position = null;
+    }
+
+    this.setState({ field: field });
+  }
+
+  onResetDeployment() {
+    let defaults = GameLogic.getDefaultSetup();
+    this.setState({ field: defaults.field });
+  }
+
+  customDeployment(layout) {
+    let field = this.state.field;
+    for (let i = 0; i < field.length; i++) {
+      field[i].position = null;
+    }
+
+    for (const l of layout) {
+      let i = field.findIndex(_ => _.layout.r === l.r && _.layout.f === l.f && _.ownership === l.o);
+      field[i].position = {x: l.x, y: l.y};
+    }
+    this.setState({ field: field });
+  }
+
+  onRoyalDeployment() {
+    let layout = [
+      { r: 1, f: 0, o: '0', x: 6, y: 6 },
+      { r: 1, f: 1, o: '0', x: 4, y: 6 },
+      { r: 1, f: 2, o: '0', x: 5, y: 6 },
+      { r: 1, f: 3, o: '0', x: 7, y: 6 },
+      { r: 1, f: 4, o: '0', x: 7, y: 7 },
+      { r: 1, f: 5, o: '0', x: 5, y: 7 },
+      { r: 1, f: 6, o: '0', x: 4, y: 7 },
+      { r: 1, f: 7, o: '0', x: 6, y: 7 },
+      { r: 1, f: 0, o: '1', x: 1, y: 6 },
+      { r: 1, f: 1, o: '1', x: 3, y: 6 },
+      { r: 1, f: 2, o: '1', x: 2, y: 6 },
+      { r: 1, f: 3, o: '1', x: 0, y: 6 },
+      { r: 1, f: 4, o: '1', x: 0, y: 7 },
+      { r: 1, f: 5, o: '1', x: 2, y: 7 },
+      { r: 1, f: 6, o: '1', x: 3, y: 7 },
+      { r: 1, f: 7, o: '1', x: 1, y: 7 },
+    ];
+
+    this.customDeployment(layout);
+  }
+
+  onFortifyDeployment() {
+    let layout = [
+      { r: 0, f: 0, o: '0', x: 3, y: 7 },
+      { r: 0, f: 1, o: '0', x: 4, y: 6 },
+      { r: 0, f: 2, o: '0', x: 5, y: 5 },
+      { r: 0, f: 3, o: '0', x: 6, y: 4 },
+      { r: 0, f: 4, o: '0', x: 7, y: 3 },
+      { r: 0, f: 5, o: '0', x: 5, y: 6 },
+      { r: 0, f: 6, o: '0', x: 6, y: 5 },
+      { r: 0, f: 7, o: '0', x: 4, y: 4 },
+      { r: 1, f: 0, o: '0', x: 4, y: 7 },
+      { r: 1, f: 1, o: '0', x: 6, y: 7 },
+      { r: 1, f: 2, o: '0', x: 5, y: 7 },
+      { r: 1, f: 3, o: '0', x: 6, y: 6 },
+      { r: 1, f: 4, o: '0', x: 7, y: 7 },
+      { r: 1, f: 5, o: '0', x: 7, y: 6 },
+      { r: 1, f: 6, o: '0', x: 7, y: 5 },
+      { r: 1, f: 7, o: '0', x: 7, y: 4 },
+      { r: 0, f: 0, o: '1', x: 4, y: 0 },
+      { r: 0, f: 1, o: '1', x: 3, y: 1 },
+      { r: 0, f: 2, o: '1', x: 2, y: 2 },
+      { r: 0, f: 3, o: '1', x: 1, y: 3 },
+      { r: 0, f: 4, o: '1', x: 0, y: 4 },
+      { r: 0, f: 5, o: '1', x: 2, y: 1 },
+      { r: 0, f: 6, o: '1', x: 1, y: 2 },
+      { r: 0, f: 7, o: '1', x: 3, y: 3 },
+      { r: 1, f: 0, o: '1', x: 3, y: 0 },
+      { r: 1, f: 1, o: '1', x: 1, y: 0 },
+      { r: 1, f: 2, o: '1', x: 2, y: 0 },
+      { r: 1, f: 3, o: '1', x: 1, y: 1 },
+      { r: 1, f: 4, o: '1', x: 0, y: 0 },
+      { r: 1, f: 5, o: '1', x: 0, y: 1 },
+      { r: 1, f: 6, o: '1', x: 0, y: 2 },
+      { r: 1, f: 7, o: '1', x: 0, y: 3 },
+    ];
+
+    this.customDeployment(layout);
+  }
+
+  onHostageDeployment() {
+    let layout = [
+      { r: 1, f: 0, o: '0', x: 6, y: 7 },
+      { r: 1, f: 2, o: '0', x: 5, y: 7 },
+      { r: 1, f: 3, o: '0', x: 7, y: 7 },
+      { r: 1, f: 4, o: '0', x: 6, y: 6 },
+      { r: 1, f: 5, o: '0', x: 7, y: 6 },
+      { r: 1, f: 7, o: '0', x: 7, y: 5 },
+      { r: 0, f: 0, o: '0', x: 0, y: 4 },
+      { r: 0, f: 1, o: '0', x: 1, y: 3 },
+      { r: 0, f: 2, o: '0', x: 2, y: 4 },
+      { r: 0, f: 3, o: '0', x: 3, y: 2 },
+      { r: 0, f: 4, o: '0', x: 4, y: 6 },
+      { r: 0, f: 5, o: '0', x: 5, y: 4 },
+      { r: 0, f: 6, o: '0', x: 6, y: 5 },
+      { r: 0, f: 7, o: '0', x: 7, y: 4 },
+      { r: 1, f: 0, o: '1', x: 1, y: 0 },
+      { r: 1, f: 2, o: '1', x: 2, y: 0 },
+      { r: 1, f: 3, o: '1', x: 0, y: 0 },
+      { r: 1, f: 4, o: '1', x: 1, y: 1 },
+      { r: 1, f: 5, o: '1', x: 0, y: 1 },
+      { r: 1, f: 7, o: '1', x: 0, y: 2 },
+      { r: 0, f: 0, o: '1', x: 0, y: 3 },
+      { r: 0, f: 1, o: '1', x: 1, y: 2 },
+      { r: 0, f: 2, o: '1', x: 2, y: 3 },
+      { r: 0, f: 3, o: '1', x: 3, y: 1 },
+      { r: 0, f: 4, o: '1', x: 4, y: 5 },
+      { r: 0, f: 5, o: '1', x: 5, y: 3 },
+      { r: 0, f: 6, o: '1', x: 6, y: 4 },
+      { r: 0, f: 7, o: '1', x: 7, y: 3 },
+    ];
+
+    this.customDeployment(layout);
+  }
+
+  onClickBlack({x,y}) {
+    let unit = this.state.field.find(_ => _.layout.f === x && _.layout.r === y && _.ownership === '1');
+    this.setState({ selection: unit });
   }
 
   onClickWhite({x,y}) {
-    
+    let unit = this.state.field.find(_ => _.layout.f === x && _.layout.r === y && _.ownership === '0');
+    this.setState({ selection: unit });
   }
 
   onClickField({x,y}) {
-    
+    let unit = this.state.selection;
+    if(unit) {
+      unit.position = {x,y};
+      this.setState({ selection: null });
+    }
   }
 
   handleChange(value, type) {
@@ -169,7 +338,9 @@ class BuildPage extends React.Component {
     for (const unit of this.state.field) {
       let element = getUnitElement(unit);
       layout[unit.ownership].push(<Token key={unit.id} x={unit.layout.f} y={unit.layout.r}>{ element }</Token>);
-      deployment.push(<Token key={unit.id} x={unit.position.x} y={unit.position.y}>{ element }</Token>);
+      if(unit.position) {
+        deployment.push(<Token key={unit.id} x={unit.position.x} y={unit.position.y}>{ element }</Token>);
+      }
     }
 
     return (
@@ -190,7 +361,7 @@ class BuildPage extends React.Component {
         <Container className="body">
           <Row>
             <Col>
-              <h5 className="text-center">Rules <small>Overrides</small></h5>
+              <h5>Rules <small>(Overrides)</small></h5>
             </Col>
           </Row>
           <Form>
@@ -236,14 +407,39 @@ class BuildPage extends React.Component {
           <hr className="highlighted" />
           <Row>
             <Col>
-              <h5 className="text-center">Deck</h5>
+              <div className="float-right">
+                <ButtonGroup>
+                  <Button color="primary" onClick={this.onClearDeck}>Clear</Button>
+                  <Button color="primary" onClick={this.onResetDeck}>Reset</Button>
+                  <Button color="primary" onClick={this.onSetDeck}>Set</Button>
+                </ButtonGroup>
+              </div>
+              <div>
+                <h5>Deck</h5>
+              </div>
+              <br />
               { items }
             </Col>
           </Row>
           <hr className="highlighted" />
           <Row>
             <Col>
-              <h5 className="text-center">Deployment</h5>
+              <div className="float-right">
+                <ButtonGroup>
+                  <Button color="primary" onClick={this.onClearDeployment}>Clear</Button>
+                  <Button color="primary" onClick={this.onResetDeployment}>Reset</Button>
+                </ButtonGroup>
+                &nbsp;
+                <ButtonGroup>
+                  <Button color="warning" onClick={this.onRoyalDeployment}>Royals</Button>
+                  <Button color="warning" onClick={this.onFortifyDeployment}>Fortify</Button>
+                  <Button color="warning" onClick={this.onHostageDeployment}>Hostage</Button>
+                </ButtonGroup>
+              </div>
+              <div>
+                <h5>Deployment <small>(Black on Top)</small></h5>
+              </div>
+              <br />
               <Row>
                 <Col>
                   <Grid rows={8} cols={8} colorMap={this.background} style={this.style} onClick={this.onClickField}>

@@ -224,7 +224,7 @@ export class Field extends React.Component {
         let mapKey = `${position.x},${position.y}`;
         this.map[mapKey] = unit;
 
-        if(targeting.includes(PLACEMENT.Unit) && !unitHasCubits(unit, CUBITS.Immunity)) {
+        if(unit.position && targeting.includes(PLACEMENT.Unit) && !unitHasCubits(unit, CUBITS.Immunity)) {
           background[mapKey] = this.placementColor;
           this.placements[mapKey] = true;
         }
@@ -251,12 +251,12 @@ export class Field extends React.Component {
           tokens.push(token);
           this.map[mapKey] = cubit;
 
-          if(targeting.includes(PLACEMENT.Cubit) && !unitHasCubits(unit, CUBITS.Immunity)) {
+          if(unit.position && targeting.includes(PLACEMENT.Cubit) && !unitHasCubits(unit, CUBITS.Immunity)) {
             background[mapKey] = this.placementColor;
             this.placements[mapKey] = true;
           }
         } else {
-          if(targeting.includes(PLACEMENT.Empty) && !unitHasCubits(unit, CUBITS.Condemn)) {
+          if(unit.position && targeting.includes(PLACEMENT.Empty) && !unitHasCubits(unit, CUBITS.Condemn)) {
             background[mapKey] = this.placementColor;
             this.placements[mapKey] = true;
           }
