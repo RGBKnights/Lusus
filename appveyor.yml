@@ -6,17 +6,20 @@ skip_tags: true
 image: Visual Studio 2017
 environment:
   nodejs_version: 10
+  REACT_APP_SERVER_URL: lusus.us-3.evennode.com
 install:
 - ps: >-
     # Get the latest stable version of Node.js or io.js
+
     Install-Product node $env:nodejs_version
+
     # install modules
+
     npm --loglevel=error install
 build_script:
 - ps: >-
-    # build client
     npm run build-client
-    # build server
+
     npm run build-server
 artifacts:
 - path: /build
