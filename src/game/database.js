@@ -92,8 +92,8 @@ function getCubits() {
     enabled: true,
     name: 'Orthogonal',
     description: 'This piece can move 7 spaces horizontally or vertically (like a Rook)',
-    type: 'Attachment',
-    subordinate: 'Contiguous Movement',
+    type: 'Buff',
+    subordinate: 'Movement - Contiguous',
     placement: [
       { where: LOCATIONS.MyField, condition: PLACEMENT.Empty },
     ],
@@ -109,8 +109,8 @@ function getCubits() {
     enabled: true,
     name: 'Diagonal',
     description: 'This piece can move 7 spaces diagonally (like a Bishop)',
-    type: 'Attachment',
-    subordinate: 'Contiguous Movement',
+    type: 'Buff',
+    subordinate: 'Movement - Contiguous',
     placement: [
       { where: LOCATIONS.MyField, condition: PLACEMENT.Empty },
     ],
@@ -126,8 +126,8 @@ function getCubits() {
     enabled: true,
     name: 'Cardinal',
     description: 'This piece can move 7 spaces in any direction (like a Queen)',
-    type: 'Attachment',
-    subordinate: 'Contiguous Movement',
+    type: 'Buff',
+    subordinate: 'Movement - Contiguous',
     placement: [
       { where: LOCATIONS.MyField, condition: PLACEMENT.Empty },
     ],
@@ -147,8 +147,8 @@ function getCubits() {
     enabled: true,
     name: 'Jump',
     description: 'This piece can move 2 spaces horizontal or vertical and then 1 the option direction (like a Knight)',
-    type: 'Attachment',
-    subordinate: 'Pattern Movement',
+    type: 'Buff',
+    subordinate: 'Movement - Pattern',
     placement: [
       { where: LOCATIONS.MyField, condition: PLACEMENT.Empty },
     ],
@@ -168,8 +168,8 @@ function getCubits() {
     enabled: true,
     name: 'SideStep',
     description: 'This piece can passively move 1 space horizontally',
-    type: 'Attachment',
-    subordinate: 'Contiguous Movement',
+    type: 'Buff',
+    subordinate: 'Movement - Contiguous',
     placement: [
       { where: LOCATIONS.MyField, condition: PLACEMENT.Empty },
     ],
@@ -183,8 +183,8 @@ function getCubits() {
     enabled: true,
     name: 'Swap',
     description: 'This piece can Swap any adjacent piece as its move',
-    type: 'Attachment',
-    subordinate: 'Pattern Movement',
+    type: 'Buff',
+    subordinate: 'Movement - Pattern',
     placement: [
       { where: LOCATIONS.MyField, condition: PLACEMENT.Empty },
     ],
@@ -206,8 +206,8 @@ function getCubits() {
     hidden: false,
     name: 'Enrage',
     description: "The piece can only make Capture movements.",
-    type: 'Attachment',
-    subordinate: 'Movement Modifier',
+    type: 'Debuff',
+    subordinate: 'Movement',
     placement: [
       { where: LOCATIONS.OpponentsField, condition: PLACEMENT.Empty },
     ]
@@ -218,8 +218,8 @@ function getCubits() {
     hidden: false,
     name: 'Passify',
     description: "The piece can only make Passive movements",
-    type: 'Attachment',
-    subordinate: 'Movement Modifier',
+    type: 'Debuff',
+    subordinate: 'Movement',
     placement: [
       { where: LOCATIONS.OpponentsField, condition: PLACEMENT.Empty },
     ]
@@ -230,8 +230,8 @@ function getCubits() {
     hidden: false,
     name: 'Encumber',
     description: "",
-    type: 'Attachment',
-    subordinate: 'Movement Modifier',
+    type: 'Debuff',
+    subordinate: 'Movement',
     placement: [
       { where: LOCATIONS.OpponentsField, condition: PLACEMENT.Empty },
     ]
@@ -242,8 +242,8 @@ function getCubits() {
     hidden: false,
     name: 'Sticky Feet',
     description: "",
-    type: 'Attachment',
-    subordinate: 'Movement Modifier',
+    type: 'Debuff',
+    subordinate: 'Movement',
     placement: [
       { where: LOCATIONS.OpponentsField, condition: PLACEMENT.Empty },
     ]
@@ -255,9 +255,10 @@ function getCubits() {
     hidden: false,
     name: 'Condemn',
     description: "Replace a cubie on an opppent's piece with this one",
-    type: 'Attachment',
+    type: 'Strategic',
     subordinate: '',
     placement: [
+      { where: LOCATIONS.Self, condition: PLACEMENT.Cubit },
       { where: LOCATIONS.OpponentsField, condition: PLACEMENT.Cubit },
     ]
   };
@@ -267,7 +268,7 @@ function getCubits() {
     hidden: false,
     name: 'Immunity',
     description: "Attached piece slot's can not be targeted",
-    type: 'Attachment',
+    type: 'Buff',
     subordinate: '',
     placement: [
       { where: LOCATIONS.MyField, condition: PLACEMENT.Empty },
@@ -280,8 +281,8 @@ function getCubits() {
     hidden: false,
     name: 'Poisoned',
     description: "After this piece makes 3 moves it is sent to the afterlife",
-    type: 'Attachment',
-    subordinate: '',
+    type: 'Debuff',
+    subordinate: 'Movement',
     placement: [
       { where: LOCATIONS.OpponentsField, condition: PLACEMENT.Empty },
     ]
@@ -292,8 +293,8 @@ function getCubits() {
     hidden: false,
     name: 'Bleed',
     description: "After moving, remove a random cubie from this piece; if this is only cubit then send the piece to the afterlife",
-    type: 'Attachment',
-    subordinate: '',
+    type: 'Debuff',
+    subordinate: 'Movement',
     placement: [
       { where: LOCATIONS.OpponentsField, condition: PLACEMENT.Empty },
     ]
@@ -305,7 +306,7 @@ function getCubits() {
     hidden: false,
     name: 'Looter',
     description: "On Capture before the captured piece is sent to the afterlife, a random cubit attached to it is sent to your bag",
-    type: 'Attachment',
+    type: 'Buff',
     subordinate: 'Capture',
     placement: [
       { where: LOCATIONS.MyField, condition: PLACEMENT.Empty },
@@ -318,7 +319,7 @@ function getCubits() {
     hidden: true,
     name: 'Blink Dodge',
     description: "When Captured, move the unit to a random unoccupied adjacent space. If no space is avaible it is captured.",
-    type: 'Attachment',
+    type: 'Buff',
     subordinate: 'Trap',
     placement: [
       { where: LOCATIONS.MyField, condition: PLACEMENT.Empty },
@@ -330,7 +331,7 @@ function getCubits() {
     hidden: true,
     name: 'Recover',
     description: "When Captured put the cubies attached to the piece into the bag.",
-    type: 'Attachment',
+    type: 'Buff',
     subordinate: 'Trap',
     placement: [
       { where: LOCATIONS.MyField, condition: PLACEMENT.Empty },
@@ -343,8 +344,8 @@ function getCubits() {
     hidden: false,
     name: 'Destroy',
     description: "Remove a Cubie from a unit",
-    type: 'Consumable',
-    subordinate: 'Removal',
+    type: 'Strategic',
+    subordinate: 'Consumable',
     placement: [
       { where: LOCATIONS.MyField, condition: PLACEMENT.Cubit },
       { where: LOCATIONS.OpponentsField, condition: PLACEMENT.Cubit },
@@ -356,8 +357,8 @@ function getCubits() {
     hidden: false,
     name: 'Eliminate',
     description: "Remove all Cubies from a unit",
-    type: 'Consumable',
-    subordinate: 'Removal',
+    type: 'Strategic',
+    subordinate: 'Consumable',
     placement: [
       { where: LOCATIONS.MyField, condition: PLACEMENT.Unit },
       { where: LOCATIONS.OpponentsField, condition: PLACEMENT.Unit },

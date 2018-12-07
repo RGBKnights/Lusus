@@ -88,6 +88,18 @@ class BuildPage extends React.Component {
     this.setState({ rules: rules });
   }
 
+  onClickBlack({x,y}) {
+
+  }
+
+  onClickWhite({x,y}) {
+    
+  }
+
+  onClickField({x,y}) {
+    
+  }
+
   handleChange(value, type) {
     let deck = this.state.deck;
     for (const item of deck) {
@@ -234,14 +246,14 @@ class BuildPage extends React.Component {
               <h5 className="text-center">Deployment</h5>
               <Row>
                 <Col>
-                  <Grid rows={8} cols={8} colorMap={this.background} style={this.style}>
+                  <Grid rows={8} cols={8} colorMap={this.background} style={this.style} onClick={this.onClickField}>
                     { deployment }
                   </Grid>
                 </Col>
                 <Col>
                   <Row>
                     <Col>
-                      <Grid rows={2} cols={8} colorMap={this.background} style={this.style}>
+                      <Grid rows={2} cols={8} colorMap={this.background} style={this.style} onClick={this.onClickBlack}>
                         { layout['1'] }
                       </Grid>
                     </Col>
@@ -249,7 +261,7 @@ class BuildPage extends React.Component {
                   <br />
                   <Row>
                     <Col>
-                      <Grid rows={2} cols={8} colorMap={this.background} style={this.style}>
+                      <Grid rows={2} cols={8} colorMap={this.background} style={this.style} onClick={this.onClickWhite}>
                         { layout['0'] }
                       </Grid>
                     </Col>

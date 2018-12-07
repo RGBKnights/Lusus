@@ -24,3 +24,7 @@
 hr.highlighted {
   background-color: #70038F; height: 1px; border: 0;
 }
+
+.icon-inline {
+  vertical-align: -10%;
+}

@@ -140,10 +140,10 @@ class PlayView extends React.Component {
         
         <Navbar color="light" light expand="md" className="p-0 fixed-bottom rounded-bottom">
           <Row className="p-1 " style={{width:'100%'}}>
-            <Col xs="5">
+            <Col xs="6">
               { hand }
             </Col>
-            <Col xs="7">
+            <Col xs="6">
               { help }
             </Col>
            </Row>

@@ -67,7 +67,7 @@ class GameStateManager extends React.Component {
     return (
       <section>
          { this.getView() }
-        <ToastContainer autoClose={2000} position={toast.POSITION.BOTTOM_CENTER} />
+        <ToastContainer autoClose={2000} position={toast.POSITION.BOTTOM_RIGHT} />
       </section>
     );
   }

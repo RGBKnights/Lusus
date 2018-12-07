@@ -33,8 +33,7 @@ export class Help extends React.Component {
       } else {
         return (
           <div className="text-light">
-            <strong>{cubit.name}</strong><br />
-            <span>Cubit</span> - <span>{cubit.type}</span> - <span>{cubit.subordinate}</span><br />
+            <strong>{cubit.name}</strong> - <span>Cubit</span> - <span>{cubit.type}</span> - <span>{cubit.subordinate}</span><br />
             <span>{cubit.description}</span>
           </div>
         );
@@ -42,8 +41,7 @@ export class Help extends React.Component {
     } else if(unit) { 
       return (
         <div className="text-light">
-          <strong>{unit.name}</strong><br />
-          <span>Unit</span><br />
+          <strong>{unit.name}</strong> - <span>Unit</span><br />
           <span>{unit.description}</span>
         </div>
       );

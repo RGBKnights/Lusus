@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import { FaClock, FaBolt, FaShoppingBag } from 'react-icons/fa';
+
 // Bootstrap
 import {
   Collapse,
@@ -61,15 +63,14 @@ export class Menu extends React.Component {
         <Row>
           <Col xs="12">
             <div className="text-light">
-              <div title="Player"  className="d-inline p-1">
-                Player <Badge>{ this.props.playerID === '0' ? 'white' : 'black' }</Badge>
-              </div>
+              <Badge style={{fontSize: '1.2em'}}>
               <div title="Actions" className="d-inline p-1">
-              Actions <Badge>{ this.props.G.players[this.props.playerID].actions }</Badge>
+                <FaBolt className="icon-inline" /> { this.props.G.players[this.props.playerID].actions }
               </div>
               <div title="Bag" className="d-inline p-1">
-                Bags <Badge>{ this.props.G.players[this.props.playerID].bag.length }</Badge>
+                <FaShoppingBag className="icon-inline" /> { this.props.G.players[this.props.playerID].bag.length }
               </div>
+              </Badge>
             </div>
           </Col>
         </Row>
@@ -77,12 +78,14 @@ export class Menu extends React.Component {
         <Row className="p-1">
           <Col xs="12">
             <div className="text-light">
+              
               <div title="Turn" className="d-inline p-1">
-                Turn <Badge>{ this.props.ctx.turn }</Badge>
+                <Badge style={{fontSize: '1.2em'}}><FaClock className="icon-inline" /> { this.props.ctx.turn } </Badge>
               </div>
               <div title="Phase"  className="d-inline p-1">
-                Phase <Badge>{ this.props.ctx.currentPlayer === '0' ? 'white' : 'black' }</Badge> <Badge>{ this.props.ctx.phase }</Badge>
+                <Badge style={{fontSize: '1.3em'}}>{ this.props.ctx.currentPlayer === '0' ? "white's" : "black's" } { this.props.ctx.phase }</Badge>
               </div>
+             
             </div>
           </Col>
         </Row>

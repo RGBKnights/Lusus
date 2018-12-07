@@ -46,6 +46,7 @@ export class Field extends React.Component {
     this.primaryColor = '#ADAAAA';
     this.secondaryColor = '#D9D6D6';
     this.placementColor = '#188108';
+    this.deadColor = '#F9766C';
 
     this.movementColors = {};
     this.movementColors[TARGETS.Empty] = '#188108';
@@ -227,12 +228,20 @@ export class Field extends React.Component {
           background[mapKey] = this.placementColor;
           this.placements[mapKey] = true;
         }
+
+        if(!unit.position) {
+          background[mapKey] = this.deadColor;
+        }
       }
 
       for (let i = 0; i < unit.slots; i++) {
         let x = position.x;
         let y = position.y + i + 1;
         let mapKey = `${x},${y}`;
+
+        if(!unit.position) {
+          background[mapKey] = this.deadColor;
+        }
 
         const cubit = unit.cubits[i];
         if(cubit) {

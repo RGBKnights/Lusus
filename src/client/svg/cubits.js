@@ -917,9 +917,7 @@ export class CubitEliminate extends React.Component {
 
 export function getCubitElement(cubit, isPlayer = false) {
   let data = Database.cubits[cubit.type];
-
-  debugger;
-
+  
   let teamColors = {'0': 'w', '1': 'b'};
   let team =  teamColors[cubit.ownership];
   let params = { name: data.name, team: team };
