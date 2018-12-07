@@ -394,6 +394,25 @@ function getCubits() {
       { where: LOCATIONS.OpponentsField, condition: PLACEMENT.Empty },
     ]
   };
+  data[CUBITS.Monster] = {
+    key: CUBITS.Monster,
+    enabled: true,
+    hidden: false,
+    name: 'Monster',
+    description: "Some Crazy Movement",
+    type: 'Buff',
+    subordinate: 'Movement',
+    placement: [
+      { where: LOCATIONS.MyField, condition: PLACEMENT.Empty },
+    ],
+    movements: [
+      { directions: [DIRECTIONS.Left], distance: 1, contiguous: true, targets: [TARGETS.Friendly] },
+      { directions: [DIRECTIONS.Right], distance: 1, contiguous: true, targets: [TARGETS.Friendly] },
+      { directions: [DIRECTIONS.Left, DIRECTIONS.Forward, DIRECTIONS.Left, DIRECTIONS.Forward], distance: 2, contiguous: false, targets: [TARGETS.Empty] },
+      { directions: [DIRECTIONS.Right, DIRECTIONS.Forward, DIRECTIONS.Right, DIRECTIONS.Forward], distance: 2, contiguous: false, targets: [TARGETS.Empty] },
+      { directions: [DIRECTIONS.Forward], distance: 7, contiguous: true, targets: [TARGETS.Empty, TARGETS.Enemy] },
+    ],
+  };
 
   return data;
 }

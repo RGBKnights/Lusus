@@ -40,7 +40,9 @@ export const CUBITS = {
   Immunity: 1012,
 
   // Testing
-  NoLeftTurn: 1021
+  NoLeftTurn: 1021,
+  Monster: 1022,
+  Telaporter: 1023,
 };
 
 export const CUBIT_TYPES = {

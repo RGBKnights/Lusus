@@ -101,6 +101,10 @@ export function getMoves(G, ctx, id, source) {
     movements = movements.filter(_ => _.directions.includes(DIRECTIONS.Left) === false);
   }
 
+  if(handicapped) {
+    movements = movements.filter(_ => _.contiguous === true);
+  }
+
   for (const movement of movements) {
     let destination = {
       x: source.x,
@@ -115,23 +119,13 @@ export function getMoves(G, ctx, id, source) {
     }
 
     let distance = stuck ? 1 : movement.distance - slow;
-    let length = distance - 1;
     for (let i = 0; i < distance; i++) {
       destination.x += pattern.x;
       destination.y += pattern.y;
 
-      if(movement.contiguous) {
-        if(isValid(ctx.currentPlayer, obstacles, moves, movement.targets, destination) === false) {
-          break;
-        }
-      } else {
-        if(handicapped === true) {
-          break;
-        } else if(i === length) {
-          isValid(ctx.currentPlayer, obstacles, moves, movement.targets, destination);
-        } else {
-          continue;
-        }
+      let valid = isValid(ctx.currentPlayer, obstacles, moves, movement.targets, destination);
+      if(movement.contiguous === true && valid === false) {
+        break;
       }
     }
   }
