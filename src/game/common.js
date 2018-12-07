@@ -11,33 +11,36 @@ export const UNITS = {
 
 export const CUBITS = {
   Unknown: 0,
-  // Attachments - Contiguous Movement
+  // Contiguous Movement
   Orthogonal: 1001,
   Diagonal: 1002,
   Cardinal: 1003,
   SideStep: 1004,
-  // Attachments - Pattern Movement
+  // Pattern Movement
   Swap: 1005,
   Jump: 1006,
-  // Attachments - Movement Modifier
+  // Movement Modifiers
   Enrage: 1007,
   Passify: 1008,
   Encumber: 1009,
   StickyFeet: 1010,
-  // Attachments - Basic
-  Condemn: 1011,
-  Immunity: 1012,
   Poisoned: 1013,
   Bleed: 1014,
-  // Attachments - Capture
-  DarkMagic: 1015,
+  // Capture
   Looter: 1016,
-  // Attachments - Traps
+  // Traps
   BlinkDodge: 1017,
   Recover: 1018,
-  // OTU - Removal
+  // Removal
+  Replacement: 1015,
   Destroy: 1019,
   Eliminate: 1020,
+  // Targeting
+  Condemn: 1011,
+  Immunity: 1012,
+
+  // Testing
+  NoLeftTurn: 1021
 };
 
 export const CUBIT_TYPES = {

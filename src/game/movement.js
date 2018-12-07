@@ -70,9 +70,10 @@ export function getMoves(G, ctx, id, source) {
   let directions = {};
   directions[DIRECTIONS.Forward] = { x:0, y: unit.ownership === '0' ? -1 : 1 };
   directions[DIRECTIONS.Back] = { x:0, y: unit.ownership === '0' ? 1 : -1 };
-  directions[DIRECTIONS.Left] = { x:-1, y:0 };
-  directions[DIRECTIONS.Right] = { x:1, y:0 };
+  directions[DIRECTIONS.Left] = { x: unit.ownership === '0' ? -1 : 1, y:0 };
+  directions[DIRECTIONS.Right] = { x: unit.ownership === '0' ? 1 : -1, y:0 };
 
+  let noLeftTurn = unitHasCubits(unit, CUBITS.NoLeftTurn);
   let encumbered = unitHasCubits(unit, CUBITS.Encumber);
   let stuck = unitHasCubits(unit, CUBITS.StickyFeet);
   let handicapped = stuck || encumbered;
@@ -95,6 +96,10 @@ export function getMoves(G, ctx, id, source) {
   let unitData = Database.units[unit.type];
   let filteredMovements = unit.moves > 0 ? unitData.movements.filter(_ => _.consumable !== true) : unitData.movements;
   movements = movements.concat(filteredMovements);
+
+  if(noLeftTurn) {
+    movements = movements.filter(_ => _.directions.includes(DIRECTIONS.Left) === false);
+  }
 
   for (const movement of movements) {
     let destination = {

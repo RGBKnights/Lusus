@@ -2,11 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from "react-router-dom";
 
-import { Menu } from '../components/menu';
+import Menu from '../components/menu';
 import { Field } from '../components/field';
 import { Hand } from '../components/hand';
 import { Help } from '../components/help';
-import { EventLog } from '../components/events';
 
 // Bootstrap
 import {
@@ -32,7 +31,6 @@ class PlayView extends React.Component {
   constructor(params) {
     super(params);
 
-    this.onShare = this.onShare.bind(this);
     this.onSkipPhase = this.onSkipPhase.bind(this);
     this.onSelection = this.onSelection.bind(this);
     this.onPlacement = this.onPlacement.bind(this);
@@ -45,20 +43,7 @@ class PlayView extends React.Component {
     };
   }
 
-  onShare() {
-    let code = this.props.gameID;
-    let opponent = this.props.playerID === "0" ? "1" : "0";
-    
-    const el = document.createElement('textarea');
-    el.value = opponent + "-" + code;
-    document.body.appendChild(el);
-    el.select();
-    document.execCommand('copy');
-    document.body.removeChild(el);
-  }
-
   onSkipPhase() {
-    // this.props.events.endGame(this.props.playerID);
     this.props.moves.skip();
   }
 
@@ -92,11 +77,8 @@ class PlayView extends React.Component {
     let validMove = this.props.isActive && this.props.G.rules.passMove && this.props.ctx.phase === 'move';
     if(validPlay || validMove) {
       let color = this.props.G.rules.freePass ? 'success' : 'warning';
-      buttons.push(<Button size="sm" color={color} onClick={this.onSkipPhase}>Pass</Button>);
+      buttons.push(<Button color={color} onClick={this.onSkipPhase}>Pass</Button>);
     }
-    
-    buttons.push(<Button size="sm" color="primary" onClick={this.onShare}>Share</Button>);
-    buttons.push(<EventLog log={this.props.G.log}></EventLog>);
 
     return buttons;
   }
