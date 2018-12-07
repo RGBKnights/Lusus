@@ -1,21 +1,28 @@
-.game-board {
-  background-color: #060606;
-  color: #ffffff;
+.gameboard {
+  margin-top: 50px;
+  margin-bottom: 80px;
 }
 
-g > text {
-  cursor: pointer;
+.body {
+  margin-top: 60px;
 }
 
-.horizontal-warper {
-  overflow: auto; 
-  white-space: nowrap;
+.vertical-center {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
 }
 
-.horizontal-section-content {
-  display: inline-block;
-  margin: 1px;
-  vertical-align: top;
+.display-5 {
+  font-size: 1.5rem;
+  font-weight: 300;
+  line-height: 1.2;
+}
+
+hr.highlighted {
+  background-color: #70038F; height: 1px; border: 0;
 }
 
 .icon-inline {
