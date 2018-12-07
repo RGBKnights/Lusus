@@ -38,6 +38,9 @@ export const CUBITS = {
   // Targeting
   Condemn: 1011,
   Immunity: 1012,
+
+  // Testing
+  NoLeftTurn: 1021
 };
 
 export const CUBIT_TYPES = {

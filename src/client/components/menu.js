@@ -89,7 +89,7 @@ export class Menu extends React.Component {
     if(this.props.ctx.gameover) {
       phase = "game over";
     } else if (this.props.ctx.currentPlayer === '0') {
-      phase = "white's" + this.props.ctx.phase;
+      phase = "white's " + this.props.ctx.phase;
     } else if (this.props.ctx.currentPlayer === '1') {
       phase = "black's " + this.props.ctx.phase;
     }

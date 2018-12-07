@@ -382,6 +382,19 @@ function getCubits() {
     ]
   };
 
+  data[CUBITS.NoLeftTurn] = {
+    key: CUBITS.NoLeftTurn,
+    enabled: true,
+    hidden: false,
+    name: 'No Left Turn',
+    description: "Removes the ability for the unit to make any moves involved moving left.",
+    type: 'Debuff',
+    subordinate: 'Movement',
+    placement: [
+      { where: LOCATIONS.OpponentsField, condition: PLACEMENT.Empty },
+    ]
+  };
+
   return data;
 }
 

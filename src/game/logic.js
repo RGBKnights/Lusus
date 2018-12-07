@@ -131,6 +131,7 @@ export class GameLogic {
         // { type: CUBITS.Condemn, amount: 1 },
         // { type: CUBITS.Immunity, amount: 1 },
         // { type: CUBITS.Replacement, amount: 1 },
+        // { type: CUBITS.NoLeftTurn, amount: 1 },
       ],
       rules: {
         passPlay: true,
