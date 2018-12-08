@@ -2,6 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from "react-router-dom";
 
+import { toast } from 'react-toastify';
+
 import { EventLog } from '../components/events';
 
 import { FaClock, FaBolt, FaShoppingBag } from 'react-icons/fa';
@@ -61,6 +63,8 @@ export class Menu extends React.Component {
     el.select();
     document.execCommand('copy');
     document.body.removeChild(el);
+
+    toast("Added to clipboard");
   }
 
   onForfeit() {
@@ -87,11 +91,11 @@ export class Menu extends React.Component {
 
     let phase = '';
     if(this.props.ctx.gameover) {
-      phase = "game over";
-    } else if (this.props.ctx.currentPlayer === '0') {
-      phase = "white's " + this.props.ctx.phase;
-    } else if (this.props.ctx.currentPlayer === '1') {
-      phase = "black's " + this.props.ctx.phase;
+      phase = "Gameover";
+    } else if (this.props.ctx.currentPlayer === this.props.playerID) {
+      phase = "Your " + this.props.ctx.phase;
+    } else {
+      phase = "Opponents " + this.props.ctx.phase;
     }
 
     return (
