@@ -118,7 +118,7 @@ export class Menu extends React.Component {
             { childern }
           </Col>
           <Col className="p-1 m-0" xs="1" sm="1" md="1" lg="1" xl="1">
-            <Button className="m-1 float-right" color="primary" onClick={this.toggle}><span class="navbar-toggler-icon"></span></Button>
+            <Button className="m-1 float-right" color="primary" onClick={this.toggle}><span className="navbar-toggler-icon"></span></Button>
           </Col>
         </Row>
       </Navbar>

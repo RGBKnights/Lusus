@@ -10,13 +10,11 @@ export class Hand extends React.Component {
     ctx: PropTypes.any.isRequired,
     playerID: PropTypes.string.isRequired,
     onSelection: PropTypes.func,
-    onHelp: PropTypes.func,
     selection: PropTypes.any,
   };
 
   static defaultProps = {
     onSelection: () => {},
-    onHelp: () => {},
     selection: null,
   };
 
@@ -35,8 +33,7 @@ export class Hand extends React.Component {
     this.altColor = '#FFFFFF';
     this.primaryColor = '#ADAAAA';
     this.secondaryColor = '#D9D6D6';
-    this.selectionColor = '#A0E595';
-    this.selectionAltColor = '#801D15';
+    this.selectionColor = '#6C69AE';
     
     this.background = {};
     for (let x = 0; x < this.cols; x++) {
@@ -56,7 +53,6 @@ export class Hand extends React.Component {
       cubit: cubit,
     };
     this.props.onSelection(event);
-    this.props.onHelp(cubit);
   };
 
   render() {
@@ -79,9 +75,7 @@ export class Hand extends React.Component {
       let mapKey = `${i},${0}`;
       this.map[mapKey] = cubit;
 
-      if(this.props.selection && this.props.selection.cubit 
-        && cubit.id === this.props.selection.cubit.id 
-        && this.props.isActive && this.props.ctx.phase === 'play') {
+      if(this.props.selection && this.props.selection.cubit && cubit.id === this.props.selection.cubit.id) {
         colorMap[mapKey] = this.selectionColor
       }
     }

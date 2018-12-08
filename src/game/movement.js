@@ -1,18 +1,18 @@
 import { TARGETS, CUBITS, DIRECTIONS, unitHasCubits } from './common';
 import { Database } from './database';
 
-function isValid(player, obstacles, moves, targets, destination) {
+function isValid(unit, obstacles, moves, targets, destination) {
   if(destination.x < 0 || destination.x > 7 || destination.y < 0 || destination.y > 7) {
     return false;
   }
 
   let obj = obstacles.find(_ => _.position.x === destination.x && _.position.y === destination.y);
   if (obj) {
-    if(obj.ownership === player && targets.includes(TARGETS.Friendly)) {
+    if(obj.ownership === unit.ownership && targets.includes(TARGETS.Friendly)) {
       moves.push({ target: TARGETS.Friendly, x: destination.x, y: destination.y });
       return false;
     }
-    if(obj.ownership !== player && targets.includes(TARGETS.Enemy)) {
+    if(obj.ownership !== unit.ownership && targets.includes(TARGETS.Enemy)) {
       moves.push({ target: TARGETS.Enemy, x: destination.x, y: destination.y });
       return false;
     }
@@ -63,9 +63,11 @@ export function getMoves(G, ctx, id, source) {
   if(!unit) {
     return moves;
   }
+  /*
   if(unit.ownership !== ctx.currentPlayer) {
     return moves;
   }
+  */
   
   let directions = {};
   directions[DIRECTIONS.Forward] = { x:0, y: unit.ownership === '0' ? -1 : 1 };
@@ -124,7 +126,7 @@ export function getMoves(G, ctx, id, source) {
       destination.x += pattern.x;
       destination.y += pattern.y;
 
-      let valid = isValid(ctx.currentPlayer, obstacles, moves, movement.targets, destination);
+      let valid = isValid(unit, obstacles, moves, movement.targets, destination);
       if(movement.contiguous === true && valid === false) {
         break;
       }

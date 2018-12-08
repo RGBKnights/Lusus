@@ -31,16 +31,19 @@ class PlayView extends React.Component {
   constructor(params) {
     super(params);
 
+    this.onClearSelection = this.onClearSelection.bind(this);
     this.onSkipPhase = this.onSkipPhase.bind(this);
     this.onSelection = this.onSelection.bind(this);
     this.onPlacement = this.onPlacement.bind(this);
     this.onMove = this.onMove.bind(this);
-    this.onHelp = this.onHelp.bind(this);
 
     this.state = {
       selection: null,
-      help: null,
     };
+  }
+
+  onClearSelection() {
+    this.setState({ selection: null });
   }
 
   onSkipPhase() {
@@ -48,17 +51,7 @@ class PlayView extends React.Component {
   }
 
   onSelection(event) {
-    if(event.cubit) {
-      this.setState({ selection: event });
-    } else {
-      this.setState({ selection: null });
-    }
-  }
-
-  onHelp(cubit) {
-    if(!this.state.selection) {
-      this.setState({ help: cubit });
-    }
+    this.setState({ selection: event });
   }
 
   onPlacement(event) {
@@ -68,6 +61,7 @@ class PlayView extends React.Component {
 
   onMove(source, destination) {
     this.props.moves.movement(source, destination);
+    this.setState({ selection: null });
   }
 
   getMenuButtons() {
@@ -77,7 +71,7 @@ class PlayView extends React.Component {
     let validMove = this.props.isActive && this.props.G.rules.passMove && this.props.ctx.phase === 'move';
     if(validPlay || validMove) {
       let color = this.props.G.rules.freePass ? 'success' : 'warning';
-      buttons.push(<Button color={color} onClick={this.onSkipPhase}>Pass</Button>);
+      buttons.push(<Button key={'skip'} color={color} onClick={this.onSkipPhase}>Pass</Button>);
     }
 
     return buttons;
@@ -91,20 +85,20 @@ class PlayView extends React.Component {
       selection: this.state.selection,
       onMove: this.onMove,
       onPlacement: this.onPlacement,
-      onHelp: this.onHelp
+      onSelection: this.onSelection
     };
     let field = React.createElement(Field, { ...fieldParams, ...this.props});
 
     let handParams = {
       selection: this.state.selection,
-      onSelection: this.onSelection,
-      onHelp: this.onHelp
+      onSelection: this.onSelection
     };
     let hand = React.createElement(Hand, { ...handParams, ...this.props});
 
     let helpParams = { 
-      selection: this.state.help,
-      playerID: this.props.playerID
+      playerID: this.props.playerID,
+      selection: this.state.selection,
+      onClearSelection: this.onClearSelection,
     };
     let help = React.createElement(Help, helpParams);
 
