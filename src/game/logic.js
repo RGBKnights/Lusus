@@ -114,7 +114,6 @@ export class GameLogic {
         { type: CUBITS.Orthogonal, amount: 1 },
         { type: CUBITS.Diagonal, amount: 1 },
         { type: CUBITS.Cardinal, amount: 1 },
-        /*
         { type: CUBITS.SideStep, amount: 1 },
         { type: CUBITS.Swap, amount: 1 },
         { type: CUBITS.Jump, amount: 1 },
@@ -132,10 +131,6 @@ export class GameLogic {
         { type: CUBITS.Condemn, amount: 1 },
         { type: CUBITS.Immunity, amount: 1 },
         { type: CUBITS.Replacement, amount: 1 },
-        */
-        { type: CUBITS.NoLeftTurn, amount: 3 },
-        { type: CUBITS.Monster, amount: 3 },
-        // { type: CUBITS.Telaporter, amount: 3 },
       ],
       rules: {
         passPlay: true,
@@ -256,6 +251,7 @@ export class GameLogic {
 
     GameLogic.addEvent(G, ctx, 'Movement', `Moved #[${s.id}] from (${source.position.x},${source.position.y}) to (${destination.position.x},${destination.position.y})`);
 
+    let isPromoted = false;
     let hasLooter = false;
     let isPoisonLeathal = false;
     let isBleeding = false;
@@ -275,6 +271,14 @@ export class GameLogic {
       }
       if(cubit.type === CUBITS.Looter) {
         hasLooter = true;
+      }
+    }
+
+    if(s.type === UNITS.Pawn) {
+      if(s.ownership === '0' && s.position.y === 0) {
+        isPromoted = true;
+      } else if (s.ownership === '1' && s.position.y === 7) {
+        isPromoted = true;
       }
     }
 
@@ -298,7 +302,7 @@ export class GameLogic {
         d.position.x = source.position.x;
         d.position.y = source.position.y;
 
-        GameLogic.addEvent(G, ctx, 'Movement', `Swapd #[${s.id}] with #[${d.id}]`);
+        GameLogic.addEvent(G, ctx, 'Movement', `Swapped #[${s.id}] with #[${d.id}]`);
       } else if(isDodged) {
         let spaces = getAdjacentSpaces(G, ctx, d.position);
         if(spaces.length > 0) {
@@ -357,6 +361,12 @@ export class GameLogic {
       }
 
       GameLogic.addEvent(G, ctx, 'Movement', `Bleeding #[${s.id}]`);
+    }
+
+    if(isPromoted) {
+      s.type = UNITS.Queen;
+
+      GameLogic.addEvent(G, ctx, 'Movement', `Promoted #[${s.id}]`);
     }
 
     // Update state counters
