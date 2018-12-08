@@ -163,7 +163,7 @@ export class Field extends React.Component {
     let isCubitSelected = this.props.selection && this.props.selection.cubit;
 
     // Movement highlights
-    if(isUnitSelected) {
+    if(isUnitSelected && this.props.selection.unit.position) {
       let moves = getMoves(this.props.G, this.props.ctx, this.props.selection.unit.id, this.props.selection.unit.position);
       for (const move of moves) {
         const key = `${move.x+9},${move.y}`;
