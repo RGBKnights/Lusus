@@ -45,6 +45,9 @@ class GameStateManager extends React.Component {
     }
 
     // Handle Notifications
+    if (this.props.G.players[this.props.playerID].check === true && props.G.players[this.props.playerID].check === false) {
+      toast("Check");
+    }
     if (this.props.ctx.phase === 'play' && props.ctx.phase !== 'play') {
       toast("Your Turn");
     }

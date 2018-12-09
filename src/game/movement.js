@@ -1,4 +1,4 @@
-import { TARGETS, CUBITS, DIRECTIONS, unitHasCubits } from './common';
+import { TARGETS, CUBITS, DIRECTIONS, unitHasCubits, UNITS } from './common';
 import { Database } from './database';
 
 function isValid(unit, obstacles, moves, targets, destination) {
@@ -149,4 +149,37 @@ export function getMoves(G, ctx, id, source) {
   }
 
   return moves;
+}
+
+export function isPlayerInCheck(G, ctx, player, position = null) {
+  // get player's kings position
+  // if position equals null then use the kings current position
+  if(position == null) {
+    let unit = G.field.find(_ => _.ownership === player && _.type === UNITS.King);
+    position = unit.position;
+  }
+
+  // safe guard against a dead king
+  if(position == null) {
+    return false;
+  }
+   
+  // get all opponent's units
+  let opponent = player === '0' ? '1' : '0';
+  let units = G.field.filter(_ => _.ownership === opponent && _.position != null);
+
+  for (const unit of units) {
+    let source = {x: unit.position.x, y: unit.position.y};
+    let moves = getMoves(G, ctx, unit.id, source);
+    let captures = moves.filter(_ =>  _.target === TARGETS.Enemy);
+    for (const move of captures) {
+      if(move.x === position.x && move.y === position.y) {
+        return true;
+      }
+    }
+  }
+
+  
+
+  return false;
 }

@@ -1,5 +1,9 @@
+import { INVALID_MOVE } from 'boardgame.io/core';
 import { Game, TurnOrder } from 'boardgame.io/core';
 import { GameLogic } from '../game/logic'
+// import { isPlayerInCheck } from './movement'
+
+var clone = require('clone');
 
 const GameCore = Game({
     name: 'Lusus',
@@ -9,13 +13,28 @@ const GameCore = Game({
         return GameLogic.config(G, ctx, data);
       },
       skip(G, ctx) {
-        return GameLogic.skip(G, ctx);
+        const g = clone(G);
+        if(GameLogic.skip(g, ctx)) {
+          return g;
+        } else {
+          return INVALID_MOVE;
+        }
       },
       placement(G, ctx, source, destination) {
-        return GameLogic.placement(G, ctx, source, destination);
+        const g = clone(G);
+        if(GameLogic.placement(g, ctx, source, destination)) {
+          return g;
+        } else {
+          return INVALID_MOVE;
+        }
       },
       movement(G, ctx, source, destination) {
-        return GameLogic.movement(G, ctx, source, destination);
+        const g = clone(G);
+        if(GameLogic.movement(g, ctx, source, destination)) {
+          return g;
+        } else {
+          return INVALID_MOVE;
+        }
       },
       resolution(G, ctx) {
         return GameLogic.resolution(G, ctx);
@@ -37,14 +56,14 @@ const GameCore = Game({
           next: 'move',
           allowedMoves: ['skip','placement'],
           endPhaseIf: (G, ctx) => {
-            return GameLogic.isEndOfPlacement(G, ctx);
+            return G.players[ctx.currentPlayer].actions === 0;
           },
         },
         move: {
           next: 'resolution',
           allowedMoves: ['movement'],
           endPhaseIf: (G, ctx) => {
-            return GameLogic.isEndOfMovement(G, ctx);
+            return G.players[ctx.currentPlayer].moves === 0;
           },
         },
         resolution: {

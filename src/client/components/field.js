@@ -5,7 +5,7 @@ import { Token, Grid } from 'boardgame.io/ui';
 import { getUnitElement } from '../svg/units';
 import { getCubitElement } from '../svg/cubits';
 
-import { TARGETS, PLACEMENT, LOCATIONS, unitHasCubits, CUBITS } from '../../game/common'
+import { TARGETS, PLACEMENT, LOCATIONS, unitHasCubits, CUBITS, UNITS } from '../../game/common'
 import { getMoves } from '../../game/movement'
 import { getTargets } from '../../game/placement'
 
@@ -46,8 +46,9 @@ export class Field extends React.Component {
     this.primaryColor = '#ADAAAA';
     this.secondaryColor = '#D9D6D6';
     this.placementColor = '#A0E595';
-    this.deadColor = '#F9766C';
     this.selectionColor = '#6C69AE';
+    this.checkColor = '#ffd8b1';
+    this.deadColor = '#C53333';
 
     this.movementColors = {};
     this.movementColors[TARGETS.Empty] = '#A0E595';
@@ -196,6 +197,10 @@ export class Field extends React.Component {
           if(isUnitSelected && !isCubitSelected && this.props.selection.unit.id === unit.id) {
             background[mapKey] = this.selectionColor;
           }
+
+          if(unit.type === UNITS.King && this.props.G.players[unit.ownership].check) {
+            background[mapKey] = this.checkColor;
+          }
         }
       }
 
@@ -231,7 +236,7 @@ export class Field extends React.Component {
         }
 
         if(!unit.position) {
-          background[mapKey] = this.deadColor;
+          background[mapKey] = this.deadColor ;
         }
 
         if(isUnitSelected && !isCubitSelected && this.props.selection.unit.id === unit.id) {

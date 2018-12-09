@@ -1,6 +1,5 @@
-import { INVALID_MOVE } from 'boardgame.io/core';
 import { SPACE_TYPES, UNITS, CUBITS } from './common';
-import { getAdjacentSpaces } from './movement'
+import { getAdjacentSpaces, isPlayerInCheck } from './movement'
 
 const shortid = require('shortid');
 
@@ -59,6 +58,7 @@ export class GameLogic {
     for (let i = 0; i < ctx.numPlayers; i++) {
       let p = i.toString();
       data.players[p] = {
+        check: false,
         bag: [],
         hand: [],
         draws: 3,
@@ -190,7 +190,8 @@ export class GameLogic {
       }
     }
 
-    // GameLogic.addEvent(G, ctx, 'Config', `Configuration [${config.name}]`);
+    G.players['0'].check = isPlayerInCheck(G, ctx, '0');
+    G.players['1'].check = isPlayerInCheck(G, ctx, '1');
 
     ctx.events.endPhase();
   }
@@ -199,7 +200,7 @@ export class GameLogic {
     if(G.rules.freePass === false) {
       let length = G.players[ctx.currentPlayer].hand.length;
       if(length === 0) {
-        return INVALID_MOVE;
+        return false;
       } else {
         let index = ctx.random.Die(length) - 1;
         GameLogic.hand(G, ctx, index);
@@ -213,6 +214,8 @@ export class GameLogic {
     }
 
     GameLogic.addEvent(G, ctx, 'Skip', `Phase ${ctx.phase}`);
+
+    return true;
   }
 
   static placement(G, ctx, source, destination) {
@@ -241,13 +244,22 @@ export class GameLogic {
 
     // Update state counters
     G.players[ctx.currentPlayer].actions--;
+
+    return true;
   }
 
   static movement(G, ctx, source, destination) {
+    let opponent = ctx.currentPlayer === "0" ? "1" : "0";
+
     // Move source
     let s = G.field.find(_ => _.id === source.unit.id);
     s.position.x = destination.position.x;
     s.position.y = destination.position.y;
+
+    G.players[ctx.currentPlayer].check = isPlayerInCheck(G, ctx, ctx.currentPlayer);
+    if(G.players[ctx.currentPlayer].check) {
+      return false;
+    }
 
     GameLogic.addEvent(G, ctx, 'Movement', `Moved #[${s.id}] from (${source.position.x},${source.position.y}) to (${destination.position.x},${destination.position.y})`);
 
@@ -315,11 +327,11 @@ export class GameLogic {
 
         GameLogic.addEvent(G, ctx, `Tripped Blink Dodge`);
       } else if (d.type === UNITS.King) {
-        GameLogic.addEvent(G, ctx, 'Movement', `Captured #[${d.id}] with #[${s.id}]`);
-
         d.position = null;
         ctx.events.endGame(s.ownership);
-        return;
+
+        GameLogic.addEvent(G, ctx, 'Movement', `Captured King - Gameover`);
+        return true;
       } else {
         d.position = null;
 
@@ -369,8 +381,16 @@ export class GameLogic {
       GameLogic.addEvent(G, ctx, 'Movement', `Promoted #[${s.id}]`);
     }
 
+    // Check for check
+    G.players[opponent].check = isPlayerInCheck(G, ctx, opponent);
+    if(G.players[opponent].check) {
+      GameLogic.addEvent(G, ctx, 'Movement', `Check`);
+    }
+
     // Update state counters
     G.players[ctx.currentPlayer].moves--;
+
+    return true;
   }
 
   static resolution(G, ctx) {
@@ -395,6 +415,8 @@ export class GameLogic {
     if(draws > G.players[ctx.currentPlayer].bag.length && G.rules.freeDraw === false) {
       let opponent = ctx.currentPlayer === "0" ? "1" : "0";
       ctx.events.endGame(opponent);
+
+      GameLogic.addEvent(G, ctx, 'Draw', `Overdraw - Gameover`);
       return;
     }
 
@@ -415,22 +437,6 @@ export class GameLogic {
       return cubit;
     } else {
       return undefined;
-    }
-  }
-
-  static isEndOfPlacement(G, ctx)  {
-    if(G.rules.passPlay && G.rules.freePass) {
-      return false;
-    } else {
-      return G.players[ctx.currentPlayer].actions === 0;  
-    }
-  }
-
-  static isEndOfMovement(G, ctx)  {
-    if(G.rules.passMove && G.rules.freePass) {
-      return false;
-    } else {
-      return G.players[ctx.currentPlayer].moves === 0;
     }
   }
 }
