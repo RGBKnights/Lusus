@@ -7,13 +7,25 @@ import { Token, Grid } from 'boardgame.io/ui';
 import { 
   Container, 
   Row, Col,
-  Navbar, NavbarBrand, Nav,
-  Media
+  Navbar, NavbarBrand,
+  Media,
+  Button
 } from 'reactstrap';
 
 import { Database } from '../../game/database';
 
 class HelpPage extends React.Component {
+
+  constructor(props) {
+    super(props);
+
+    this.onBack = this.onBack.bind(this);
+  }
+
+  onBack() {
+    let url = '/';
+    this.props.history.push(url);
+  }
 
   render() {
     let cubits = [];
@@ -25,7 +37,7 @@ class HelpPage extends React.Component {
         let element = getCubitElement(cubit, true);
 
         let media = (
-          <Media>
+          <Media key={key}>
             <Media left href="#" className="p-1">
               <Grid rows={1} cols={1} style={{width:60}}>
                 <Token x={0} y={0}>
@@ -54,7 +66,11 @@ class HelpPage extends React.Component {
               <img className="p-1" height="32" src="/favicon.ico" alt="Logo"></img>
               <strong className="p-1">Lusus <small>Tactical Chess</small> Help</strong>
             </NavbarBrand>
-            <Nav></Nav>
+            <Row className="p-1">
+              <Col xs="12">
+                <Button size="sm" color="secondary" onClick={this.onBack}>Back</Button>
+              </Col>
+            </Row>
           </Container>
         </Navbar>
         <Container className="body">
@@ -80,6 +96,7 @@ class HelpPage extends React.Component {
             </p>
             </Col>
           </Row>
+          <hr className="highlighted" />
           <Row>
             <Col>
               <h5 >Cubies</h5>

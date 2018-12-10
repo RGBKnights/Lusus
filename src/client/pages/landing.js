@@ -22,7 +22,6 @@ class LandingPage extends React.Component {
     this.onHelp = this.onHelp.bind(this);
     this.onNewMatch = this.onNewMatch.bind(this);
     this.onJoinMatch = this.onJoinMatch.bind(this);
-    this.onViewMatch = this.onViewMatch.bind(this);
   }
 
   onCodeChange(event) {
@@ -50,15 +49,6 @@ class LandingPage extends React.Component {
       let player = code.substring(0, 1);
       let match = code.substring(2);
       let url = '/match/?p=' + player + '&m=' + match;
-      this.props.history.push(url);
-    }
-  }
-
-  onViewMatch() {
-    if(this.state.code) {
-      let code = this.state.code.trim();
-      let match = code.substring(2);
-      let url = '/match/?m=' + match;
       this.props.history.push(url);
     }
   }
@@ -131,13 +121,11 @@ class LandingPage extends React.Component {
                   <li className="list-group-item text-center">
                     <Form>
                       <FormGroup>
-                        <Label>An opponent needs to share a code which can then be used to join or view their match.</Label>
+                        <Label>An opponent needs to share a code which can then be used to join their match.</Label>
                         <Input type="text" name="code" id="matchCode" placeholder="Code" value={this.state.code} onChange={this.onCodeChange} />
                       </FormGroup>
                       <FormGroup>
                         <Button onClick={this.onJoinMatch} color="primary">Join Match</Button> 
-                        &nbsp;
-                        <Button onClick={this.onViewMatch} color="info">View Match</Button>
                       </FormGroup>
                     </Form>
                   </li>

@@ -54,6 +54,7 @@ class BuildPage extends React.Component {
     this.onClickWhite = this.onClickWhite.bind(this);
     this.onClickField = this.onClickField.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.onBack = this.onBack.bind(this);
     this.onSave = this.onSave.bind(this);
 
     let deck = [];
@@ -264,8 +265,17 @@ class BuildPage extends React.Component {
   onClickField({x,y}) {
     let unit = this.state.selection;
     if(unit) {
-      unit.position = {x,y};
+      if(unit.position && unit.position.x === x && unit.position.y === y) {
+        unit.position = null;
+      } else {
+        unit.position = {x,y};
+      }
       this.setState({ selection: null });
+    } else {
+      let unit = this.state.field.filter(_ => _.position != null).find(_ => _.position.x === x && _.position.y === y);
+      if(unit) {
+        this.setState({ selection: unit });
+      }
     }
   }
 
@@ -277,6 +287,11 @@ class BuildPage extends React.Component {
       }
     }
     this.setState({ deck: deck });
+  }
+
+  onBack() {
+    let url = '/';
+    this.props.history.push(url);
   }
 
   onSave() {
@@ -337,9 +352,10 @@ class BuildPage extends React.Component {
     let layout = { '0': [], '1': [] };
     for (const unit of this.state.field) {
       let element = getUnitElement(unit);
-      layout[unit.ownership].push(<Token key={unit.id} x={unit.layout.f} y={unit.layout.r}>{ element }</Token>);
+      let key = `key_${unit.ownership}_${unit.layout.f}_${unit.layout.r}`;
+      layout[unit.ownership].push(<Token key={key} x={unit.layout.f} y={unit.layout.r}>{ element }</Token>);
       if(unit.position) {
-        deployment.push(<Token key={unit.id} x={unit.position.x} y={unit.position.y}>{ element }</Token>);
+        deployment.push(<Token key={key} x={unit.position.x} y={unit.position.y}>{ element }</Token>);
       }
     }
 
@@ -354,6 +370,8 @@ class BuildPage extends React.Component {
             <Row className="p-1">
               <Col xs="12">
                 <Button size="sm" color="success" onClick={this.onSave}>Save</Button>
+                &nbsp;
+                <Button size="sm" color="secondary" onClick={this.onBack}>Back</Button>
               </Col>
             </Row>
           </Container>
