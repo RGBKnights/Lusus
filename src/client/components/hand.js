@@ -49,6 +49,7 @@ export class Hand extends React.Component {
   onClick({ x, y }) {
     let cubit = this.map[`${x},${y}`];
     let event = {
+      type: 'selection',
       slot: x,
       cubit: cubit,
     };

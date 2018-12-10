@@ -41,8 +41,9 @@ export const CUBITS = {
 
   // Testing
   NoLeftTurn: 1021,
-  Monster: 1022,
-  Swapaport: 1023,
+  NoRightTurn: 1022,
+  Monster: 1023,
+  Swapaport: 1024,
 };
 
 export const CUBIT_TYPES = {
@@ -94,6 +95,11 @@ export const TARGETS = {
   Enemy: 2,
   Friendly: 3,
 };
+
+export const ACTIONS = {
+  Unknown: 0,
+  Castle: 1,
+}
 
 export function unitHasCubits(unit, type) {
   return unit.cubits.filter(_ => _ != null).filter(_ => _.type === type).length > 0;

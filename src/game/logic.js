@@ -1,4 +1,4 @@
-import { SPACE_TYPES, UNITS, CUBITS } from './common';
+import { SPACE_TYPES, UNITS, CUBITS, ACTIONS } from './common';
 import { getAdjacentSpaces, isPlayerInCheck } from './movement'
 
 const shortid = require('shortid');
@@ -218,6 +218,39 @@ export class GameLogic {
     return true;
   }
 
+  static action(G, ctx, source, target) {
+
+    if(source.action.type === ACTIONS.Castle) {
+      let king = G.field.find(_ => _.id === source.unit.id);
+      let rook = G.field.find(_ => _.id === target.unit.id);
+      let dk = (king.position.x - rook.position.x) > 0 ? -1 : 1;
+      let dr = (king.position.x - rook.position.x) > 0 ? 3 : -2;
+      
+      // Move King twice (Left) or (Right) 
+      for (let i = 0; i < 2; i++) {
+        king.position.x += dk;
+
+        // Test for Check after each move
+        if(isPlayerInCheck(G, ctx, ctx.currentPlayer)) {
+          return false;
+        }
+      }
+
+      // Move Rook
+      rook.position.x += dr;
+
+      // Test for Check
+      if(isPlayerInCheck(G, ctx, ctx.currentPlayer)) {
+        return false;
+      }
+
+      // Update state counters
+      G.players[ctx.currentPlayer].moves--;
+    }
+
+    return true;
+  }
+
   static placement(G, ctx, source, destination) {
     // Get source from hand
     let s = GameLogic.hand(G, ctx, source.slot);
@@ -255,11 +288,6 @@ export class GameLogic {
     let s = G.field.find(_ => _.id === source.unit.id);
     s.position.x = destination.position.x;
     s.position.y = destination.position.y;
-
-    G.players[ctx.currentPlayer].check = isPlayerInCheck(G, ctx, ctx.currentPlayer);
-    if(G.players[ctx.currentPlayer].check) {
-      return false;
-    }
 
     GameLogic.addEvent(G, ctx, 'Movement', `Moved #[${s.id}] from (${source.position.x},${source.position.y}) to (${destination.position.x},${destination.position.y})`);
 
@@ -385,6 +413,11 @@ export class GameLogic {
     G.players[opponent].check = isPlayerInCheck(G, ctx, opponent);
     if(G.players[opponent].check) {
       GameLogic.addEvent(G, ctx, 'Movement', `Check`);
+    }
+
+    G.players[ctx.currentPlayer].check = isPlayerInCheck(G, ctx, ctx.currentPlayer);
+    if(G.players[ctx.currentPlayer].check) {
+      return false;
     }
 
     // Update state counters

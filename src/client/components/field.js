@@ -5,9 +5,10 @@ import { Token, Grid } from 'boardgame.io/ui';
 import { getUnitElement } from '../svg/units';
 import { getCubitElement } from '../svg/cubits';
 
-import { TARGETS, PLACEMENT, LOCATIONS, unitHasCubits, CUBITS, UNITS } from '../../game/common'
+import { TARGETS, LOCATIONS, UNITS } from '../../game/common'
 import { getMoves } from '../../game/movement'
-import { getTargets } from '../../game/placement'
+import { getPlacements } from '../../game/placement'
+import { getTargets } from '../../game/actions'
 
 export class Field extends React.Component {
   static propTypes = {
@@ -18,6 +19,7 @@ export class Field extends React.Component {
     onMove: PropTypes.func,
     onPlacement: PropTypes.func,
     onSelection: PropTypes.func,
+    onAction: PropTypes.func,
   };
 
   static defaultProps = {
@@ -25,18 +27,17 @@ export class Field extends React.Component {
     onMove: () => {},
     onPlacement: () => {},
     onSelection:() => {},
+    onAction: () => {},
   };
 
   constructor(params) {
     super(params);
 
     this.validTarget = this.validTarget.bind(this);
-    this.validMove = this.validMove.bind(this);
     this.onClick = this.onClick.bind(this);
 
     this.map = {};
-    this.placements = {};
-    this.movements = {};
+    this.selection = {};
 
     this.rows = 8;
     this.cols = 26;
@@ -83,37 +84,7 @@ export class Field extends React.Component {
 
 
   validTarget(x,y) {
-    // Guard
-    if(!this.props.selection) {
-      return false;
-    }
-    if(!this.props.selection.cubit) {
-      return false;
-    }
-
-    // Check
-    if(this.placements[`${x},${y}`]) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  validMove(x,y) {
-    // Guard
-    if(!this.props.selection) {
-      return false;
-    }
-    if(!this.props.selection.unit) {
-      return false;
-    }
-
-    // Check
-    if(this.movements[`${x},${y}`]) {
-      return true;
-    } else {
-      return false;
-    }
+    return this.selection[`${x},${y}`];
   }
 
   onClick({ x, y }) {
@@ -124,27 +95,46 @@ export class Field extends React.Component {
     let isField = this.layout.fieldSelf.includes(x) || this.layout.fieldOpponent.includes(x);
     let isBoard = this.layout.board.includes(x);
     if(isField) {
-      let event = {
-        unit: (y < 4) ? this.map[`${x},${0}`] : this.map[`${x},${4}`],
-        slot: (y < 4) ? y - 1 : y - 5,
-        cubit: (y !== 0 && y !== 4) ? this.map[`${x},${y}`] : undefined,
-      };
-
       if(this.props.ctx.phase === 'play' && this.props.selection && this.props.selection.cubit && this.validTarget(x,y))  {
+        let event = {
+          type: 'placement',
+          unit: (y < 4) ? this.map[`${x},${0}`] : this.map[`${x},${4}`],
+          slot: (y < 4) ? y - 1 : y - 5,
+          cubit: (y !== 0 && y !== 4) ? this.map[`${x},${y}`] : undefined,
+        };
         this.props.onPlacement(event);
       } else {
+        let event = {
+          type: 'selection',
+          unit: (y < 4) ? this.map[`${x},${0}`] : this.map[`${x},${4}`],
+          slot: (y < 4) ? y - 1 : y - 5,
+          cubit: (y !== 0 && y !== 4) ? this.map[`${x},${y}`] : undefined,
+        };
         this.props.onSelection(event);
       }
     } else if (isBoard) {
-      let event = {
-        position: {x:x-9,y:y},
-        unit: this.map[`${x},${y}`],
-      };
-      if(this.props.ctx.phase === 'move' && this.props.selection && this.props.selection.unit && this.validMove(x,y)) {
+      if(this.props.ctx.phase === 'move' && this.props.selection && this.props.selection.action && this.validTarget(x,y)) {
+        let event = {
+          type: 'action',
+          position: {x:x-9,y:y},
+          unit: this.map[`${x},${y}`],
+        };
+        this.props.onAction(event);
+      } else if(this.props.ctx.phase === 'move' && this.props.selection && this.props.selection.unit && this.validTarget(x,y)) {
         if(this.props.selection.unit.ownership === this.props.playerID) {
+          let event = {
+            type: 'move',
+            position: {x:x-9,y:y},
+            unit: this.map[`${x},${y}`],
+          };
           this.props.onMove(this.props.selection, event);
         }
       } else {
+        let event = {
+          type: 'selection',
+          position: {x:x-9,y:y},
+          unit: this.map[`${x},${y}`],
+        };
         this.props.onSelection(event);
       }
     }
@@ -157,26 +147,40 @@ export class Field extends React.Component {
     let tokens = [];
 
     this.map = {};
-    this.placements = {};
-    this.movements = {};
+    this.selection = {};
 
-    let isUnitSelected = this.props.selection && this.props.selection.unit;
-    let isCubitSelected = this.props.selection && this.props.selection.cubit;
+    let isUnitSelected = false;
+    let isCubitSelected = false;
+    // let isActionSelected = false;
 
-    // Movement highlights
-    if(isUnitSelected && this.props.selection.unit.position) {
-      let moves = getMoves(this.props.G, this.props.ctx, this.props.selection.unit.id, this.props.selection.unit.position);
-      for (const move of moves) {
-        const key = `${move.x+9},${move.y}`;
-        background[key] = this.movementColors[move.target];
-        this.movements[key] = 1;
+    if(this.props.selection) {
+      if(this.props.selection.type === 'selection') {
+        if(this.props.selection.cubit) {
+          isCubitSelected = true;
+          let placements = getPlacements(this.props.G, this.props.ctx, this.props.selection.cubit.id);
+          for (const placement of placements) {
+            const key = `${placement.x},${placement.y}`;
+            background[key] = this.placementColor;
+            this.selection[key] = true;
+          }
+        } else if(this.props.selection.unit) {
+          isUnitSelected = true;
+          let moves = getMoves(this.props.G, this.props.ctx, this.props.selection.unit.id, this.props.selection.unit.position);
+          for (const move of moves) {
+            const key = `${move.x+9},${move.y}`;
+            background[key] = this.movementColors[move.target];
+            this.selection[key] = true;
+          }
+        }
+      } else if(this.props.selection.type === 'action') {
+        // isActionSelected = true;
+        let targets = getTargets(this.props.G, this.props.ctx, this.props.selection);
+        for (const target of targets) {
+          const key = `${target.x+9},${target.y}`;
+          background[key] = this.movementColors[target.target];
+          this.selection[key] = true;
+        }
       }
-    }
-
-    // Placement highlights
-    let targets = [];
-    if(isCubitSelected) {
-      targets = getTargets(this.props.G, this.props.ctx, this.props.selection.cubit.id);
     }
 
     for (const unit of this.props.G.field) {
@@ -205,7 +209,6 @@ export class Field extends React.Component {
       }
 
       let location = (unit.ownership === this.props.playerID) ? LOCATIONS.MyField : LOCATIONS.OpponentsField
-      let targeting = targets.filter(_ => _.where === location).map(_ => _.condition);
       let position = {x:0, y:0};
       {
         let offset = location === LOCATIONS.MyField ? 0 : 18;
@@ -230,13 +233,8 @@ export class Field extends React.Component {
         let mapKey = `${position.x},${position.y}`;
         this.map[mapKey] = unit;
 
-        if(unit.position && targeting.includes(PLACEMENT.Unit) && !unitHasCubits(unit, CUBITS.Immunity)) {
-          background[mapKey] = this.placementColor;
-          this.placements[mapKey] = true;
-        }
-
         if(!unit.position) {
-          background[mapKey] = this.deadColor ;
+          background[mapKey] = this.deadColor;
         }
 
         if(isUnitSelected && !isCubitSelected && this.props.selection.unit.id === unit.id) {
@@ -261,18 +259,8 @@ export class Field extends React.Component {
           tokens.push(token);
           this.map[mapKey] = cubit;
 
-          if(unit.position && targeting.includes(PLACEMENT.Cubit) && !unitHasCubits(unit, CUBITS.Immunity)) {
-            background[mapKey] = this.placementColor;
-            this.placements[mapKey] = true;
-          }
-
           if(isCubitSelected && this.props.selection.cubit.id === cubit.id) {
             background[mapKey] = this.selectionColor;
-          }
-        } else {
-          if(unit.position && targeting.includes(PLACEMENT.Empty) && !unitHasCubits(unit, CUBITS.Condemn)) {
-            background[mapKey] = this.placementColor;
-            this.placements[mapKey] = true;
           }
         }
       }

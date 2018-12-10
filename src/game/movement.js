@@ -54,8 +54,10 @@ export function getAdjacentSpaces(G, ctx, position, unoccupied = true) {
 
 export function getMoves(G, ctx, id, source) {
   // TODO: G.board => test for SPACE_TYPES
-
   let moves = [];
+  if(source == null) {
+    return moves;
+  }
 
   let obstacles = G.field.filter(_ => _.position != null);
 
@@ -77,6 +79,7 @@ export function getMoves(G, ctx, id, source) {
 
   let isTelaporter = unitHasCubits(unit, CUBITS.Swapaport);
   let noLeftTurn = unitHasCubits(unit, CUBITS.NoLeftTurn);
+  let noRightTurn = unitHasCubits(unit, CUBITS.NoRightTurn);
   let encumbered = unitHasCubits(unit, CUBITS.Encumber);
   let stuck = unitHasCubits(unit, CUBITS.StickyFeet);
   let handicapped = stuck || encumbered;
@@ -102,6 +105,9 @@ export function getMoves(G, ctx, id, source) {
 
   if(noLeftTurn) {
     movements = movements.filter(_ => _.directions.includes(DIRECTIONS.Left) === false);
+  }
+  if(noRightTurn) {
+    movements = movements.filter(_ => _.directions.includes(DIRECTIONS.Right) === false);
   }
 
   if(handicapped) {

@@ -1,4 +1,4 @@
-import { UNITS, CUBITS, LOCATIONS, PLACEMENT, TARGETS, DIRECTIONS } from './common';
+import { UNITS, CUBITS, LOCATIONS, PLACEMENT, TARGETS, DIRECTIONS, ACTIONS } from './common';
 
 function getUnits() {
   let data = {};
@@ -12,6 +12,7 @@ function getUnits() {
       { directions: [DIRECTIONS.Back, DIRECTIONS.Left], distance: 7, contiguous: true, targets: [TARGETS.Empty, TARGETS.Enemy] },
       { directions: [DIRECTIONS.Back, DIRECTIONS.Right], distance: 7, contiguous: true, targets: [TARGETS.Empty, TARGETS.Enemy] },
     ],
+    actions: [],
   };
   data[UNITS.King] = {
     key: UNITS.Pawn,
@@ -27,6 +28,9 @@ function getUnits() {
       { directions: [DIRECTIONS.Back, DIRECTIONS.Left], distance: 1, contiguous: true, targets: [TARGETS.Empty, TARGETS.Enemy] },
       { directions: [DIRECTIONS.Back, DIRECTIONS.Right], distance: 1, contiguous: true, targets: [TARGETS.Empty, TARGETS.Enemy] },
     ],
+    actions: [
+      { type: ACTIONS.Castle, name: "Castle", phase: 'move', targeting: true }
+    ]
   };
   data[UNITS.Queen] = {
     key: UNITS.Pawn,
@@ -42,6 +46,7 @@ function getUnits() {
       { directions: [DIRECTIONS.Back, DIRECTIONS.Left], distance: 7, contiguous: true, targets: [TARGETS.Empty, TARGETS.Enemy] },
       { directions: [DIRECTIONS.Back, DIRECTIONS.Right], distance: 7, contiguous: true, targets: [TARGETS.Empty, TARGETS.Enemy] },
     ],
+    actions: [],
   };
   data[UNITS.Knight] = {
     key: UNITS.Pawn,
@@ -56,7 +61,8 @@ function getUnits() {
       { directions: [DIRECTIONS.Left, DIRECTIONS.Left, DIRECTIONS.Back], distance: 1, contiguous: false, targets: [TARGETS.Empty, TARGETS.Enemy] },
       { directions: [DIRECTIONS.Right, DIRECTIONS.Right, DIRECTIONS.Forward], distance: 1, contiguous: false, targets: [TARGETS.Empty, TARGETS.Enemy] },
       { directions: [DIRECTIONS.Right, DIRECTIONS.Right, DIRECTIONS.Back], distance: 1, contiguous: false, targets: [TARGETS.Empty, TARGETS.Enemy] },
-    ]
+    ],
+    actions: [],
   };
   data[UNITS.Rook] = {
     key: UNITS.Pawn,
@@ -68,6 +74,7 @@ function getUnits() {
       { directions: [DIRECTIONS.Left], distance: 7, contiguous: true, targets: [TARGETS.Empty, TARGETS.Enemy] },
       { directions: [DIRECTIONS.Right], distance: 7, contiguous: true, targets: [TARGETS.Empty, TARGETS.Enemy] },
     ],
+    actions: [],
   };
   data[UNITS.Pawn] = {
     key: UNITS.Pawn,
@@ -78,7 +85,8 @@ function getUnits() {
       { directions: [DIRECTIONS.Forward], distance: 2, contiguous: true, consumable: true, targets: [TARGETS.Empty] },
       { directions: [DIRECTIONS.Forward, DIRECTIONS.Left],  distance: 1, contiguous: true, targets: [TARGETS.Enemy] },
       { directions: [DIRECTIONS.Forward, DIRECTIONS.Right], distance: 1, contiguous: true, targets: [TARGETS.Enemy] },
-    ]
+    ],
+    actions: [],
   };
 
   return data;
@@ -388,6 +396,18 @@ function getCubits() {
     hidden: false,
     name: 'No Left Turn',
     description: "Removes the ability for the unit to make any moves involved moving left.",
+    type: 'Debuff',
+    subordinate: 'Movement',
+    placement: [
+      { where: LOCATIONS.OpponentsField, condition: PLACEMENT.Empty },
+    ]
+  };
+  data[CUBITS.NoRightTurn] = {
+    key: CUBITS.NoRightTurn,
+    enabled: true,
+    hidden: false,
+    name: 'No Right Turn',
+    description: "Removes the ability for the unit to make any moves involved moving right.",
     type: 'Debuff',
     subordinate: 'Movement',
     placement: [

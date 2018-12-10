@@ -20,6 +20,14 @@ const GameCore = Game({
           return INVALID_MOVE;
         }
       },
+      action(G, ctx, source, target) {
+        const g = clone(G);
+        if(GameLogic.action(g, ctx, source, target)) {
+          return g;
+        } else {
+          return INVALID_MOVE;
+        }
+      },
       placement(G, ctx, source, destination) {
         const g = clone(G);
         if(GameLogic.placement(g, ctx, source, destination)) {
@@ -54,14 +62,14 @@ const GameCore = Game({
         },
         play: {
           next: 'move',
-          allowedMoves: ['skip','placement'],
+          allowedMoves: ['skip','placement','action'],
           endPhaseIf: (G, ctx) => {
             return G.players[ctx.currentPlayer].actions === 0;
           },
         },
         move: {
           next: 'resolution',
-          allowedMoves: ['movement'],
+          allowedMoves: ['movement','action'],
           endPhaseIf: (G, ctx) => {
             return G.players[ctx.currentPlayer].moves === 0;
           },

@@ -32,6 +32,8 @@ class PlayView extends React.Component {
     super(params);
 
     this.onClearSelection = this.onClearSelection.bind(this);
+    this.onAction  = this.onAction.bind(this);
+    this.onActionTarget = this.onActionTarget.bind(this);
     this.onSkipPhase = this.onSkipPhase.bind(this);
     this.onSelection = this.onSelection.bind(this);
     this.onPlacement = this.onPlacement.bind(this);
@@ -50,6 +52,20 @@ class PlayView extends React.Component {
     this.props.moves.skip();
   }
 
+  onAction(event) {
+    if(event.action.targeting) {
+      this.setState({ selection: event });
+    } else {
+      this.props.moves.action(event);
+      this.setState({ selection: null });
+    }
+  }
+
+  onActionTarget(event) {
+    this.props.moves.action(this.state.selection, event);
+    this.setState({ selection: null });
+  }
+
   onSelection(event) {
     this.setState({ selection: event });
   }
@@ -63,7 +79,7 @@ class PlayView extends React.Component {
     this.props.moves.movement(source, destination);
     this.setState({ selection: null });
   }
-
+  
   getMenuButtons() {
     let buttons = [];
 
@@ -83,9 +99,10 @@ class PlayView extends React.Component {
 
     let fieldParams = {
       selection: this.state.selection,
+      onSelection: this.onSelection,
       onMove: this.onMove,
       onPlacement: this.onPlacement,
-      onSelection: this.onSelection
+      onAction: this.onActionTarget,
     };
     let field = React.createElement(Field, { ...fieldParams, ...this.props});
 
@@ -96,11 +113,11 @@ class PlayView extends React.Component {
     let hand = React.createElement(Hand, { ...handParams, ...this.props});
 
     let helpParams = { 
-      playerID: this.props.playerID,
       selection: this.state.selection,
       onClearSelection: this.onClearSelection,
+      onAction: this.onAction,
     };
-    let help = React.createElement(Help, helpParams);
+    let help = React.createElement(Help, { ...helpParams, ...this.props});
 
     return (
       <section>
