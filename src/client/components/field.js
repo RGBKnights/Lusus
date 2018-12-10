@@ -42,7 +42,7 @@ export class Field extends React.Component {
     this.rows = 8;
     this.cols = 26;
 
-    this.baseColor = '#000000';
+    this.baseColor = '#060606';
     this.altColor = '#FFFFFF';
     this.primaryColor = '#ADAAAA';
     this.secondaryColor = '#D9D6D6';
@@ -79,7 +79,7 @@ export class Field extends React.Component {
       }
     }
 
-    this.style = { strokeWidth: 0.02, stroke: '#000000' };
+    this.style = { strokeWidth: 0.02, stroke: '#060606' };
   }
 
 
@@ -88,9 +88,7 @@ export class Field extends React.Component {
   }
 
   onClick({ x, y }) {
-    if(this.layout.breaks.includes(x)) {
-      return; // Out of bounds
-    }
+    if(this.layout.breaks.includes(x)) return; // Out of bounds
 
     let isField = this.layout.fieldSelf.includes(x) || this.layout.fieldOpponent.includes(x);
     let isBoard = this.layout.board.includes(x);

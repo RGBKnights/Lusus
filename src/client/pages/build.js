@@ -348,12 +348,27 @@ class BuildPage extends React.Component {
       }
     }
 
+    let backgrounds = {
+      '0': { ...this.background },
+      '1': { ...this.background },
+    }
+
     let deployment = [];
     let layout = { '0': [], '1': [] };
     for (const unit of this.state.field) {
       let element = getUnitElement(unit);
       let key = `key_${unit.ownership}_${unit.layout.f}_${unit.layout.r}`;
       layout[unit.ownership].push(<Token key={key} x={unit.layout.f} y={unit.layout.r}>{ element }</Token>);
+      
+      if(this.state.selection) {
+        let ownership = unit.ownership === this.state.selection.ownership;
+        let file = unit.layout.f === this.state.selection.layout.f;
+        let rank = unit.layout.r === this.state.selection.layout.r;
+        if( ownership && file && rank) {
+          backgrounds[unit.ownership][`${unit.layout.f},${unit.layout.r}`] = '#6C69AE';
+        }
+      }
+
       if(unit.position) {
         deployment.push(<Token key={key} x={unit.position.x} y={unit.position.y}>{ element }</Token>);
       }
@@ -467,7 +482,7 @@ class BuildPage extends React.Component {
                 <Col>
                   <Row>
                     <Col>
-                      <Grid rows={2} cols={8} colorMap={this.background} style={this.style} onClick={this.onClickBlack}>
+                      <Grid rows={2} cols={8} colorMap={backgrounds['1']} style={this.style} onClick={this.onClickBlack}>
                         { layout['1'] }
                       </Grid>
                     </Col>
@@ -475,7 +490,7 @@ class BuildPage extends React.Component {
                   <br />
                   <Row>
                     <Col>
-                      <Grid rows={2} cols={8} colorMap={this.background} style={this.style} onClick={this.onClickWhite}>
+                      <Grid rows={2} cols={8} colorMap={backgrounds['0']} style={this.style} onClick={this.onClickWhite}>
                         { layout['0'] }
                       </Grid>
                     </Col>

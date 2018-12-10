@@ -34,15 +34,15 @@ export function getTargets(G, ctx, event) {
         // There are no pieces between the king and the chosen rook.
         for (const unit of rooks) {
           if(unit.position.x === 0) {
-            let a = units.find(_ => _.position.x === 1);
-            let b = units.find(_ => _.position.x === 2);
-            let c = units.find(_ => _.position.x === 3);
+            let a = units.find(_ => _.position.x === 1 && _.position.y === unit.position.y);
+            let b = units.find(_ => _.position.x === 2 && _.position.y === unit.position.y);
+            let c = units.find(_ => _.position.x === 3 && _.position.y === unit.position.y);
             if(a == null && b == null && c == null) {
               collection.push({ target: TARGETS.Friendly, x: unit.position.x, y: unit.position.y });
             }
           } else if(unit.position.x === 7) {
-            let a = units.find(_ => _.position.x === 5);
-            let b = units.find(_ => _.position.x === 6);
+            let a = units.find(_ => _.position.x === 5 && _.position.y === unit.position.y);
+            let b = units.find(_ => _.position.x === 6 && _.position.y === unit.position.y);
             if(a == null && b == null) {
               collection.push({ target: TARGETS.Friendly, x: unit.position.x, y: unit.position.y });
             }

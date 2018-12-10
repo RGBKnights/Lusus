@@ -104,7 +104,7 @@ export class Menu extends React.Component {
         <Row className="p-0 m-0" style={{width:'100%'}}>
           <Col className="p-1 m-0 d-none d-sm-block" sm="1" md="1" lg="1" xl="2">
             <img className="img-fluid" src="/favicon.ico" alt="Logo"></img>
-            <h5 className="d-none d-xl-inline text-light">Lusus</h5>
+            <strong className="d-none d-xl-inline text-light" style={{fontSize:'2em'}}>Lusus</strong>
           </Col>
           <Col className="p-1 m-0" xs="7" sm="5" md="4" lg="3" xl="2">
             <Button className="m-1 btn-block" color="secondary" disabled>
