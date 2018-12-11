@@ -45,7 +45,25 @@ export class Help extends React.Component {
     let obj = this.props.selection;
     if(obj.cubit) {
       let cubit = Database.cubits[obj.cubit.type];
-      if(cubit.hidden && obj.cubit.ownership !== this.props.playerID) {
+      if(obj.cubit.ownership === this.props.playerID) {
+        let actions = [];
+        for (const action of cubit.actions) {
+          if(action.phase === this.props.ctx.phase) {
+            actions.push(<Button key={'action_' + action.type} className="m-1" color="primary" onClick={(e) => this.onAction(e, action)}>{action.name}</Button>);
+          }
+        }
+
+        return (
+          <div className="text-light">
+            <div className="float-right">
+              { actions }
+              { deselection }
+            </div>
+            <strong>{cubit.name}</strong> - <span>Cubit</span> - <span>{cubit.type}</span> - <span>{cubit.subordinate}</span><br />
+            <span>{cubit.description}</span>
+          </div>
+        );
+      } if(cubit.hidden) { 
         return (
           <div className="text-light">
             <div className="float-right">
@@ -55,7 +73,7 @@ export class Help extends React.Component {
             <span>Cubit</span> - <span>Unknown</span> - <span>Unknown</span><br />
           </div>
         );
-      } else { 
+      } else {
         return (
           <div className="text-light">
             <div className="float-right">
@@ -88,39 +106,5 @@ export class Help extends React.Component {
     } else {
       return <div></div>;
     }
-
-    /*
-    let cubit = Database.cubits[obj.type];
-    let unit = Database.units[obj.type];
-    if(cubit) {
-      if(cubit.hidden && obj.ownership !== this.props.playerID) {
-        return (
-          <div className="text-light">
-            { deselection }
-            <strong>Hidden</strong><br />
-            <span>Cubit</span> - <span>Unknown</span> - <span>Unknown</span><br />
-          </div>
-        );
-      } else {
-        return (
-          <div className="text-light">
-            { deselection }
-            <strong>{cubit.name}</strong> - <span>Cubit</span> - <span>{cubit.type}</span> - <span>{cubit.subordinate}</span><br />
-            <span>{cubit.description}</span>
-          </div>
-        );
-      }
-    } else if(unit) { 
-      return (
-        <div className="text-light">
-          { deselection }
-          <strong>{unit.name}</strong> - <span>Unit</span><br />
-          <span>{unit.description}</span>
-        </div>
-      );
-    } else {
-      return <div></div>;
-    }
-    */
   }
 }

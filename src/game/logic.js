@@ -219,36 +219,65 @@ export class GameLogic {
   }
 
   static action(G, ctx, source, target) {
+    switch (source.action.type) {
+      case ACTIONS.Castle:
+      {
+        let king = G.field.find(_ => _.id === source.unit.id);
+        let rook = G.field.find(_ => _.id === target.unit.id);
+        let dk = (king.position.x - rook.position.x) > 0 ? -1 : 1;
+        let dr = (king.position.x - rook.position.x) > 0 ? 3 : -2;
+        
+        // Move King twice (Left) or (Right) 
+        for (let i = 0; i < 2; i++) {
+          king.position.x += dk;
 
-    if(source.action.type === ACTIONS.Castle) {
-      let king = G.field.find(_ => _.id === source.unit.id);
-      let rook = G.field.find(_ => _.id === target.unit.id);
-      let dk = (king.position.x - rook.position.x) > 0 ? -1 : 1;
-      let dr = (king.position.x - rook.position.x) > 0 ? 3 : -2;
-      
-      // Move King twice (Left) or (Right) 
-      for (let i = 0; i < 2; i++) {
-        king.position.x += dk;
+          // Test for Check after each move
+          if(isPlayerInCheck(G, ctx, ctx.currentPlayer)) {
+            return false;
+          }
+        }
 
-        // Test for Check after each move
+        // Move Rook
+        rook.position.x += dr;
+
+        // Test for Check
         if(isPlayerInCheck(G, ctx, ctx.currentPlayer)) {
           return false;
         }
+
+        GameLogic.addEvent(G, ctx, 'Movement', `Castle #[${rook.id}]`);
+
+        // Update state counters
+        G.players[ctx.currentPlayer].moves--;
+
+        return true;
       }
+      case ACTIONS.Mulligan:
+      {
+        while(G.players[ctx.currentPlayer].hand.length > 0) {
+          let cubit = G.players[ctx.currentPlayer].hand.pop();
+          G.players[ctx.currentPlayer].bag.push(cubit);
+        }
+    
+        let draws = G.players[ctx.currentPlayer].draws - 1;
+        if(draws < 1) {
+          return false;
+        }
 
-      // Move Rook
-      rook.position.x += dr;
+        G.players[ctx.currentPlayer].bag = ctx.random.Shuffle(G.players[ctx.currentPlayer].bag);
+        for (let i = 0; i < draws; i++) {
+          let cubit = G.players[ctx.currentPlayer].bag.pop();
+          G.players[ctx.currentPlayer].hand.push(cubit);
+        }
 
-      // Test for Check
-      if(isPlayerInCheck(G, ctx, ctx.currentPlayer)) {
+        // Update state counters
+        G.players[ctx.currentPlayer].actions--;
+
+        return true;
+      }
+      default:
         return false;
-      }
-
-      // Update state counters
-      G.players[ctx.currentPlayer].moves--;
     }
-
-    return true;
   }
 
   static placement(G, ctx, source, destination) {
@@ -463,6 +492,7 @@ export class GameLogic {
   }
 
   static hand(G, ctx, slot) {
+    debugger;
     let cubit = G.players[ctx.currentPlayer].hand[slot];
     if(cubit) {
       let delta = G.players[ctx.currentPlayer].hand.filter(_ => _.id !== cubit.id);

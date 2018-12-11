@@ -44,6 +44,7 @@ export const CUBITS = {
   NoRightTurn: 1022,
   Monster: 1023,
   Swapaport: 1024,
+  Mulligan: 1025,
 };
 
 export const CUBIT_TYPES = {
@@ -99,6 +100,7 @@ export const TARGETS = {
 export const ACTIONS = {
   Unknown: 0,
   Castle: 1,
+  Mulligan: 2
 }
 
 export function unitHasCubits(unit, type) {

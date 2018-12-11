@@ -3,7 +3,7 @@ import { Database } from './database';
 
 export function getPlacements(G, ctx, id) {
   let collection = [];
-
+  
   let cubit = G.players[ctx.currentPlayer].hand.find(_ => _.id === id);
   if(!cubit) {
     return collection;

@@ -112,6 +112,7 @@ function getCubits() {
       { directions: [DIRECTIONS.Left], distance: 7, contiguous: true, targets: [TARGETS.Empty, TARGETS.Enemy] },
       { directions: [DIRECTIONS.Right], distance: 7, contiguous: true, targets: [TARGETS.Empty, TARGETS.Enemy] },
     ],
+    actions: [],
   };
   data[CUBITS.Diagonal] = {
     key: CUBITS.Diagonal,
@@ -129,6 +130,7 @@ function getCubits() {
       { directions: [DIRECTIONS.Back, DIRECTIONS.Left], distance: 7, contiguous: true, targets: [TARGETS.Empty, TARGETS.Enemy] },
       { directions: [DIRECTIONS.Back, DIRECTIONS.Right], distance: 7, contiguous: true, targets: [TARGETS.Empty, TARGETS.Enemy] },
     ],
+    actions: [],
   };
   data[CUBITS.Cardinal] = {
     key: CUBITS.Cardinal,
@@ -150,6 +152,7 @@ function getCubits() {
       { directions: [DIRECTIONS.Back, DIRECTIONS.Left], distance: 7, contiguous: true, targets: [TARGETS.Empty, TARGETS.Enemy] },
       { directions: [DIRECTIONS.Back, DIRECTIONS.Right], distance: 7, contiguous: true, targets: [TARGETS.Empty, TARGETS.Enemy] },
     ],
+    actions: [],
   };
   data[CUBITS.Jump] = {
     key: CUBITS.Jump,
@@ -171,6 +174,7 @@ function getCubits() {
       { directions: [DIRECTIONS.Right, DIRECTIONS.Right, DIRECTIONS.Forward], distance: 1, contiguous: false, targets: [TARGETS.Empty, TARGETS.Enemy] },
       { directions: [DIRECTIONS.Right, DIRECTIONS.Right, DIRECTIONS.Back], distance: 1, contiguous: false, targets: [TARGETS.Empty, TARGETS.Enemy] },
     ],
+    actions: [],
   };
   data[CUBITS.SideStep] = {
     key: CUBITS.SideStep,
@@ -186,6 +190,7 @@ function getCubits() {
       { directions: [DIRECTIONS.Left], distance: 1, contiguous: true, targets: [TARGETS.Empty] },
       { directions: [DIRECTIONS.Right], distance: 1, contiguous: true, targets: [TARGETS.Empty] },
     ],
+    actions: [],
   };
   data[CUBITS.Swap] = {
     key: CUBITS.Swap,
@@ -207,6 +212,7 @@ function getCubits() {
       { directions: [DIRECTIONS.Back, DIRECTIONS.Left], distance: 7, contiguous: true, targets: [TARGETS.Friendly] },
       { directions: [DIRECTIONS.Back, DIRECTIONS.Right], distance: 7, contiguous: true, targets: [TARGETS.Friendly] },
     ],
+    actions: [],
   };
 
   data[CUBITS.Enrage] = {
@@ -219,7 +225,8 @@ function getCubits() {
     subordinate: 'Movement',
     placement: [
       { where: LOCATIONS.OpponentsField, condition: PLACEMENT.Empty },
-    ]
+    ],
+    actions: [],
   };
   data[CUBITS.Passify] = {
     key: CUBITS.Passify,
@@ -231,7 +238,8 @@ function getCubits() {
     subordinate: 'Movement',
     placement: [
       { where: LOCATIONS.OpponentsField, condition: PLACEMENT.Empty },
-    ]
+    ],
+    actions: [],
   };
   data[CUBITS.Encumber] = {
     key: CUBITS.Encumber,
@@ -243,7 +251,8 @@ function getCubits() {
     subordinate: 'Movement',
     placement: [
       { where: LOCATIONS.OpponentsField, condition: PLACEMENT.Empty },
-    ]
+    ],
+    actions: [],
   };
   data[CUBITS.StickyFeet] = {
     key: CUBITS.StickyFeet,
@@ -255,7 +264,8 @@ function getCubits() {
     subordinate: 'Movement',
     placement: [
       { where: LOCATIONS.OpponentsField, condition: PLACEMENT.Empty },
-    ]
+    ],
+    actions: [],
   };
   data[CUBITS.Poisoned] = {
     key: CUBITS.Poisoned,
@@ -267,7 +277,8 @@ function getCubits() {
     subordinate: 'Movement',
     placement: [
       { where: LOCATIONS.OpponentsField, condition: PLACEMENT.Empty },
-    ]
+    ],
+    actions: [],
   };
   data[CUBITS.Bleed] = {
     key: CUBITS.Bleed,
@@ -279,7 +290,8 @@ function getCubits() {
     subordinate: 'Movement',
     placement: [
       { where: LOCATIONS.OpponentsField, condition: PLACEMENT.Empty },
-    ]
+    ],
+    actions: [],
   };
 
   // Aggressive
@@ -293,7 +305,8 @@ function getCubits() {
     subordinate: 'Capture',
     placement: [
       { where: LOCATIONS.MyField, condition: PLACEMENT.Empty },
-    ]
+    ],
+    actions: [],
   };
 
   // Traps
@@ -307,7 +320,8 @@ function getCubits() {
     subordinate: 'Trap',
     placement: [
       { where: LOCATIONS.MyField, condition: PLACEMENT.Empty },
-    ]
+    ],
+    actions: [],
   };
   data[CUBITS.Recover] = {
     key: CUBITS.Recover,
@@ -319,7 +333,8 @@ function getCubits() {
     subordinate: 'Trap',
     placement: [
       { where: LOCATIONS.MyField, condition: PLACEMENT.Empty },
-    ]
+    ],
+    actions: [],
   };
 
   // Targeting
@@ -333,7 +348,8 @@ function getCubits() {
     subordinate: 'Targeting',
     placement: [
       { where: LOCATIONS.OpponentsField, condition: PLACEMENT.Empty },
-    ]
+    ],
+    actions: [],
   };
   data[CUBITS.Immunity] = {
     key: CUBITS.Immunity,
@@ -346,7 +362,8 @@ function getCubits() {
     placement: [
       { where: LOCATIONS.MyField, condition: PLACEMENT.Empty },
       { where: LOCATIONS.OpponentsField, condition: PLACEMENT.Empty },
-    ]
+    ],
+    actions: [],
   };
 
   // Removal
@@ -361,7 +378,8 @@ function getCubits() {
     placement: [
       { where: LOCATIONS.MyField, condition: PLACEMENT.Cubit },
       { where: LOCATIONS.OpponentsField, condition: PLACEMENT.Cubit },
-    ]
+    ],
+    actions: [],
   };
   data[CUBITS.Destroy] = {
     key: CUBITS.Destroy,
@@ -374,7 +392,8 @@ function getCubits() {
     placement: [
       { where: LOCATIONS.MyField, condition: PLACEMENT.Cubit },
       { where: LOCATIONS.OpponentsField, condition: PLACEMENT.Cubit },
-    ]
+    ],
+    actions: [],
   };
   data[CUBITS.Eliminate] = {
     key: CUBITS.Eliminate,
@@ -387,9 +406,11 @@ function getCubits() {
     placement: [
       { where: LOCATIONS.MyField, condition: PLACEMENT.Unit },
       { where: LOCATIONS.OpponentsField, condition: PLACEMENT.Unit },
-    ]
+    ],
+    actions: [],
   };
 
+  // Tests...
   data[CUBITS.NoLeftTurn] = {
     key: CUBITS.NoLeftTurn,
     enabled: true,
@@ -400,7 +421,8 @@ function getCubits() {
     subordinate: 'Movement',
     placement: [
       { where: LOCATIONS.OpponentsField, condition: PLACEMENT.Empty },
-    ]
+    ],
+    actions: [],
   };
   data[CUBITS.NoRightTurn] = {
     key: CUBITS.NoRightTurn,
@@ -412,7 +434,8 @@ function getCubits() {
     subordinate: 'Movement',
     placement: [
       { where: LOCATIONS.OpponentsField, condition: PLACEMENT.Empty },
-    ]
+    ],
+    actions: [],
   };
   data[CUBITS.Monster] = {
     key: CUBITS.Monster,
@@ -432,6 +455,7 @@ function getCubits() {
       { directions: [DIRECTIONS.Right, DIRECTIONS.Forward, DIRECTIONS.Right, DIRECTIONS.Forward], distance: 2, contiguous: false, targets: [TARGETS.Empty] },
       { directions: [DIRECTIONS.Forward], distance: 7, contiguous: true, targets: [TARGETS.Empty, TARGETS.Enemy] },
     ],
+    actions: [],
   };
   data[CUBITS.Swapaport] = {
     key: CUBITS.Swapaport,
@@ -463,6 +487,23 @@ function getCubits() {
       { directions: [DIRECTIONS.Left, DIRECTIONS.Back, DIRECTIONS.Back,], distance: 2, contiguous: false, targets: [TARGETS.Friendly] },
       { directions: [DIRECTIONS.Right, DIRECTIONS.Forward, DIRECTIONS.Forward], distance: 2, contiguous: false, targets: [TARGETS.Friendly] },
       { directions: [DIRECTIONS.Right, DIRECTIONS.Back, DIRECTIONS.Back], distance: 2, contiguous: false, targets: [TARGETS.Friendly] },
+    ],
+    actions: [],
+  };
+
+  data[CUBITS.Mulligan] = {
+    key: CUBITS.Mulligan,
+    enabled: true,
+    hidden: false,
+    name: 'Mulligan',
+    description: "On Activation you shuffle your hand back into your library, then draws a new hand of one fewer cards than you had before.",
+    type: 'Buff',
+    subordinate: 'Activatable',
+    placement: [
+      { where: LOCATIONS.MyField, condition: PLACEMENT.Empty },
+    ],
+    actions: [
+      { type: ACTIONS.Mulligan, name: "Mulligan", phase: 'play', targeting: false }
     ],
   };
 
