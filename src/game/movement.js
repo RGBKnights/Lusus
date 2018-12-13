@@ -54,6 +54,7 @@ export function getAdjacentSpaces(G, ctx, position, unoccupied = true) {
 
 export function getMoves(G, ctx, id, source) {
   // TODO: G.board => test for SPACE_TYPES
+  
   let moves = [];
   if(source == null) {
     return moves;
@@ -65,11 +66,6 @@ export function getMoves(G, ctx, id, source) {
   if(!unit) {
     return moves;
   }
-  /*
-  if(unit.ownership !== ctx.currentPlayer) {
-    return moves;
-  }
-  */
   
   let directions = {};
   directions[DIRECTIONS.Forward] = { x:0, y: unit.ownership === '0' ? -1 : 1 };

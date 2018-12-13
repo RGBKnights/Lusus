@@ -3,7 +3,7 @@ import { UNITS, CUBITS, LOCATIONS, PLACEMENT, TARGETS, DIRECTIONS, ACTIONS } fro
 function getUnits() {
   let data = {};
   data[UNITS.Bishop] = {
-    key: UNITS.Pawn,
+    key: UNITS.Bishop,
     name: 'Bishop',
     description: 'A bishop moves any number of vacant squares in any diagonal direction by default.',
     movements: [
@@ -15,7 +15,7 @@ function getUnits() {
     actions: [],
   };
   data[UNITS.King] = {
-    key: UNITS.Pawn,
+    key: UNITS.King,
     name: 'King',
     description: 'The king moves one square horizontally, vertically, or diagonally by default. The game can be won by capturing this piece.',
     movements: [
@@ -33,7 +33,7 @@ function getUnits() {
     ]
   };
   data[UNITS.Queen] = {
-    key: UNITS.Pawn,
+    key: UNITS.Queen,
     name: 'Queen',
     description: 'The queen moves any number of vacant squares in a horizontal, vertical, or diagonal direction by default.',
     movements: [
@@ -49,7 +49,7 @@ function getUnits() {
     actions: [],
   };
   data[UNITS.Knight] = {
-    key: UNITS.Pawn,
+    key: UNITS.Knight,
     name: 'Knight',
     description: 'A Knight moves to any of the closest squares that are not on the same rank, file, or diagonal, thus the move forms an "L"-shape: two squares vertically and one square horizontally, or two squares horizontally and one square vertically. The knight can leap over other pieces.',
     movements: [
@@ -65,7 +65,7 @@ function getUnits() {
     actions: [],
   };
   data[UNITS.Rook] = {
-    key: UNITS.Pawn,
+    key: UNITS.Rook,
     name: 'Rook',
     description: 'A rook moves any number of vacant squares in a horizontal or vertical direction by default.',
     movements: [

@@ -224,26 +224,12 @@ export class GameLogic {
       {
         let king = G.field.find(_ => _.id === source.unit.id);
         let rook = G.field.find(_ => _.id === target.unit.id);
-        let dk = (king.position.x - rook.position.x) > 0 ? -1 : 1;
+        let dk = (king.position.x - rook.position.x) > 0 ? -2 : 2;
         let dr = (king.position.x - rook.position.x) > 0 ? 3 : -2;
         
-        // Move King twice (Left) or (Right) 
-        for (let i = 0; i < 2; i++) {
-          king.position.x += dk;
-
-          // Test for Check after each move
-          if(isPlayerInCheck(G, ctx, ctx.currentPlayer)) {
-            return false;
-          }
-        }
-
-        // Move Rook
+        // Move King
+        king.position.x += dk;
         rook.position.x += dr;
-
-        // Test for Check
-        if(isPlayerInCheck(G, ctx, ctx.currentPlayer)) {
-          return false;
-        }
 
         GameLogic.addEvent(G, ctx, 'Movement', `Castle #[${rook.id}]`);
 
@@ -311,7 +297,7 @@ export class GameLogic {
   }
 
   static movement(G, ctx, source, destination) {
-    let opponent = ctx.currentPlayer === "0" ? "1" : "0";
+    // let opponent = ctx.currentPlayer === "0" ? "1" : "0";
 
     // Move source
     let s = G.field.find(_ => _.id === source.unit.id);
@@ -370,6 +356,7 @@ export class GameLogic {
       if(isSwap) {
         d.position.x = source.position.x;
         d.position.y = source.position.y;
+        s.moves++;
 
         GameLogic.addEvent(G, ctx, 'Movement', `Swapped #[${s.id}] with #[${d.id}]`);
       } else if(isDodged) {
@@ -438,6 +425,7 @@ export class GameLogic {
       GameLogic.addEvent(G, ctx, 'Movement', `Promoted #[${s.id}]`);
     }
 
+    /*
     // Check for check
     G.players[opponent].check = isPlayerInCheck(G, ctx, opponent);
     if(G.players[opponent].check) {
@@ -448,6 +436,9 @@ export class GameLogic {
     if(G.players[ctx.currentPlayer].check) {
       return false;
     }
+
+    // Checkmate...
+    */
 
     // Update state counters
     G.players[ctx.currentPlayer].moves--;
