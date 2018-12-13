@@ -227,7 +227,7 @@ export class GameLogic {
         let dk = (king.position.x - rook.position.x) > 0 ? -2 : 2;
         let dr = (king.position.x - rook.position.x) > 0 ? 3 : -2;
         
-        // Move King
+        // Move Units
         king.position.x += dk;
         rook.position.x += dr;
 
